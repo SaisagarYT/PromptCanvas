@@ -32,45 +32,90 @@
   let themeStyleEl = null;
   let sidebarRoot = null;
 
+  // Suppress orphaned extension context errors when extension updates or reloads
+  window.addEventListener('unhandledrejection', (event) => {
+    try {
+      const msg = (event.reason?.message || event.reason || '').toString();
+      if (msg.includes('Extension context invalidated') || msg.includes('getURL')) {
+        event.preventDefault();
+      }
+    } catch (e) {}
+  });
+
+  window.addEventListener('error', (event) => {
+    try {
+      const msg = (event.message || '').toString();
+      if (msg.includes('Extension context invalidated') || msg.includes('getURL')) {
+        event.preventDefault();
+      }
+    } catch (e) {}
+  });
+
   function isExtensionValid() {
     try {
-      return typeof chrome !== 'undefined' && !!chrome?.runtime?.id;
+      return typeof chrome !== 'undefined' && Boolean(chrome && chrome.runtime && chrome.runtime.id);
     } catch (e) {
       return false;
     }
   }
 
-  async function init() {
-    if (!isExtensionValid()) return;
-
-    const data = await getStorage(['themes', 'prompts', 'settings', 'uiPalette']);
-    state.themes = data.themes || {};
-    state.prompts = data.prompts || [];
-    state.settings = data.settings || {};
-    state.uiPalette = data.uiPalette || null;
-    state.activeTheme = state.settings.activeTheme || 'amberDuo';
-
-    injectSidebar();
-    applyCSSVarsFromTheme(state.activeTheme);
-    applyPageTheme(state.activeTheme);
-    if (state.uiPalette) applySidebarUIPalette(state.uiPalette);
-
-    if (isExtensionValid() && chrome.storage?.onChanged) {
-      chrome.storage.onChanged.addListener((changes) => {
-        if (!isExtensionValid()) return;
-        onStorageChanged(changes);
-      });
+  function safeLastError() {
+    try {
+      if (!isExtensionValid()) return true;
+      return Boolean(chrome.runtime?.lastError);
+    } catch (e) {
+      return true;
     }
-    setupKeyboardShortcuts();
+  }
+
+  async function init() {
+    try {
+      if (!isExtensionValid()) return;
+
+      const data = await getStorage(['themes', 'prompts', 'settings', 'uiPalette']);
+      if (!isExtensionValid()) return;
+
+      state.themes = data.themes || {};
+      state.prompts = data.prompts || [];
+      state.settings = data.settings || {};
+      state.uiPalette = data.uiPalette || null;
+      state.activeTheme = state.settings.activeTheme || 'amberDuo';
+
+      injectSidebar();
+      applyCSSVarsFromTheme(state.activeTheme);
+      applyPageTheme(state.activeTheme);
+      if (state.uiPalette) applySidebarUIPalette(state.uiPalette);
+
+      try {
+        if (isExtensionValid() && chrome.storage?.onChanged) {
+          chrome.storage.onChanged.addListener((changes) => {
+            try {
+              if (!isExtensionValid()) return;
+              onStorageChanged(changes);
+            } catch (e) {}
+          });
+        }
+      } catch (e) {}
+
+      setupKeyboardShortcuts();
+    } catch (e) {
+      // Prevent any unhandled promise rejections on context invalidation
+    }
   }
 
   function getStorage(keys) {
     return new Promise((resolve) => {
-      if (!isExtensionValid()) return resolve({});
       try {
+        if (!isExtensionValid()) return resolve({});
         chrome.storage.local.get(keys, (res) => {
-          if (chrome.runtime?.lastError) return resolve({});
-          resolve(res || {});
+          try {
+            if (!isExtensionValid() || safeLastError()) {
+              return resolve({});
+            }
+            resolve(res || {});
+          } catch (e) {
+            resolve({});
+          }
         });
       } catch (e) {
         resolve({});
@@ -80,11 +125,15 @@
 
   function setStorage(data) {
     return new Promise((resolve) => {
-      if (!isExtensionValid()) return resolve();
       try {
+        if (!isExtensionValid()) return resolve();
         chrome.storage.local.set(data, () => {
-          if (chrome.runtime?.lastError) {}
-          resolve();
+          try {
+            if (!isExtensionValid() || safeLastError()) {}
+            resolve();
+          } catch (e) {
+            resolve();
+          }
         });
       } catch (e) {
         resolve();
@@ -949,7 +998,11 @@
       const url = chrome.runtime?.getURL ? chrome.runtime.getURL(`options/options.html${hash}`) : '';
       if (!url) return;
       chrome.runtime.sendMessage({ type: 'OPEN_OPTIONS', panel }, (res) => {
-        if (chrome.runtime?.lastError || !res) {
+        try {
+          if (safeLastError() || !res) {
+            window.open(url, '_blank');
+          }
+        } catch (e) {
           window.open(url, '_blank');
         }
       });
@@ -1168,9 +1221,11 @@
   }
 
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', init);
+    document.addEventListener('DOMContentLoaded', () => {
+      init().catch(() => {});
+    });
   } else {
-    init();
+    init().catch(() => {});
   }
 
 })();
