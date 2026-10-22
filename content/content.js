@@ -32,7 +32,17 @@
   let themeStyleEl = null;
   let sidebarRoot = null;
 
+  function isExtensionValid() {
+    try {
+      return typeof chrome !== 'undefined' && !!chrome?.runtime?.id;
+    } catch (e) {
+      return false;
+    }
+  }
+
   async function init() {
+    if (!isExtensionValid()) return;
+
     const data = await getStorage(['themes', 'prompts', 'settings', 'uiPalette']);
     state.themes = data.themes || {};
     state.prompts = data.prompts || [];
@@ -45,16 +55,41 @@
     applyPageTheme(state.activeTheme);
     if (state.uiPalette) applySidebarUIPalette(state.uiPalette);
 
-    chrome.storage.onChanged.addListener(onStorageChanged);
+    if (isExtensionValid() && chrome.storage?.onChanged) {
+      chrome.storage.onChanged.addListener((changes) => {
+        if (!isExtensionValid()) return;
+        onStorageChanged(changes);
+      });
+    }
     setupKeyboardShortcuts();
   }
 
   function getStorage(keys) {
-    return new Promise((resolve) => chrome.storage.local.get(keys, resolve));
+    return new Promise((resolve) => {
+      if (!isExtensionValid()) return resolve({});
+      try {
+        chrome.storage.local.get(keys, (res) => {
+          if (chrome.runtime?.lastError) return resolve({});
+          resolve(res || {});
+        });
+      } catch (e) {
+        resolve({});
+      }
+    });
   }
 
   function setStorage(data) {
-    return new Promise((resolve) => chrome.storage.local.set(data, resolve));
+    return new Promise((resolve) => {
+      if (!isExtensionValid()) return resolve();
+      try {
+        chrome.storage.local.set(data, () => {
+          if (chrome.runtime?.lastError) {}
+          resolve();
+        });
+      } catch (e) {
+        resolve();
+      }
+    });
   }
 
   function onStorageChanged(changes) {
@@ -779,7 +814,7 @@
     if (textarea) {
       if (textarea.tagName === 'TEXTAREA' || textarea.tagName === 'INPUT') {
         const setter = Object.getOwnPropertyDescriptor(window.HTMLTextAreaElement.prototype, 'value')?.set ||
-                       Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value')?.set;
+          Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value')?.set;
         if (setter) {
           setter.call(textarea, text);
         } else {
@@ -906,15 +941,20 @@
 
   function openOptionsPage(panel = '') {
     const hash = panel ? `#${panel}` : '';
-    const url = chrome.runtime.getURL(`options/options.html${hash}`);
+    if (!isExtensionValid()) {
+      showToast('Please reload this tab to reconnect PromptCanvas');
+      return;
+    }
     try {
+      const url = chrome.runtime?.getURL ? chrome.runtime.getURL(`options/options.html${hash}`) : '';
+      if (!url) return;
       chrome.runtime.sendMessage({ type: 'OPEN_OPTIONS', panel }, (res) => {
-        if (chrome.runtime.lastError || !res) {
+        if (chrome.runtime?.lastError || !res) {
           window.open(url, '_blank');
         }
       });
     } catch (e) {
-      window.open(url, '_blank');
+      // Context invalidated or window error
     }
   }
 
@@ -1020,7 +1060,11 @@
     // Reset button
     document.getElementById('btn-reset')?.addEventListener('click', async () => {
       if (!confirm('Reset all Tokyo Duo settings and prompt templates to factory defaults?')) return;
-      await chrome.storage.local.clear();
+      if (isExtensionValid()) {
+        try {
+          await chrome.storage.local.clear();
+        } catch (e) {}
+      }
       showToast('Resetting...');
       setTimeout(() => window.location.reload(), 600);
     });
