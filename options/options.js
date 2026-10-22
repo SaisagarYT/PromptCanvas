@@ -181,6 +181,15 @@ function setupNavigation() {
       document.getElementById(`panel-${panelId}`)?.classList.add('active');
     });
   });
+
+  const hash = window.location.hash.replace('#', '');
+  const params = new URLSearchParams(window.location.search);
+  const target = hash || params.get('panel');
+  if (target) {
+    const targetNav = document.querySelector(`.nav-item[data-panel="${target}"]`) ||
+                      document.querySelector(`.nav-item[data-panel="${target === 'studio' ? 'palette' : target}"]`);
+    if (targetNav) targetNav.click();
+  }
 }
 
 function renderThemeGrid() {

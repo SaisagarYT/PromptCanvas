@@ -160,4 +160,9 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     chrome.storage.local.set(message.data).then(() => sendResponse({ success: true }));
     return true;
   }
+  if (message.type === 'OPEN_OPTIONS') {
+    chrome.runtime.openOptionsPage ? chrome.runtime.openOptionsPage() : chrome.tabs.create({ url: chrome.runtime.getURL('options/options.html') });
+    sendResponse({ success: true });
+    return true;
+  }
 });

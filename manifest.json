@@ -50,7 +50,7 @@
   "options_page": "options/options.html",
   "web_accessible_resources": [
     {
-      "resources": ["content/*", "icons/*"],
+      "resources": ["content/*", "icons/*", "options/*"],
       "matches": [
         "https://chatgpt.com/*",
         "https://chat.openai.com/*",
