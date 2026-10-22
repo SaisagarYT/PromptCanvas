@@ -135,7 +135,7 @@ const DEFAULT_SETTINGS = {
   sidebarOpen: false,
   sidebarPosition: 'right',
   promptsEnabled: true,
-  themeEnabled: true,
+  themeEnabled: false,
   customTheme: null,
 };
 

@@ -135,6 +135,7 @@
   }
 
   function applyCSSVarsFromTheme(themeId) {
+    if (!state.settings.themeEnabled) return;
     const theme = getTheme(themeId);
     if (!theme) return;
     const root = document.documentElement;
@@ -159,7 +160,7 @@
   }
 
   function applyPageTheme(themeId) {
-    if (state.settings.themeEnabled === false) {
+    if (!state.settings.themeEnabled) {
       if (themeStyleEl) themeStyleEl.textContent = '';
       return;
     }
@@ -706,30 +707,32 @@
       return `
         <div class="pc-prompt-card" data-prompt-id="${p.id}">
           <div class="pc-prompt-header">
-            ${p.category ? `<span class="pc-prompt-tag">${escapeHtml(p.category)}</span>` : '<span></span>'}
-            ${varCount > 0 ? `<span class="pc-prompt-var-badge">${varCount} var${varCount > 1 ? 's' : ''}</span>` : ''}
+            <span class="pc-prompt-tag">${p.category ? escapeHtml(p.category) : 'General'}</span>
+            ${varCount > 0 ? `<span class="pc-prompt-var-badge">${varCount} VAR${varCount > 1 ? 'S' : ''}</span>` : ''}
           </div>
           <div class="pc-prompt-title">${escapeHtml(p.title)}</div>
           <div class="pc-prompt-preview">${highlightedPreview}</div>
           <div class="pc-prompt-meta">
+            <span class="pc-prompt-click-hint">Click to insert</span>
             <div class="pc-prompt-actions">
               <button class="pc-prompt-action-btn btn-insert" data-action="insert" data-prompt-id="${p.id}" title="Insert into composer">
-                <svg viewBox="0 0 24 24" width="10" height="10" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                   <path d="M5 12h14"/>
                   <path d="m12 5 7 7-7 7"/>
                 </svg>
-                <span>INSERT</span>
+                <span>Insert</span>
               </button>
-              <button class="pc-prompt-action-btn" data-action="copy" data-prompt-id="${p.id}" title="Copy to clipboard">
-                <svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">
+              <button class="pc-prompt-action-btn btn-icon btn-copy" data-action="copy" data-prompt-id="${p.id}" title="Copy to clipboard">
+                <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                   <rect width="14" height="14" x="8" y="8" rx="2" ry="2"/>
                   <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/>
                 </svg>
               </button>
-              <button class="pc-prompt-action-btn" data-action="delete" data-prompt-id="${p.id}" title="Delete template">
-                <svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M18 6 6 18"/>
-                  <path d="m6 6 12 12"/>
+              <button class="pc-prompt-action-btn btn-icon btn-delete" data-action="delete" data-prompt-id="${p.id}" title="Delete template">
+                <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M3 6h18"/>
+                  <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/>
+                  <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/>
                 </svg>
               </button>
             </div>
@@ -868,6 +871,8 @@
   function openSidebar() {
     if (!sidebarRoot) return;
     sidebarRoot.classList.add('pc-open');
+    const toggleBtn = document.getElementById('pc-toggle-btn');
+    if (toggleBtn) toggleBtn.classList.add('pc-hidden');
     state.open = true;
     state.settings.sidebarOpen = true;
     setStorage({ settings: state.settings });
@@ -876,6 +881,8 @@
   function closeSidebar() {
     if (!sidebarRoot) return;
     sidebarRoot.classList.remove('pc-open');
+    const toggleBtn = document.getElementById('pc-toggle-btn');
+    if (toggleBtn) toggleBtn.classList.remove('pc-hidden');
     state.open = false;
     state.settings.sidebarOpen = false;
     setStorage({ settings: state.settings });
