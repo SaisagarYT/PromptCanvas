@@ -231,24 +231,25 @@
       margin-bottom: 12px;
       display: flex;
       flex-direction: column;
-      padding: 10px;
+      justify-content: center;
+      padding: 10px 12px;
       gap: 7px;
     }
 
     .theme-preview-msg {
-      height: 10px;
+      height: 9px;
       border-radius: 2px;
-      width: 70%;
+      width: 68%;
     }
 
     .theme-preview-msg.short {
-      width: 48%;
+      width: 44%;
       align-self: flex-end;
     }
 
     .theme-name-full {
       font-family: 'Plus Jakarta Sans', sans-serif;
-      font-size: 12px;
+      font-size: 13px;
       font-weight: 800;
       margin-bottom: 4px;
       letter-spacing: 0.2px;
@@ -256,7 +257,7 @@
 
     .theme-desc-full {
       font-size: 11px;
-      line-height: 1.4;
+      line-height: 1.45;
     }
 
     .theme-selected-badge {
@@ -268,7 +269,7 @@
       font-family: 'Plus Jakarta Sans', sans-serif;
       font-size: 9px;
       font-weight: 800;
-      padding: 2px 7px;
+      padding: 3px 8px;
       border-radius: 2px;
       display: none;
       letter-spacing: 0.6px;
@@ -276,6 +277,11 @@
 
     .theme-card-full.selected .theme-selected-badge {
       display: block;
+    }
+
+    .theme-card-full[data-theme-id="slateDuo"] .theme-selected-badge {
+      background: var(--color-amber);
+      color: #151E25;
     }
 
     /* ===== PROMPT TABLE ===== */

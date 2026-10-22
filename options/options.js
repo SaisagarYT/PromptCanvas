@@ -61,8 +61,10 @@ function renderThemeGrid() {
 
   grid.innerHTML = Object.values(themes).map(theme => {
     const prev = THEME_PREVIEWS[theme.id] || { bg: '#FFFBF5', bar1: '#283845', bar2: '#151E25', border: 'rgba(40, 56, 69, 0.2)' };
-    const textColor = theme.colors?.text || '#151E25';
-    const textMutedColor = theme.colors?.textMuted || 'rgba(40, 56, 69, 0.70)';
+    const textColor = theme.id === 'slateDuo' ? '#FFA649' : '#151E25';
+    const textMutedColor = theme.id === 'slateDuo' ? 'rgba(255, 166, 73, 0.70)' : 'rgba(40, 56, 69, 0.70)';
+    const name = FALLBACK_THEMES[theme.id]?.name || theme.name;
+    const desc = FALLBACK_THEMES[theme.id]?.description || theme.description;
     return `
       <div class="theme-card-full ${activeId === theme.id ? 'selected' : ''}" data-theme-id="${theme.id}" style="background:${prev.bg};border-color:${prev.border};">
         <div class="theme-selected-badge">ACTIVE</div>
@@ -71,8 +73,8 @@ function renderThemeGrid() {
           <div class="theme-preview-msg short" style="background:${prev.bar2};"></div>
           <div class="theme-preview-msg" style="background:${prev.bar1};opacity:0.6;width:80%;"></div>
         </div>
-        <div class="theme-name-full" style="color:${textColor};">${theme.name}</div>
-        <div class="theme-desc-full" style="color:${textMutedColor};">${theme.description}</div>
+        <div class="theme-name-full" style="color:${textColor};">${name}</div>
+        <div class="theme-desc-full" style="color:${textMutedColor};">${desc}</div>
       </div>`;
   }).join('');
 
