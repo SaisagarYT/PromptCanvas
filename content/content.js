@@ -499,27 +499,28 @@
 
         <!-- Prompts Tab (Default SaaS Productivity Hub) -->
         <div class="pc-content pc-active" id="pc-tab-prompts">
-          <div class="pc-cat-bar" id="pc-cat-bar"></div>
-
           <div class="pc-prompts-toolbar">
             <div class="pc-search-box">
               <span class="pc-search-icon">
-                <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">
+                <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
                   <circle cx="11" cy="11" r="8"/>
                   <path d="m21 21-4.3-4.3"/>
                 </svg>
               </span>
-              <input type="text" class="pc-search-input" id="pc-search" placeholder="Search prompts or [variables]...">
+              <input type="text" class="pc-search-input" id="pc-search" placeholder="Search prompts, categories, [variables]...">
+              <kbd class="pc-search-kbd" title="Press / to search">/</kbd>
               <button class="pc-search-clear" id="pc-search-clear" style="display:none;" title="Clear search">✕</button>
             </div>
             <button class="pc-add-btn" id="pc-add-prompt-btn" title="Create reusable template">
-              <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M5 12h14"/>
+              <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M12 5v14"/>
+                <path d="M5 12h14"/>
               </svg>
-              <span>NEW</span>
+              <span>New</span>
             </button>
           </div>
+
+          <div class="pc-cat-bar" id="pc-cat-bar"></div>
 
           <div class="pc-prompt-list" id="pc-prompt-list"></div>
         </div>
@@ -787,33 +788,38 @@
       const bracketMatches = p.text.match(/\[([^\]]+)\]/g) || [];
       const varCount = bracketMatches.length;
       const highlightedPreview = escapeHtml(p.text).replace(/\[([^\]]+)\]/g, '<span class="pc-prompt-var-pill">[$1]</span>');
+      const cat = p.category ? escapeHtml(p.category.trim()) : 'General';
+      const catKey = cat.toLowerCase();
 
       return `
         <div class="pc-prompt-card" data-prompt-id="${p.id}">
-          <div class="pc-prompt-header">
-            <span class="pc-prompt-tag">${p.category ? escapeHtml(p.category) : 'General'}</span>
-            ${varCount > 0 ? `<span class="pc-prompt-var-badge">${varCount} VAR${varCount > 1 ? 'S' : ''}</span>` : ''}
-          </div>
-          <div class="pc-prompt-title">${escapeHtml(p.title)}</div>
-          <div class="pc-prompt-preview">${highlightedPreview}</div>
-          <div class="pc-prompt-meta">
-            <span class="pc-prompt-click-hint">Click to insert</span>
-            <div class="pc-prompt-actions">
-              <button class="pc-prompt-action-btn btn-insert" data-action="insert" data-prompt-id="${p.id}" title="Insert into composer">
-                <svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M5 12h14"/>
-                  <path d="m12 5 7 7-7 7"/>
-                </svg>
-                <span>Insert</span>
-              </button>
-              <button class="pc-prompt-action-btn btn-icon btn-copy" data-action="copy" data-prompt-id="${p.id}" title="Copy to clipboard">
-                <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <div class="pc-card-header">
+            <div class="pc-card-badges">
+              <span class="pc-card-tag pc-tag-${catKey}">
+                <span class="pc-tag-dot"></span>
+                <span>${cat}</span>
+              </span>
+              ${varCount > 0 ? `
+                <span class="pc-card-var-badge" title="${varCount} dynamic variable${varCount > 1 ? 's' : ''}">
+                  <svg viewBox="0 0 24 24" width="10" height="10" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M4 7c0-2 1-3 3-3h1"/>
+                    <path d="M4 17c0 2 1 3 3 3h1"/>
+                    <path d="M20 7c0-2-1-3-3-3h-1"/>
+                    <path d="M20 17c0 2-1 3-3 3h-1"/>
+                  </svg>
+                  <span>${varCount} ${varCount === 1 ? 'var' : 'vars'}</span>
+                </span>` : ''}
+            </div>
+
+            <div class="pc-card-actions">
+              <button class="pc-card-btn pc-card-btn-copy" data-action="copy" data-prompt-id="${p.id}" title="Copy prompt text">
+                <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                   <rect width="14" height="14" x="8" y="8" rx="2" ry="2"/>
                   <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/>
                 </svg>
               </button>
-              <button class="pc-prompt-action-btn btn-icon btn-delete" data-action="delete" data-prompt-id="${p.id}" title="Delete template">
-                <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <button class="pc-card-btn pc-card-btn-del" data-action="delete" data-prompt-id="${p.id}" title="Delete template">
+                <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                   <path d="M3 6h18"/>
                   <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/>
                   <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/>
@@ -821,17 +827,36 @@
               </button>
             </div>
           </div>
+
+          <div class="pc-card-body">
+            <div class="pc-card-title">${escapeHtml(p.title)}</div>
+            <div class="pc-card-preview">${highlightedPreview}</div>
+          </div>
+
+          <div class="pc-card-footer">
+            <span class="pc-card-hint">
+              <svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="9 10 4 15 9 20"/>
+                <path d="M20 4v7a4 4 0 0 1-4 4H4"/>
+              </svg>
+              <span>Click card to insert</span>
+            </span>
+            <button class="pc-card-insert-btn" data-action="insert" data-prompt-id="${p.id}" title="Insert into chat">
+              <span>Insert</span>
+              <kbd class="pc-insert-kbd">↵</kbd>
+            </button>
+          </div>
         </div>`;
     }).join('');
 
     list.querySelectorAll('.pc-prompt-card').forEach(card => {
       card.addEventListener('click', (e) => {
-        const btn = e.target.closest('.pc-prompt-action-btn');
-        if (btn) {
+        const actionBtn = e.target.closest('.pc-card-btn, .pc-card-insert-btn');
+        if (actionBtn) {
           e.stopPropagation();
-          handlePromptAction(btn.dataset.action, btn.dataset.promptId, btn);
+          handlePromptAction(actionBtn.dataset.action, actionBtn.dataset.promptId, actionBtn);
         } else {
-          const insertBtn = card.querySelector('.btn-insert');
+          const insertBtn = card.querySelector('.pc-card-insert-btn');
           handlePromptAction('insert', card.dataset.promptId, insertBtn);
         }
       });
