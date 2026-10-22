@@ -1,5 +1,5 @@
 // PromptCanvas Options Page Script
-// Theme: Tokyo Duo — Golden Amber (#FFA649) & Slate Navy (#283845)
+// Theme: Tokyo Duo & Active Color Studio
 
 const THEME_PREVIEWS = {
   amberDuo: { bg: '#FFFBF5', bar1: '#283845', bar2: '#151E25', border: 'rgba(40, 56, 69, 0.2)' },
@@ -28,16 +28,147 @@ const FALLBACK_THEMES = {
   }
 };
 
+// Curated Designer Presets (based on UI Color Palette reference)
+const DESIGNER_PRESETS = [
+  {
+    id: 'tokyoDuo',
+    num: '00',
+    name: 'Tokyo Duo',
+    desc: 'Flagship · Warm & Architectural',
+    canvas: '#FFFBF5',
+    controls: '#283845',
+    text: '#151E25',
+    accent: '#FFA649',
+    swatches: ['#283845', '#151E25', '#FFA649', '#FFE8D1', '#FFFBF5'],
+  },
+  {
+    id: 'sunsetVibes',
+    num: '04',
+    name: 'Sunset Vibes',
+    desc: 'Warm · Energetic · Friendly',
+    canvas: '#FFF7ED',
+    controls: '#F97316',
+    text: '#7C2D12',
+    accent: '#FB923C',
+    swatches: ['#F97316', '#FB923C', '#FDBA74', '#FFF7ED', '#7C2D12'],
+  },
+  {
+    id: 'oceanBreeze',
+    num: '02',
+    name: 'Ocean Breeze',
+    desc: 'Calm · Fresh · Trustworthy',
+    canvas: '#E0F2FE',
+    controls: '#0EA5E9',
+    text: '#0F172A',
+    accent: '#38BDF8',
+    swatches: ['#0EA5E9', '#38BDF8', '#BAE6FD', '#E0F2FE', '#0F172A'],
+  },
+  {
+    id: 'natureGreen',
+    num: '03',
+    name: 'Nature Green',
+    desc: 'Natural · Balanced · Calm',
+    canvas: '#F0FDF4',
+    controls: '#16A34A',
+    text: '#14532D',
+    accent: '#4ADE80',
+    swatches: ['#16A34A', '#4ADE80', '#BBF7D0', '#F0FDF4', '#14532D'],
+  },
+  {
+    id: 'modernPurple',
+    num: '01',
+    name: 'Modern Purple',
+    desc: 'Creative · Modern · Premium',
+    canvas: '#F5F3FF',
+    controls: '#6D28D9',
+    text: '#1F2937',
+    accent: '#8B5CF6',
+    swatches: ['#6D28D9', '#8B5CF6', '#C4B5FD', '#F5F3FF', '#1F2937'],
+  },
+  {
+    id: 'deepBlue',
+    num: '06',
+    name: 'Deep Blue',
+    desc: 'Professional · Strong · Reliable',
+    canvas: '#EFF6FF',
+    controls: '#1E3A8A',
+    text: '#0B1220',
+    accent: '#2563EB',
+    swatches: ['#1E3A8A', '#2563EB', '#93C5FD', '#EFF6FF', '#0B1220'],
+  },
+  {
+    id: 'tealHarmony',
+    num: '08',
+    name: 'Teal Harmony',
+    desc: 'Modern · Clean · Balanced',
+    canvas: '#ECFEFF',
+    controls: '#14B8A6',
+    text: '#134E4A',
+    accent: '#2DD4BF',
+    swatches: ['#14B8A6', '#2DD4BF', '#99F6E4', '#ECFEFF', '#134E4A'],
+  },
+  {
+    id: 'blushPink',
+    num: '05',
+    name: 'Blush Pink',
+    desc: 'Soft · Feminine · Elegant',
+    canvas: '#FDF2F8',
+    controls: '#EC4899',
+    text: '#831843',
+    accent: '#F472B6',
+    swatches: ['#EC4899', '#F472B6', '#FBCFE8', '#FDF2F8', '#831843'],
+  },
+  {
+    id: 'brightYellow',
+    num: '07',
+    name: 'Bright Yellow',
+    desc: 'Cheerful · Optimistic · Bold',
+    canvas: '#FFFBEB',
+    controls: '#EAB308',
+    text: '#713F12',
+    accent: '#FACC15',
+    swatches: ['#EAB308', '#FACC15', '#FDE68A', '#FFFBEB', '#713F12'],
+  },
+  {
+    id: 'royalDark',
+    num: '09',
+    name: 'Royal Dark',
+    desc: 'Luxury · Elegant · Sophisticated',
+    canvas: '#EDE9FE',
+    controls: '#4C1D95',
+    text: '#111827',
+    accent: '#6D28D9',
+    swatches: ['#4C1D95', '#6D28D9', '#A78BFA', '#EDE9FE', '#111827'],
+  },
+  {
+    id: 'minimalNeutral',
+    num: '10',
+    name: 'Minimal Neutral',
+    desc: 'Clean · Simple · Timeless',
+    canvas: '#F3F4F6',
+    controls: '#374151',
+    text: '#111827',
+    accent: '#6B7280',
+    swatches: ['#374151', '#6B7280', '#D1D5DB', '#F3F4F6', '#111827'],
+  },
+];
+
 let storageData = {};
 
 async function init() {
-  storageData = await new Promise(resolve => chrome.storage.local.get(['themes', 'prompts', 'settings'], resolve));
+  storageData = await new Promise(resolve => chrome.storage.local.get(['themes', 'prompts', 'settings', 'uiPalette'], resolve));
+
+  if (storageData.uiPalette) {
+    applyRootStyles(storageData.uiPalette);
+  }
+
   renderThemeGrid();
   renderPromptTable();
   loadSettings();
   setupNavigation();
   setupPromptForm();
   setupSettingsActions();
+  initColorStudio();
 }
 
 function setupNavigation() {
@@ -123,7 +254,6 @@ function renderPromptTable() {
       storageData.prompts = (storageData.prompts || []).filter(p => p.id !== btn.dataset.delete);
       await chrome.storage.local.set({ prompts: storageData.prompts });
       renderPromptTable();
-      updateAboutStats();
       showToast('Prompt template deleted');
     });
   });
@@ -142,9 +272,7 @@ function setupPromptForm() {
     document.getElementById('new-category').value = '';
     document.getElementById('new-text').value = '';
     renderPromptTable();
-    updateAboutStats();
     showToast('Prompt template saved');
-    // Switch to prompts tab
     document.querySelector('[data-panel="prompts"]')?.click();
   });
 
@@ -157,7 +285,6 @@ function loadSettings() {
   const settings = storageData.settings || {};
   const t = document.getElementById('opt-theme-enabled'); if (t) t.checked = settings.themeEnabled !== false;
   const p = document.getElementById('opt-prompts-enabled'); if (p) p.checked = settings.promptsEnabled !== false;
-  updateAboutStats();
 }
 
 function setupSettingsActions() {
@@ -184,6 +311,7 @@ function setupSettingsActions() {
       await chrome.storage.local.set(data);
       storageData = data;
       renderThemeGrid(); renderPromptTable(); loadSettings();
+      if (storageData.uiPalette) applyRootStyles(storageData.uiPalette);
       showToast('Configuration restored');
     } catch (err) { showToast('Invalid JSON file'); }
   });
@@ -206,9 +334,201 @@ async function saveSettings() {
   showToast('Settings saved');
 }
 
-function updateAboutStats() {
-  const count = document.getElementById('about-prompt-count');
-  if (count) count.textContent = (storageData.prompts || []).length;
+// ===== ACTIVE COLOR STUDIO IMPLEMENTATION =====
+let currentStudioPalette = {
+  canvas: '#FFFBF5',
+  controls: '#283845',
+  text: '#151E25',
+  accent: '#FFA649',
+};
+
+function initColorStudio() {
+  const initial = storageData.uiPalette || DESIGNER_PRESETS[0];
+  currentStudioPalette = {
+    canvas: initial.canvas || '#FFFBF5',
+    controls: initial.controls || '#283845',
+    text: initial.text || '#151E25',
+    accent: initial.accent || '#FFA649',
+  };
+
+  renderStudioPresets();
+  syncInputsWithPalette(currentStudioPalette);
+  updateLiveMockPreview();
+  setupStudioEvents();
+}
+
+function renderStudioPresets() {
+  const container = document.getElementById('designer-presets-grid');
+  if (!container) return;
+
+  container.innerHTML = DESIGNER_PRESETS.map((p, idx) => `
+    <div class="preset-chip-card ${idx === 0 ? 'active' : ''}" data-preset-id="${p.id}">
+      <div class="preset-header">
+        <span class="preset-name">${p.name}</span>
+        <span class="preset-num">${p.num}</span>
+      </div>
+      <div class="preset-swatches">
+        ${p.swatches.map(hex => `<span class="preset-swatch" style="background:${hex};"></span>`).join('')}
+      </div>
+      <span class="preset-desc">${p.desc}</span>
+    </div>`).join('');
+
+  container.querySelectorAll('.preset-chip-card').forEach(card => {
+    card.addEventListener('click', () => {
+      const preset = DESIGNER_PRESETS.find(p => p.id === card.dataset.presetId);
+      if (!preset) return;
+
+      container.querySelectorAll('.preset-chip-card').forEach(c => c.classList.remove('active'));
+      card.classList.add('active');
+
+      currentStudioPalette = {
+        canvas: preset.canvas,
+        controls: preset.controls,
+        text: preset.text,
+        accent: preset.accent,
+      };
+
+      syncInputsWithPalette(currentStudioPalette);
+      updateLiveMockPreview();
+    });
+  });
+}
+
+function syncInputsWithPalette(p) {
+  setPairValue('canvas', p.canvas);
+  setPairValue('controls', p.controls);
+  setPairValue('text', p.text);
+  setPairValue('accent', p.accent);
+}
+
+function setPairValue(key, hex) {
+  const picker = document.getElementById(`picker-${key}`);
+  const input = document.getElementById(`hex-${key}`);
+  if (picker) picker.value = hex;
+  if (input) input.value = hex.toUpperCase();
+}
+
+function setupStudioEvents() {
+  ['canvas', 'controls', 'text', 'accent'].forEach(key => {
+    const picker = document.getElementById(`picker-${key}`);
+    const hexInput = document.getElementById(`hex-${key}`);
+
+    picker?.addEventListener('input', (e) => {
+      const val = e.target.value.toUpperCase();
+      if (hexInput) hexInput.value = val;
+      currentStudioPalette[key] = val;
+      updateLiveMockPreview();
+    });
+
+    hexInput?.addEventListener('input', (e) => {
+      let val = e.target.value.trim();
+      if (!val.startsWith('#')) val = '#' + val;
+      if (/^#[0-9A-Fa-f]{6}$/.test(val)) {
+        if (picker) picker.value = val;
+        currentStudioPalette[key] = val;
+        updateLiveMockPreview();
+      }
+    });
+  });
+
+  // Apply to Extension UI
+  document.getElementById('btn-apply-ui-palette')?.addEventListener('click', async () => {
+    await chrome.storage.local.set({ uiPalette: currentStudioPalette });
+    storageData.uiPalette = currentStudioPalette;
+    applyRootStyles(currentStudioPalette);
+    showToast('Extension UI palette applied!');
+  });
+
+  // Reset to Tokyo Duo
+  document.getElementById('btn-reset-studio')?.addEventListener('click', () => {
+    const tokyo = DESIGNER_PRESETS[0];
+    currentStudioPalette = {
+      canvas: tokyo.canvas,
+      controls: tokyo.controls,
+      text: tokyo.text,
+      accent: tokyo.accent,
+    };
+    syncInputsWithPalette(currentStudioPalette);
+    updateLiveMockPreview();
+    document.querySelectorAll('.preset-chip-card').forEach((c, idx) => {
+      c.classList.toggle('active', idx === 0);
+    });
+  });
+}
+
+function updateLiveMockPreview() {
+  const mock = document.getElementById('studio-mock-popup');
+  if (!mock) return;
+
+  mock.style.setProperty('--prev-canvas', currentStudioPalette.canvas);
+  mock.style.setProperty('--prev-controls', currentStudioPalette.controls);
+  mock.style.setProperty('--prev-text', currentStudioPalette.text);
+  mock.style.setProperty('--prev-accent', currentStudioPalette.accent);
+
+  // Update contrast badge
+  const ratio = getContrastRatio(currentStudioPalette.canvas, currentStudioPalette.text);
+  const ratioVal = document.getElementById('contrast-ratio-val');
+  const ratioBadge = document.getElementById('contrast-ratio-badge');
+  if (ratioVal && ratioBadge) {
+    ratioVal.textContent = `${ratio.toFixed(1)}:1`;
+    if (ratio >= 7.0) {
+      ratioBadge.innerHTML = `<span>${ratio.toFixed(1)}:1</span> <span>· WCAG AAA</span>`;
+      ratioBadge.style.background = '#16A34A';
+    } else if (ratio >= 4.5) {
+      ratioBadge.innerHTML = `<span>${ratio.toFixed(1)}:1</span> <span>· WCAG AA</span>`;
+      ratioBadge.style.background = '#2563EB';
+    } else {
+      ratioBadge.innerHTML = `<span>${ratio.toFixed(1)}:1</span> <span>· LOW CONTRAST</span>`;
+      ratioBadge.style.background = '#DC2626';
+    }
+  }
+}
+
+function applyRootStyles(p) {
+  if (!p) return;
+  const root = document.documentElement;
+  if (p.canvas) root.style.setProperty('--color-light', p.canvas);
+  if (p.controls) root.style.setProperty('--color-dark', p.controls);
+  if (p.text) root.style.setProperty('--color-darker', p.text);
+  if (p.accent) root.style.setProperty('--color-amber', p.accent);
+
+  const rgb = hexToRgb(p.controls);
+  if (rgb) {
+    root.style.setProperty('--color-dark-subtle', `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.05)`);
+    root.style.setProperty('--color-border', `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.12)`);
+    root.style.setProperty('--color-border-strong', `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.25)`);
+    root.style.setProperty('--color-dark-muted', `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.70)`);
+  }
+}
+
+// ===== COLOR MATH HELPERS =====
+function hexToRgb(hex) {
+  const clean = hex.replace('#', '');
+  if (clean.length !== 6) return null;
+  const num = parseInt(clean, 16);
+  return {
+    r: (num >> 16) & 255,
+    g: (num >> 8) & 255,
+    b: num & 255,
+  };
+}
+
+function getLuminance(r, g, b) {
+  const a = [r, g, b].map(v => {
+    v /= 255;
+    return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4);
+  });
+  return a[0] * 0.2126 + a[1] * 0.7152 + a[2] * 0.0722;
+}
+
+function getContrastRatio(hex1, hex2) {
+  const rgb1 = hexToRgb(hex1) || { r: 255, g: 255, b: 255 };
+  const rgb2 = hexToRgb(hex2) || { r: 0, g: 0, b: 0 };
+  const lum1 = getLuminance(rgb1.r, rgb1.g, rgb1.b);
+  const lum2 = getLuminance(rgb2.r, rgb2.g, rgb2.b);
+  const brightest = Math.max(lum1, lum2);
+  const darkest = Math.min(lum1, lum2);
+  return (brightest + 0.05) / (darkest + 0.05);
 }
 
 let toastTimer = null;

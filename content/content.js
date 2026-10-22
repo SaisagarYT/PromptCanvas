@@ -31,15 +31,17 @@
   let sidebarRoot = null;
 
   async function init() {
-    const data = await getStorage(['themes', 'prompts', 'settings']);
+    const data = await getStorage(['themes', 'prompts', 'settings', 'uiPalette']);
     state.themes = data.themes || {};
     state.prompts = data.prompts || [];
     state.settings = data.settings || {};
+    state.uiPalette = data.uiPalette || null;
     state.activeTheme = state.settings.activeTheme || 'amberDuo';
 
     injectSidebar();
     applyCSSVarsFromTheme(state.activeTheme);
     applyPageTheme(state.activeTheme);
+    if (state.uiPalette) applySidebarUIPalette(state.uiPalette);
 
     chrome.storage.onChanged.addListener(onStorageChanged);
   }
@@ -63,6 +65,10 @@
         updateThemeSelection();
       }
     }
+    if (changes.uiPalette) {
+      state.uiPalette = changes.uiPalette.newValue;
+      if (state.uiPalette) applySidebarUIPalette(state.uiPalette);
+    }
     if (changes.prompts) {
       state.prompts = changes.prompts.newValue;
       renderPromptsTab();
@@ -70,6 +76,31 @@
     if (changes.themes) {
       state.themes = changes.themes.newValue;
       renderThemeCards();
+    }
+  }
+
+  function applySidebarUIPalette(p) {
+    if (!p) return;
+    const root = document.getElementById('promptcanvas-root');
+    const toggleBtn = document.getElementById('pc-toggle-btn');
+    if (root) {
+      if (p.canvas) {
+        root.style.setProperty('--pc-bg', p.canvas);
+        root.style.setProperty('--pc-surface', p.canvas);
+      }
+      if (p.controls) {
+        root.style.setProperty('--pc-primary', p.controls);
+        root.style.setProperty('--pc-sidebar', p.controls);
+      }
+      if (p.text) root.style.setProperty('--pc-text', p.text);
+      if (p.accent) root.style.setProperty('--pc-accent', p.accent);
+    }
+    if (toggleBtn) {
+      if (p.controls) {
+        toggleBtn.style.background = p.controls;
+        toggleBtn.style.borderColor = p.controls;
+      }
+      if (p.canvas) toggleBtn.style.color = p.canvas;
     }
   }
 

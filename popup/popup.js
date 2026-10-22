@@ -42,7 +42,11 @@ async function init() {
   }
 
   // Always fetch storage regardless of active tab
-  storageData = await new Promise(resolve => chrome.storage.local.get(['themes', 'prompts', 'settings'], resolve));
+  storageData = await new Promise(resolve => chrome.storage.local.get(['themes', 'prompts', 'settings', 'uiPalette'], resolve));
+
+  if (storageData.uiPalette) {
+    applyUIPalette(storageData.uiPalette);
+  }
 
   // If not on an AI platform, update banner status gracefully
   if (!currentPlatform) {
@@ -63,6 +67,27 @@ async function init() {
   renderThemeChips();
   setupToggles();
   setupActions();
+}
+
+function applyUIPalette(p) {
+  if (!p) return;
+  const root = document.documentElement;
+  if (p.canvas) root.style.setProperty('--color-light', p.canvas);
+  if (p.controls) root.style.setProperty('--color-dark', p.controls);
+  if (p.text) root.style.setProperty('--color-darker', p.text);
+  if (p.accent) root.style.setProperty('--color-amber', p.accent);
+
+  const clean = (p.controls || '').replace('#', '');
+  if (clean.length === 6) {
+    const num = parseInt(clean, 16);
+    const r = (num >> 16) & 255;
+    const g = (num >> 8) & 255;
+    const b = num & 255;
+    root.style.setProperty('--color-dark-subtle', `rgba(${r}, ${g}, ${b}, 0.05)`);
+    root.style.setProperty('--color-border', `rgba(${r}, ${g}, ${b}, 0.12)`);
+    root.style.setProperty('--color-border-strong', `rgba(${r}, ${g}, ${b}, 0.25)`);
+    root.style.setProperty('--color-dark-muted', `rgba(${r}, ${g}, ${b}, 0.70)`);
+  }
 }
 
 function updateStats() {

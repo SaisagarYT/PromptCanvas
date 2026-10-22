@@ -31,6 +31,7 @@
       color: var(--color-darker);
       min-height: 100vh;
       -webkit-font-smoothing: antialiased;
+      transition: background 0.2s ease, color 0.2s ease;
     }
 
     /* ===== HERO HEADER ===== */
@@ -38,6 +39,7 @@
       background: var(--color-light);
       border-bottom: 1px solid var(--color-border);
       padding: 32px 48px;
+      transition: background 0.2s ease;
     }
 
     .hero-content {
@@ -518,83 +520,404 @@
       background: var(--color-light);
     }
 
-    /* ===== PALETTE SPECIFICATION ===== */
-    .about-palette {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 14px;
+    /* ===== COLOR STUDIO STYLES ===== */
+    .studio-notice {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 14px;
+      background: var(--color-dark-subtle);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-sm);
+      margin-bottom: 20px;
+      font-size: 12px;
+      color: var(--color-dark-muted);
+    }
+    .studio-notice svg {
+      flex-shrink: 0;
+      color: var(--color-dark);
+    }
+
+    .presets-carousel-wrap {
       margin-bottom: 24px;
     }
 
-    .palette-box {
-      border: 1px solid var(--color-border);
-      border-radius: var(--radius-sm);
-      overflow: hidden;
-      background: #FFFFFF;
-    }
-
-    .palette-color {
-      height: 64px;
+    .presets-title-row {
       display: flex;
       align-items: center;
-      justify-content: center;
-      font-family: 'Plus Jakarta Sans', sans-serif;
-      font-weight: 800;
-      font-size: 14px;
-      letter-spacing: 0.5px;
+      justify-content: space-between;
+      margin-bottom: 12px;
     }
-
-    .palette-meta {
-      padding: 12px;
-      background: #FFFFFF;
-    }
-
-    .palette-name {
+    .presets-title {
       font-family: 'Plus Jakarta Sans', sans-serif;
       font-size: 11px;
       font-weight: 800;
       color: var(--color-darker);
       text-transform: uppercase;
-      margin-bottom: 3px;
+      letter-spacing: 0.8px;
     }
-
-    .palette-hex {
-      font-size: 10px;
-      font-family: 'JetBrains Mono', monospace;
+    .presets-sub {
+      font-size: 11px;
       color: var(--color-dark-muted);
     }
 
-    .about-grid {
+    .presets-grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      gap: 14px;
-      margin-bottom: 24px;
+      gap: 12px;
+      max-height: 280px;
+      overflow-y: auto;
+      padding: 2px;
+    }
+    .presets-grid::-webkit-scrollbar {
+      width: 4px;
+    }
+    .presets-grid::-webkit-scrollbar-thumb {
+      background: var(--color-border);
+      border-radius: 2px;
     }
 
-    .about-stat {
+    .preset-chip-card {
       background: #FFFFFF;
       border: 1px solid var(--color-border);
       border-radius: var(--radius-sm);
-      padding: 18px;
-      text-align: center;
+      padding: 10px 12px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      text-align: left;
+    }
+    .preset-chip-card:hover {
+      border-color: var(--color-dark);
+      transform: translateY(-1px);
+    }
+    .preset-chip-card.active {
+      border-color: var(--color-dark);
+      box-shadow: 0 0 0 1.5px var(--color-dark);
+      background: var(--color-dark-subtle);
     }
 
-    .about-stat-val {
+    .preset-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .preset-name {
       font-family: 'Plus Jakarta Sans', sans-serif;
-      font-size: 26px;
+      font-size: 11px;
       font-weight: 800;
-      color: var(--color-dark);
-      line-height: 1.1;
+      color: var(--color-darker);
+    }
+    .preset-num {
+      font-size: 9px;
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 700;
+      color: var(--color-dark-muted);
+      background: var(--color-dark-subtle);
+      padding: 1px 5px;
+      border-radius: 2px;
     }
 
-    .about-stat-lbl {
-      font-family: 'Plus Jakarta Sans', sans-serif;
+    .preset-swatches {
+      display: flex;
+      height: 18px;
+      border-radius: 3px;
+      overflow: hidden;
+      border: 1px solid rgba(40, 56, 69, 0.12);
+    }
+    .preset-swatch {
+      flex: 1;
+      height: 100%;
+    }
+
+    .preset-desc {
       font-size: 10px;
       color: var(--color-dark-muted);
-      margin-top: 6px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* Two-column Studio Workbench */
+    .studio-workbench {
+      display: grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: 24px;
+      align-items: start;
+    }
+
+    .color-editor-form {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .color-control-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 14px;
+      background: var(--color-dark-subtle);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-sm);
+      gap: 12px;
+    }
+
+    .color-info-group {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      flex: 1;
+    }
+    .color-info-title {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 11px;
       font-weight: 800;
+      color: var(--color-darker);
       text-transform: uppercase;
-      letter-spacing: 0.6px;
+      letter-spacing: 0.4px;
+    }
+    .color-info-role {
+      font-size: 10px;
+      color: var(--color-dark-muted);
+    }
+
+    .color-input-group {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .color-picker-input {
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      appearance: none;
+      width: 32px;
+      height: 32px;
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      background: transparent;
+      padding: 0;
+      overflow: hidden;
+    }
+    .color-picker-input::-webkit-color-swatch-wrapper {
+      padding: 0;
+    }
+    .color-picker-input::-webkit-color-swatch {
+      border: none;
+      border-radius: var(--radius-sm);
+    }
+
+    .color-hex-input {
+      width: 82px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 6px 8px;
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-sm);
+      background: #FFFFFF;
+      color: var(--color-darker);
+      text-transform: uppercase;
+      text-align: center;
+      outline: none;
+    }
+    .color-hex-input:focus {
+      border-color: var(--color-dark);
+    }
+
+    .contrast-card {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 14px;
+      background: #FFFFFF;
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-sm);
+      margin-top: 4px;
+    }
+    .contrast-label {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 11px;
+      font-weight: 800;
+      color: var(--color-darker);
+      text-transform: uppercase;
+    }
+    .contrast-badge {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px;
+      font-weight: 800;
+      padding: 3px 8px;
+      border-radius: 2px;
+      background: var(--color-dark);
+      color: var(--color-light);
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    /* Live Mini Mockup Preview */
+    .mock-preview-wrap {
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius);
+      padding: 14px;
+      background: #FFFFFF;
+    }
+
+    .mock-preview-title {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 10px;
+      font-weight: 800;
+      color: var(--color-dark-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .mock-live-pill {
+      font-size: 8px;
+      font-weight: 800;
+      color: #16A34A;
+      background: rgba(22, 163, 74, 0.1);
+      padding: 2px 6px;
+      border-radius: 2px;
+      letter-spacing: 0.5px;
+    }
+
+    .mock-popup {
+      background: var(--prev-canvas, #FFFBF5);
+      color: var(--prev-text, #151E25);
+      border: 1px solid rgba(40, 56, 69, 0.15);
+      border-radius: var(--radius-sm);
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      box-shadow: 0 4px 12px rgba(40, 56, 69, 0.08);
+      transition: all 0.15s ease;
+    }
+
+    .mock-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-bottom: 8px;
+      border-bottom: 1px solid rgba(40, 56, 69, 0.1);
+    }
+    .mock-logo {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .mock-logo-box {
+      width: 20px;
+      height: 20px;
+      background: var(--prev-controls, #283845);
+      color: var(--prev-canvas, #FFFBF5);
+      border-radius: 3px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 9px;
+      font-weight: 900;
+    }
+    .mock-logo-name {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 11px;
+      font-weight: 800;
+      color: var(--prev-text, #151E25);
+      letter-spacing: -0.2px;
+    }
+    .mock-pill {
+      font-size: 8px;
+      font-weight: 800;
+      background: var(--prev-controls, #283845);
+      color: var(--prev-canvas, #FFFBF5);
+      padding: 2px 5px;
+      border-radius: 2px;
+      text-transform: uppercase;
+    }
+
+    .mock-banner {
+      background: rgba(40, 56, 69, 0.05);
+      border: 1px solid rgba(40, 56, 69, 0.1);
+      border-radius: 4px;
+      padding: 7px 10px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .mock-banner-text {
+      display: flex;
+      flex-direction: column;
+    }
+    .mock-banner-sub {
+      font-size: 7px;
+      font-weight: 800;
+      letter-spacing: 0.5px;
+      opacity: 0.7;
+    }
+    .mock-banner-title {
+      font-size: 10px;
+      font-weight: 800;
+    }
+    .mock-btn-sm {
+      background: var(--prev-controls, #283845);
+      color: var(--prev-canvas, #FFFBF5);
+      border: none;
+      font-size: 8px;
+      font-weight: 800;
+      padding: 4px 8px;
+      border-radius: 3px;
+      letter-spacing: 0.5px;
+    }
+
+    .mock-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 6px;
+    }
+    .mock-card {
+      background: rgba(40, 56, 69, 0.05);
+      border: 1px solid rgba(40, 56, 69, 0.1);
+      border-radius: 3px;
+      padding: 6px 4px;
+      text-align: center;
+      font-size: 8px;
+      font-weight: 800;
+      letter-spacing: 0.3px;
+    }
+
+    .mock-toggle-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 6px 8px;
+      background: rgba(40, 56, 69, 0.05);
+      border-radius: 3px;
+      font-size: 8px;
+      font-weight: 800;
+    }
+    .mock-slider-switch {
+      width: 22px;
+      height: 12px;
+      background: var(--prev-controls, #283845);
+      border-radius: 6px;
+      position: relative;
+    }
+    .mock-slider-switch::after {
+      content: '';
+      position: absolute;
+      width: 8px;
+      height: 8px;
+      background: var(--prev-canvas, #FFFBF5);
+      border-radius: 50%;
+      top: 2px;
+      right: 2px;
     }
 
     /* ===== TOAST ===== */
@@ -683,6 +1006,14 @@
       </span>
       <span>Add Prompt</span>
     </button>
+    <button class="nav-item" data-panel="palette">
+      <span class="nav-icon">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/>
+        </svg>
+      </span>
+      <span>Color Studio</span>
+    </button>
     <button class="nav-item" data-panel="settings">
       <span class="nav-icon">
         <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -691,16 +1022,6 @@
         </svg>
       </span>
       <span>Settings</span>
-    </button>
-    <button class="nav-item" data-panel="about">
-      <span class="nav-icon">
-        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <circle cx="12" cy="12" r="10"/>
-          <path d="M12 16v-4"/>
-          <path d="M12 8h.01"/>
-        </svg>
-      </span>
-      <span>Palette</span>
     </button>
   </nav>
 
@@ -765,6 +1086,138 @@
       </div>
     </div>
 
+    <!-- Active Color Studio Panel -->
+    <div class="panel" id="panel-palette">
+      <div class="card">
+        <div class="card-title">Extension UI Color Studio</div>
+        <div class="card-desc">Customize the theme of the Toolbar Popup, In-Page Sidebar, and Options Page.</div>
+        
+        <div class="studio-notice">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"/>
+            <line x1="12" y1="16" x2="12" y2="12"/>
+            <line x1="12" y1="8" x2="12.01" y2="8"/>
+          </svg>
+          <span><strong>Notice:</strong> This studio styles the PromptCanvas Extension UI only (Popup, Sidebar, & Options). It does <strong>not</strong> alter underlying AI chat workspace content.</span>
+        </div>
+
+        <!-- Designer Preset Gallery -->
+        <div class="presets-carousel-wrap">
+          <div class="presets-title-row">
+            <span class="presets-title">Curated UI Color Palettes</span>
+            <span class="presets-sub">Click any preset to preview & load</span>
+          </div>
+          <div class="presets-grid" id="designer-presets-grid"></div>
+        </div>
+
+        <!-- Workbench: Customizer + Live Preview -->
+        <div class="studio-workbench">
+          <!-- Left: Controls -->
+          <div class="color-editor-form">
+            <div class="color-control-row">
+              <div class="color-info-group">
+                <span class="color-info-title">Canvas (Background)</span>
+                <span class="color-info-role">60% dominant light surface</span>
+              </div>
+              <div class="color-input-group">
+                <input type="color" class="color-picker-input" id="picker-canvas" value="#FFFBF5">
+                <input type="text" class="color-hex-input" id="hex-canvas" value="#FFFBF5" maxlength="7">
+              </div>
+            </div>
+
+            <div class="color-control-row">
+              <div class="color-info-group">
+                <span class="color-info-title">Controls (Buttons & Chips)</span>
+                <span class="color-info-role">30% structural UI elements</span>
+              </div>
+              <div class="color-input-group">
+                <input type="color" class="color-picker-input" id="picker-controls" value="#283845">
+                <input type="text" class="color-hex-input" id="hex-controls" value="#283845" maxlength="7">
+              </div>
+            </div>
+
+            <div class="color-control-row">
+              <div class="color-info-group">
+                <span class="color-info-title">Typography (Text)</span>
+                <span class="color-info-role">Deep high-contrast readability</span>
+              </div>
+              <div class="color-input-group">
+                <input type="color" class="color-picker-input" id="picker-text" value="#151E25">
+                <input type="text" class="color-hex-input" id="hex-text" value="#151E25" maxlength="7">
+              </div>
+            </div>
+
+            <div class="color-control-row">
+              <div class="color-info-group">
+                <span class="color-info-title">Accent (Highlights)</span>
+                <span class="color-info-role">10% energetic touch & badges</span>
+              </div>
+              <div class="color-input-group">
+                <input type="color" class="color-picker-input" id="picker-accent" value="#FFA649">
+                <input type="text" class="color-hex-input" id="hex-accent" value="#FFA649" maxlength="7">
+              </div>
+            </div>
+
+            <!-- Contrast indicator -->
+            <div class="contrast-card">
+              <span class="contrast-label">Readability Ratio</span>
+              <div class="contrast-badge" id="contrast-ratio-badge">
+                <span id="contrast-ratio-val">15.6:1</span>
+                <span>· WCAG AAA</span>
+              </div>
+            </div>
+
+            <div class="btn-row" style="margin-top: 10px;">
+              <button class="btn-primary" id="btn-apply-ui-palette">
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="20 6 9 17 4 12"/>
+                </svg>
+                <span>Apply to Extension UI</span>
+              </button>
+              <button class="btn-ghost" id="btn-reset-studio">Reset to Tokyo Duo</button>
+            </div>
+          </div>
+
+          <!-- Right: Live Mini Preview -->
+          <div class="mock-preview-wrap">
+            <div class="mock-preview-title">
+              <span>Interactive Live Preview</span>
+              <span class="mock-live-pill">REAL-TIME</span>
+            </div>
+
+            <div class="mock-popup" id="studio-mock-popup">
+              <div class="mock-header">
+                <div class="mock-logo">
+                  <div class="mock-logo-box">PC</div>
+                  <span class="mock-logo-name">PromptCanvas</span>
+                </div>
+                <span class="mock-pill">PRO</span>
+              </div>
+
+              <div class="mock-banner">
+                <div class="mock-banner-text">
+                  <span class="mock-banner-sub">ENGINE STATUS</span>
+                  <span class="mock-banner-title">Connected</span>
+                </div>
+                <button class="mock-btn-sm">SIDEBAR</button>
+              </div>
+
+              <div class="mock-grid">
+                <div class="mock-card">PROMPTS</div>
+                <div class="mock-card">THEMES</div>
+                <div class="mock-card">OPTIONS</div>
+              </div>
+
+              <div class="mock-toggle-row">
+                <span>EXTENSION THEME</span>
+                <div class="mock-slider-switch"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- Settings Panel -->
     <div class="panel" id="panel-settings">
       <div class="card">
@@ -815,61 +1268,6 @@
           <button class="btn-ghost" id="btn-reset-all" style="color:#C92A2A;border-color:rgba(201,42,42,0.3);margin-left:auto;">Reset Defaults</button>
         </div>
         <input type="file" id="file-import" accept=".json" style="display:none;">
-      </div>
-    </div>
-
-    <!-- About / Palette Panel -->
-    <div class="panel" id="panel-about">
-      <div class="card">
-        <div class="card-title">Tokyo Duo Design Specification</div>
-        <div class="card-desc">An uncompromising 2-color architectural palette with high-contrast text and zero neon glare.</div>
-        <div class="about-palette">
-          <div class="palette-box">
-            <div class="palette-color" style="background:#FFFBF5;color:#283845;border-bottom:1px solid var(--color-border);">CANVAS</div>
-            <div class="palette-meta">
-              <div class="palette-name">Linen Light</div>
-              <div class="palette-hex">#FFFBF5 · 98% Light</div>
-            </div>
-          </div>
-          <div class="palette-box">
-            <div class="palette-color" style="background:#283845;color:#FFFBF5;">CONTROLS</div>
-            <div class="palette-meta">
-              <div class="palette-name">Slate Navy</div>
-              <div class="palette-hex">#283845 · Primary</div>
-            </div>
-          </div>
-          <div class="palette-box">
-            <div class="palette-color" style="background:#151E25;color:#FFFBF5;">TEXT</div>
-            <div class="palette-meta">
-              <div class="palette-name">Deep Slate</div>
-              <div class="palette-hex">#151E25 · 15.6:1 AAA</div>
-            </div>
-          </div>
-          <div class="palette-box">
-            <div class="palette-color" style="background:#FFA649;color:#283845;">ACCENT</div>
-            <div class="palette-meta">
-              <div class="palette-name">Tokyo Amber</div>
-              <div class="palette-hex">#FFA649 · Golden</div>
-            </div>
-          </div>
-        </div>
-
-        <div class="about-grid">
-          <div class="about-stat">
-            <div class="about-stat-val">3</div>
-            <div class="about-stat-lbl">Curated Presets</div>
-          </div>
-          <div class="about-stat">
-            <div class="about-stat-val">4</div>
-            <div class="about-stat-lbl">AI Workspaces</div>
-          </div>
-          <div class="about-stat">
-            <div class="about-stat-val" id="about-prompt-count">6</div>
-            <div class="about-stat-lbl">Prompt Templates</div>
-          </div>
-        </div>
-
-        <p style="font-size:12px;color:var(--color-dark-muted);line-height:1.7;">PromptCanvas applies an architectural, distraction-free aesthetic across ChatGPT, Claude, DeepSeek, and Google Gemini. Zero gradients, zero neon glows, zero blur overhead.</p>
       </div>
     </div>
   </main>
