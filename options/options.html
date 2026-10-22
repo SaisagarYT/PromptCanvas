@@ -3,274 +3,396 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>PromptCanvas — Options</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <title>PromptCanvas — Options & Settings</title>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
   <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', -apple-system, sans-serif; }
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Inter', -apple-system, sans-serif;
+    }
+
     :root {
-      --primary: #F92424;       /* Bright Red Plus */
-      --secondary: #D1C0A5;     /* Sand */
-      --bg: #3C0016;            /* Burgundy Brown */
-      --surface: #3C0016;       /* Burgundy Brown */
-      --text: #D1C0A5;          /* Sand */
-      --muted: rgba(209, 192, 165, 0.65);
-      --border: rgba(209, 192, 165, 0.22);
-      --radius: 4px;
+      --color-light: #FFFBF5;
+      --color-dark: #283845;
+      --color-darker: #151E25;
+      --color-amber: #FFA649;
+      --color-dark-muted: rgba(40, 56, 69, 0.70);
+      --color-dark-subtle: rgba(40, 56, 69, 0.04);
+      --color-border: rgba(40, 56, 69, 0.12);
+      --color-border-strong: rgba(40, 56, 69, 0.28);
+      --radius-sm: 4px;
+      --radius: 6px;
     }
 
-    body { background: var(--bg); color: var(--text); min-height: 100vh; }
+    body {
+      background: var(--color-light);
+      color: var(--color-darker);
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+    }
 
+    /* ===== HERO HEADER ===== */
     .hero {
-      background: #3C0016;
-      border-bottom: 1px solid var(--border);
-      padding: 36px 48px;
+      background: var(--color-light);
+      border-bottom: 1px solid var(--color-border);
+      padding: 32px 48px;
     }
+
     .hero-content {
-      max-width: 1100px;
+      max-width: 1080px;
       margin: 0 auto;
       display: flex;
       align-items: center;
       gap: 16px;
     }
+
     .hero-logo {
       width: 44px;
       height: 44px;
-      border-radius: 4px;
-      background: var(--primary);
-      color: #3C0016;
+      border-radius: var(--radius-sm);
+      background: var(--color-dark);
+      color: var(--color-light);
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 18px;
-      font-weight: 900;
-      letter-spacing: -1px;
+      box-shadow: 0 1px 3px rgba(40, 56, 69, 0.2);
     }
+    .hero-logo svg {
+      width: 22px;
+      height: 22px;
+    }
+
     .hero-text h1 {
-      font-size: 22px;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 20px;
       font-weight: 800;
-      color: var(--text);
-      letter-spacing: 0.5px;
+      color: var(--color-darker);
+      letter-spacing: -0.2px;
       text-transform: uppercase;
       margin-bottom: 3px;
     }
+
     .hero-text p {
       font-size: 13px;
-      color: var(--muted);
-      letter-spacing: 0.2px;
+      color: var(--color-dark-muted);
+      letter-spacing: 0.1px;
     }
+
     .hero-badge {
       margin-left: auto;
-      background: var(--primary);
-      border-radius: 2px;
-      padding: 4px 10px;
+      background: var(--color-dark);
+      border-radius: var(--radius-sm);
+      padding: 6px 12px;
+      font-family: 'Plus Jakarta Sans', sans-serif;
       font-size: 10px;
       font-weight: 800;
-      color: #3C0016;
-      letter-spacing: 1px;
+      color: var(--color-light);
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
     }
 
+    /* ===== MAIN LAYOUT ===== */
     .main-layout {
       display: flex;
-      max-width: 1100px;
+      max-width: 1080px;
       margin: 0 auto;
       padding: 36px 48px;
-      gap: 32px;
+      gap: 36px;
     }
 
+    /* ===== SIDEBAR NAVIGATION ===== */
     .options-nav {
-      width: 180px;
+      width: 200px;
       flex-shrink: 0;
     }
+
     .nav-label {
+      font-family: 'Plus Jakarta Sans', sans-serif;
       font-size: 9px;
       font-weight: 800;
-      color: var(--muted);
-      letter-spacing: 1.5px;
+      color: var(--color-dark-muted);
+      letter-spacing: 1.2px;
       text-transform: uppercase;
-      margin-bottom: 10px;
-      padding-left: 8px;
+      margin-bottom: 12px;
+      padding-left: 10px;
     }
+
     .nav-item {
       display: flex;
       align-items: center;
-      gap: 8px;
-      padding: 9px 12px;
-      border-radius: 3px;
+      gap: 10px;
+      padding: 10px 12px;
+      border-radius: var(--radius-sm);
       cursor: pointer;
+      font-family: 'Plus Jakarta Sans', sans-serif;
       font-size: 12px;
       font-weight: 700;
-      color: var(--muted);
+      color: var(--color-dark-muted);
       transition: all 0.15s ease;
       border: 1px solid transparent;
       background: transparent;
       width: 100%;
       text-align: left;
       margin-bottom: 4px;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
+      letter-spacing: 0.2px;
     }
-    .nav-item:hover {
-      color: var(--text);
-      background: rgba(209, 192, 165, 0.05);
-    }
-    .nav-item.active {
-      color: var(--primary);
-      border-color: var(--primary);
-      background: rgba(249, 36, 36, 0.08);
-    }
-    .nav-icon { font-size: 9px; font-weight: 900; }
 
-    .options-content { flex: 1; }
-    .panel { display: none; }
-    .panel.active { display: block; }
+    .nav-item:hover {
+      color: var(--color-darker);
+      background: var(--color-dark-subtle);
+      border-color: var(--color-border);
+    }
+
+    .nav-item.active {
+      color: var(--color-light);
+      background: var(--color-dark);
+      border-color: var(--color-dark);
+    }
+
+    .nav-icon {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 16px;
+      height: 16px;
+      flex-shrink: 0;
+    }
+
+    /* ===== PANELS & CARDS ===== */
+    .options-content {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .panel {
+      display: none;
+    }
+
+    .panel.active {
+      display: block;
+    }
 
     .card {
-      background: #3C0016;
-      border: 1px solid var(--border);
+      background: #FFFFFF;
+      border: 1px solid var(--color-border);
       border-radius: var(--radius);
       padding: 24px;
-      margin-bottom: 20px;
+      margin-bottom: 24px;
     }
+
     .card-title {
+      font-family: 'Plus Jakarta Sans', sans-serif;
       font-size: 14px;
       font-weight: 800;
-      color: var(--text);
+      color: var(--color-darker);
       text-transform: uppercase;
-      letter-spacing: 0.8px;
+      letter-spacing: 0.6px;
       margin-bottom: 4px;
     }
+
     .card-desc {
       font-size: 12px;
-      color: var(--muted);
-      margin-bottom: 18px;
+      color: var(--color-dark-muted);
+      margin-bottom: 20px;
       line-height: 1.5;
     }
 
+    /* ===== THEME GRID (PRESETS) ===== */
     .theme-grid-full {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      gap: 14px;
+      gap: 16px;
     }
+
     .theme-card-full {
-      border-radius: 4px;
+      border-radius: var(--radius);
       padding: 16px;
-      border: 1px solid var(--border);
+      border: 1px solid var(--color-border);
       cursor: pointer;
       transition: all 0.15s ease;
       position: relative;
     }
+
     .theme-card-full:hover {
-      border-color: var(--secondary);
+      border-color: var(--color-dark);
+      transform: translateY(-1px);
     }
+
     .theme-card-full.selected {
-      border-color: var(--primary);
-      background: rgba(249, 36, 36, 0.08);
+      border-color: var(--color-dark);
+      box-shadow: 0 0 0 1px var(--color-dark);
     }
+
     .theme-preview-full {
-      height: 64px;
-      border-radius: 3px;
+      height: 72px;
+      border-radius: var(--radius-sm);
       margin-bottom: 12px;
       display: flex;
       flex-direction: column;
-      padding: 8px;
-      gap: 6px;
-      border: 1px solid var(--border);
+      padding: 10px;
+      gap: 7px;
     }
-    .theme-preview-msg { height: 10px; border-radius: 2px; width: 70%; }
-    .theme-preview-msg.short { width: 45%; align-self: flex-end; }
-    .theme-name-full { font-size: 12px; font-weight: 800; color: var(--text); margin-bottom: 3px; letter-spacing: 0.3px; }
-    .theme-desc-full { font-size: 11px; color: var(--muted); line-height: 1.4; }
+
+    .theme-preview-msg {
+      height: 10px;
+      border-radius: 2px;
+      width: 70%;
+    }
+
+    .theme-preview-msg.short {
+      width: 48%;
+      align-self: flex-end;
+    }
+
+    .theme-name-full {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 12px;
+      font-weight: 800;
+      margin-bottom: 4px;
+      letter-spacing: 0.2px;
+    }
+
+    .theme-desc-full {
+      font-size: 11px;
+      line-height: 1.4;
+    }
+
     .theme-selected-badge {
       position: absolute;
       top: 10px;
       right: 10px;
-      background: var(--primary);
-      color: #3C0016;
+      background: var(--color-dark);
+      color: var(--color-light);
+      font-family: 'Plus Jakarta Sans', sans-serif;
       font-size: 9px;
       font-weight: 800;
-      padding: 2px 6px;
+      padding: 2px 7px;
       border-radius: 2px;
       display: none;
-      letter-spacing: 0.5px;
+      letter-spacing: 0.6px;
     }
-    .theme-card-full.selected .theme-selected-badge { display: block; }
 
-    .prompt-table { width: 100%; border-collapse: collapse; }
+    .theme-card-full.selected .theme-selected-badge {
+      display: block;
+    }
+
+    /* ===== PROMPT TABLE ===== */
+    .prompt-table-wrap {
+      overflow-x: auto;
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-sm);
+    }
+
+    .prompt-table {
+      width: 100%;
+      border-collapse: collapse;
+      background: #FFFFFF;
+    }
+
     .prompt-table th {
       text-align: left;
+      font-family: 'Plus Jakarta Sans', sans-serif;
       font-size: 10px;
       font-weight: 800;
-      color: var(--muted);
-      letter-spacing: 1px;
+      color: var(--color-dark-muted);
+      letter-spacing: 0.8px;
       text-transform: uppercase;
-      padding: 8px 12px;
-      border-bottom: 1px solid var(--border);
+      padding: 10px 14px;
+      background: var(--color-dark-subtle);
+      border-bottom: 1px solid var(--color-border);
     }
+
     .prompt-table td {
-      padding: 12px;
+      padding: 14px;
       font-size: 12px;
-      color: var(--text);
-      border-bottom: 1px solid rgba(209, 192, 165, 0.12);
+      color: var(--color-darker);
+      border-bottom: 1px solid var(--color-border);
       vertical-align: top;
     }
-    .prompt-table tr:last-child td { border-bottom: none; }
+
+    .prompt-table tr:last-child td {
+      border-bottom: none;
+    }
+
     .prompt-tag-full {
+      font-family: 'Plus Jakarta Sans', sans-serif;
       font-size: 9px;
-      font-weight: 700;
-      color: #3C0016;
-      background: var(--secondary);
-      padding: 2px 6px;
+      font-weight: 800;
+      color: var(--color-light);
+      background: var(--color-dark);
+      padding: 3px 7px;
       border-radius: 2px;
       display: inline-block;
       text-transform: uppercase;
       letter-spacing: 0.5px;
     }
+
     .btn-icon {
       background: transparent;
-      border: 1px solid var(--border);
-      border-radius: 2px;
-      color: var(--text);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-sm);
+      color: var(--color-darker);
       cursor: pointer;
-      font-size: 11px;
-      font-weight: 700;
-      padding: 3px 8px;
+      padding: 5px 8px;
       transition: all 0.15s ease;
-    }
-    .btn-icon:hover {
-      background: var(--primary);
-      border-color: var(--primary);
-      color: #3C0016;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
     }
 
-    .form-group { margin-bottom: 14px; }
+    .btn-icon:hover {
+      background: var(--color-dark);
+      border-color: var(--color-dark);
+      color: var(--color-light);
+    }
+
+    /* ===== FORM STYLES ===== */
+    .form-group {
+      margin-bottom: 16px;
+    }
+
     .form-label {
       display: block;
+      font-family: 'Plus Jakarta Sans', sans-serif;
       font-size: 11px;
-      font-weight: 700;
-      color: var(--text);
+      font-weight: 800;
+      color: var(--color-darker);
       margin-bottom: 6px;
       text-transform: uppercase;
       letter-spacing: 0.5px;
     }
+
     .form-input {
       width: 100%;
-      background: #3C0016;
-      border: 1px solid var(--border);
-      border-radius: 3px;
-      color: var(--text);
-      font-size: 12px;
-      padding: 8px 12px;
+      background: var(--color-light);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-sm);
+      color: var(--color-darker);
+      font-size: 13px;
+      padding: 10px 14px;
       outline: none;
-      font-family: 'Inter', sans-serif;
+      transition: border-color 0.15s ease;
     }
-    .form-input:focus { border-color: var(--primary); }
-    .form-textarea { resize: vertical; min-height: 100px; line-height: 1.5; }
 
+    .form-input:focus {
+      border-color: var(--color-dark);
+    }
+
+    .form-textarea {
+      resize: vertical;
+      min-height: 120px;
+      line-height: 1.6;
+    }
+
+    /* ===== BUTTONS ===== */
     .btn-primary {
-      background: var(--primary);
-      border: none;
-      border-radius: 3px;
-      color: #3C0016;
+      background: var(--color-dark);
+      border: 1px solid var(--color-dark);
+      border-radius: var(--radius-sm);
+      color: var(--color-light);
+      font-family: 'Plus Jakarta Sans', sans-serif;
       font-size: 11px;
       font-weight: 800;
       text-transform: uppercase;
@@ -278,246 +400,483 @@
       padding: 10px 20px;
       cursor: pointer;
       transition: all 0.15s ease;
-      font-family: 'Inter', sans-serif;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
     }
+
     .btn-primary:hover {
-      background: var(--secondary);
-      color: #3C0016;
+      background: var(--color-darker);
+      border-color: var(--color-darker);
     }
+
     .btn-ghost {
       background: transparent;
-      border: 1px solid var(--border);
-      border-radius: 3px;
-      color: var(--text);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-sm);
+      color: var(--color-darker);
+      font-family: 'Plus Jakarta Sans', sans-serif;
       font-size: 11px;
-      font-weight: 700;
+      font-weight: 800;
       text-transform: uppercase;
       letter-spacing: 0.8px;
       padding: 10px 20px;
       cursor: pointer;
       transition: all 0.15s ease;
-      font-family: 'Inter', sans-serif;
     }
-    .btn-ghost:hover {
-      border-color: var(--secondary);
-      background: rgba(209, 192, 165, 0.05);
-    }
-    .btn-row { display: flex; gap: 10px; margin-top: 6px; }
 
+    .btn-ghost:hover {
+      border-color: var(--color-dark);
+      background: var(--color-dark-subtle);
+    }
+
+    .btn-row {
+      display: flex;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    /* ===== SETTINGS ROWS ===== */
     .settings-row {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 14px 0;
-      border-bottom: 1px solid rgba(209, 192, 165, 0.15);
+      padding: 16px 0;
+      border-bottom: 1px solid var(--color-border);
     }
-    .settings-row:last-child { border-bottom: none; }
-    .settings-row-info h3 { font-size: 13px; font-weight: 700; color: var(--text); margin-bottom: 2px; }
-    .settings-row-info p { font-size: 11px; color: var(--muted); line-height: 1.4; }
 
-    .toggle-wrap { position: relative; width: 34px; height: 18px; flex-shrink: 0; }
-    .toggle-wrap input { opacity: 0; width: 0; height: 0; position: absolute; }
+    .settings-row:last-child {
+      border-bottom: none;
+    }
+
+    .settings-row-info h3 {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 13px;
+      font-weight: 800;
+      color: var(--color-darker);
+      margin-bottom: 3px;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+    }
+
+    .settings-row-info p {
+      font-size: 12px;
+      color: var(--color-dark-muted);
+      line-height: 1.4;
+    }
+
+    /* ===== TOGGLES ===== */
+    .toggle-wrap {
+      position: relative;
+      width: 36px;
+      height: 20px;
+      flex-shrink: 0;
+    }
+
+    .toggle-wrap input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+      position: absolute;
+    }
+
     .toggle-slider {
       position: absolute;
       inset: 0;
-      background: rgba(209, 192, 165, 0.15);
-      border-radius: 2px;
+      background: rgba(40, 56, 69, 0.2);
+      border-radius: 3px;
       cursor: pointer;
       transition: background 0.15s ease;
-      border: 1px solid var(--border);
+      border: 1px solid var(--color-border);
     }
+
     .toggle-slider::before {
       content: '';
       position: absolute;
-      width: 12px;
-      height: 12px;
-      border-radius: 1px;
-      background: var(--secondary);
+      width: 14px;
+      height: 14px;
+      border-radius: 2px;
+      background: var(--color-dark);
       top: 2px;
       left: 2px;
-      transition: all 0.15s ease;
-    }
-    .toggle-wrap input:checked + .toggle-slider {
-      background: var(--primary);
-      border-color: var(--primary);
-    }
-    .toggle-wrap input:checked + .toggle-slider::before {
-      transform: translateX(16px);
-      background: #3C0016;
+      transition: transform 0.15s ease;
     }
 
+    .toggle-wrap input:checked + .toggle-slider {
+      background: var(--color-dark);
+      border-color: var(--color-dark);
+    }
+
+    .toggle-wrap input:checked + .toggle-slider::before {
+      transform: translateX(16px);
+      background: var(--color-light);
+    }
+
+    /* ===== PALETTE SPECIFICATION ===== */
+    .about-palette {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px;
+      margin-bottom: 24px;
+    }
+
+    .palette-box {
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-sm);
+      overflow: hidden;
+      background: #FFFFFF;
+    }
+
+    .palette-color {
+      height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-weight: 800;
+      font-size: 14px;
+      letter-spacing: 0.5px;
+    }
+
+    .palette-meta {
+      padding: 12px;
+      background: #FFFFFF;
+    }
+
+    .palette-name {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 11px;
+      font-weight: 800;
+      color: var(--color-darker);
+      text-transform: uppercase;
+      margin-bottom: 3px;
+    }
+
+    .palette-hex {
+      font-size: 10px;
+      font-family: 'JetBrains Mono', monospace;
+      color: var(--color-dark-muted);
+    }
+
+    .about-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+      margin-bottom: 24px;
+    }
+
+    .about-stat {
+      background: #FFFFFF;
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-sm);
+      padding: 18px;
+      text-align: center;
+    }
+
+    .about-stat-val {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 26px;
+      font-weight: 800;
+      color: var(--color-dark);
+      line-height: 1.1;
+    }
+
+    .about-stat-lbl {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 10px;
+      color: var(--color-dark-muted);
+      margin-top: 6px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+    }
+
+    /* ===== TOAST ===== */
     #options-toast {
       position: fixed;
       bottom: 24px;
       right: 24px;
-      background: #3C0016;
-      border: 1px solid var(--primary);
-      border-radius: 3px;
-      padding: 10px 16px;
+      background: var(--color-dark);
+      border: 1px solid var(--color-dark);
+      border-radius: var(--radius-sm);
+      padding: 10px 18px;
+      font-family: 'Plus Jakarta Sans', sans-serif;
       font-size: 12px;
-      font-weight: 700;
-      color: var(--text);
-      box-shadow: 0 2px 8px rgba(60, 0, 22, 0.35);
+      font-weight: 800;
+      color: var(--color-light);
+      box-shadow: 0 2px 8px rgba(40, 56, 69, 0.25);
       z-index: 9999;
       opacity: 0;
       transform: translateY(6px);
       transition: all 0.15s ease;
       pointer-events: none;
-    }
-    #options-toast.show { opacity: 1; transform: translateY(0); }
-
-    .about-palette {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 12px;
-      margin-bottom: 20px;
-    }
-    .palette-box {
-      border: 1px solid var(--border);
-      border-radius: 3px;
-      overflow: hidden;
-    }
-    .palette-color {
-      height: 60px;
       display: flex;
       align-items: center;
-      justify-content: center;
-      font-weight: 900;
-      font-size: 16px;
+      gap: 8px;
     }
-    .palette-meta {
-      padding: 10px 12px;
-      background: #3C0016;
-    }
-    .palette-name { font-size: 11px; font-weight: 800; color: var(--text); text-transform: uppercase; margin-bottom: 2px; }
-    .palette-hex { font-size: 10px; font-family: 'JetBrains Mono', monospace; color: var(--muted); }
 
-    .about-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 20px; }
-    .about-stat { background: #3C0016; border: 1px solid var(--border); border-radius: 3px; padding: 16px; text-align: center; }
-    .about-stat-val { font-size: 22px; font-weight: 800; color: var(--primary); }
-    .about-stat-lbl { font-size: 10px; color: var(--muted); margin-top: 4px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
+    #options-toast.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
   </style>
 </head>
 <body>
+
+<!-- Header -->
 <div class="hero">
   <div class="hero-content">
-    <div class="hero-logo">PC</div>
-    <div class="hero-text">
-      <h1>PromptCanvas</h1>
-      <p>3-Color Swiss Editorial Engine — Burgundy Brown, Bright Red Plus & Sand</p>
+    <div class="hero-logo">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 2L2 7l10 5 10-5-10-5Z"/>
+        <path d="m2 17 10 5 10-5"/>
+        <path d="m2 12 10 5 10-5"/>
+      </svg>
     </div>
-    <div class="hero-badge">EDITORIAL PRO</div>
+    <div class="hero-text">
+      <h1>PromptCanvas Dashboard</h1>
+      <p>Tokyo Duo Theme Engine · Curated Palettes & Prompt Library Management</p>
+    </div>
+    <div class="hero-badge">TOKYO DUO PRO</div>
   </div>
 </div>
 
+<!-- Main Content -->
 <div class="main-layout">
+  <!-- Nav -->
   <nav class="options-nav">
-    <div class="nav-label">Navigation</div>
-    <button class="nav-item active" data-panel="themes"><span class="nav-icon">■</span> Themes</button>
-    <button class="nav-item" data-panel="prompts"><span class="nav-icon">■</span> Prompts</button>
-    <button class="nav-item" data-panel="new-prompt"><span class="nav-icon">■</span> Add Prompt</button>
-    <button class="nav-item" data-panel="settings"><span class="nav-icon">■</span> Settings</button>
-    <button class="nav-item" data-panel="about"><span class="nav-icon">■</span> Palette</button>
+    <div class="nav-label">Dashboard</div>
+    <button class="nav-item active" data-panel="themes">
+      <span class="nav-icon">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="13.5" cy="6.5" r=".5" fill="currentColor"/>
+          <circle cx="17.5" cy="10.5" r=".5" fill="currentColor"/>
+          <circle cx="8.5" cy="7.5" r=".5" fill="currentColor"/>
+          <circle cx="6.5" cy="12.5" r=".5" fill="currentColor"/>
+          <path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"/>
+        </svg>
+      </span>
+      <span>Themes</span>
+    </button>
+    <button class="nav-item" data-panel="prompts">
+      <span class="nav-icon">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="m18 16 4-4-4-4"/>
+          <path d="m6 8-4 4 4 4"/>
+          <path d="m14.5 4-5 16"/>
+        </svg>
+      </span>
+      <span>Prompts</span>
+    </button>
+    <button class="nav-item" data-panel="new-prompt">
+      <span class="nav-icon">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M5 12h14"/>
+          <path d="M12 5v14"/>
+        </svg>
+      </span>
+      <span>Add Prompt</span>
+    </button>
+    <button class="nav-item" data-panel="settings">
+      <span class="nav-icon">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="3"/>
+          <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+        </svg>
+      </span>
+      <span>Settings</span>
+    </button>
+    <button class="nav-item" data-panel="about">
+      <span class="nav-icon">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"/>
+          <path d="M12 16v-4"/>
+          <path d="M12 8h.01"/>
+        </svg>
+      </span>
+      <span>Palette</span>
+    </button>
   </nav>
 
+  <!-- Content Panels -->
   <main class="options-content">
+    <!-- Themes Panel -->
     <div class="panel active" id="panel-themes">
       <div class="card">
-        <div class="card-title">Editorial Palettes</div>
-        <div class="card-desc">Select an active palette arrangement across ChatGPT, Claude, DeepSeek, and Gemini.</div>
+        <div class="card-title">Tokyo Duo Presets</div>
+        <div class="card-desc">Select an active palette arrangement. Changes sync instantly across the popup and all active AI workspaces.</div>
         <div class="theme-grid-full" id="options-theme-grid"></div>
       </div>
     </div>
 
+    <!-- Prompts Panel -->
     <div class="panel" id="panel-prompts">
       <div class="card">
         <div class="card-title">Prompt Template Library</div>
-        <div class="card-desc">Saved prompt templates with 1-click in-page composer injection.</div>
-        <table class="prompt-table">
-          <thead><tr><th>Title</th><th>Category</th><th>Preview</th><th></th></tr></thead>
-          <tbody id="options-prompt-body"></tbody>
-        </table>
+        <div class="card-desc">Manage reusable prompt templates. Use dynamic placeholders like <code>[FIELD]</code> to fill values quickly.</div>
+        <div class="prompt-table-wrap">
+          <table class="prompt-table">
+            <thead>
+              <tr>
+                <th style="width: 22%;">Title</th>
+                <th style="width: 18%;">Category</th>
+                <th style="width: 50%;">Prompt Snippet</th>
+                <th style="width: 10%; text-align: right;">Action</th>
+              </tr>
+            </thead>
+            <tbody id="options-prompt-body"></tbody>
+          </table>
+        </div>
       </div>
     </div>
 
+    <!-- Add Prompt Panel -->
     <div class="panel" id="panel-new-prompt">
       <div class="card">
         <div class="card-title">Create Prompt Template</div>
-        <div class="card-desc">Add a new template to your library. Use [BRACKETS] for dynamic placeholders.</div>
-        <div class="form-group"><label class="form-label">Title</label><input type="text" class="form-input" id="new-title" placeholder="e.g. Code Reviewer"></div>
-        <div class="form-group"><label class="form-label">Category</label><input type="text" class="form-input" id="new-category" placeholder="e.g. Coding, Writing, Business"></div>
-        <div class="form-group"><label class="form-label">Prompt Template</label><textarea class="form-input form-textarea" id="new-text" placeholder="Your prompt text. Use [FIELD] for placeholders..."></textarea></div>
+        <div class="card-desc">Save a new template into your local library. Available immediately in ChatGPT, Claude, DeepSeek, and Gemini.</div>
+        <div class="form-group">
+          <label class="form-label">Template Title</label>
+          <input type="text" class="form-input" id="new-title" placeholder="e.g. Code Reviewer, System Architect">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Category</label>
+          <input type="text" class="form-input" id="new-category" placeholder="e.g. Coding, Writing, Analysis">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Prompt Content</label>
+          <textarea class="form-input form-textarea" id="new-text" placeholder="Enter your prompt instructions. Use [BRACKETS] for dynamic placeholders..."></textarea>
+        </div>
         <div class="btn-row">
-          <button class="btn-primary" id="btn-save-prompt">Save Template</button>
-          <button class="btn-ghost" id="btn-clear-form">Clear</button>
+          <button class="btn-primary" id="btn-save-prompt">
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="20 6 9 17 4 12"/>
+            </svg>
+            <span>Save Template</span>
+          </button>
+          <button class="btn-ghost" id="btn-clear-form">Clear Form</button>
         </div>
       </div>
     </div>
 
+    <!-- Settings Panel -->
     <div class="panel" id="panel-settings">
       <div class="card">
-        <div class="card-title">Theme Injection Settings</div>
-        <div class="card-desc">Configure in-page behavioral toggles.</div>
+        <div class="card-title">Theme Injection Preferences</div>
+        <div class="card-desc">Configure behavioral toggles for the AI workspaces.</div>
         <div class="settings-row">
-          <div class="settings-row-info"><h3>Enable Page Theming</h3><p>Inject 3-color palette into ChatGPT, Claude, DeepSeek, and Gemini</p></div>
-          <label class="toggle-wrap"><input type="checkbox" id="opt-theme-enabled" checked><span class="toggle-slider"></span></label>
+          <div class="settings-row-info">
+            <h3>Enable Page Theming</h3>
+            <p>Inject Tokyo Duo custom palette into ChatGPT, Claude, DeepSeek, and Gemini</p>
+          </div>
+          <label class="toggle-wrap">
+            <input type="checkbox" id="opt-theme-enabled" checked>
+            <span class="toggle-slider"></span>
+          </label>
         </div>
         <div class="settings-row">
-          <div class="settings-row-info"><h3>Prompt Inserter</h3><p>Enable prompt library in the sidebar</p></div>
-          <label class="toggle-wrap"><input type="checkbox" id="opt-prompts-enabled" checked><span class="toggle-slider"></span></label>
+          <div class="settings-row-info">
+            <h3>Prompt Library Sidebar</h3>
+            <p>Show floating sidebar launcher button on supported AI platforms</p>
+          </div>
+          <label class="toggle-wrap">
+            <input type="checkbox" id="opt-prompts-enabled" checked>
+            <span class="toggle-slider"></span>
+          </label>
         </div>
       </div>
+
       <div class="card">
-        <div class="card-title">Data Backup</div>
-        <div class="card-desc">Export or restore your prompt library and settings via JSON.</div>
+        <div class="card-title">Data Backup & Reset</div>
+        <div class="card-desc">Export or restore your prompt library and customized settings via JSON backup.</div>
         <div class="btn-row">
-          <button class="btn-primary" id="btn-export">Export JSON</button>
-          <button class="btn-ghost" id="btn-import">Import JSON</button>
-          <button class="btn-ghost" id="btn-reset-all" style="color:#F92424;border-color:rgba(249,36,36,0.3);">Reset to Defaults</button>
+          <button class="btn-primary" id="btn-export">
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+              <polyline points="7 10 12 15 17 10"/>
+              <line x1="12" y1="15" x2="12" y2="3"/>
+            </svg>
+            <span>Export JSON</span>
+          </button>
+          <button class="btn-ghost" id="btn-import">
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+              <polyline points="17 8 12 3 7 8"/>
+              <line x1="12" y1="3" x2="12" y2="15"/>
+            </svg>
+            <span>Import JSON</span>
+          </button>
+          <button class="btn-ghost" id="btn-reset-all" style="color:#C92A2A;border-color:rgba(201,42,42,0.3);margin-left:auto;">Reset Defaults</button>
         </div>
         <input type="file" id="file-import" accept=".json" style="display:none;">
       </div>
     </div>
 
+    <!-- About / Palette Panel -->
     <div class="panel" id="panel-about">
       <div class="card">
-        <div class="card-title">Color Palette Specification</div>
-        <div class="card-desc">Strict 3-color Swiss / editorial design system with zero gradients and zero glow effects.</div>
+        <div class="card-title">Tokyo Duo Design Specification</div>
+        <div class="card-desc">An uncompromising 2-color architectural palette with high-contrast text and zero neon glare.</div>
         <div class="about-palette">
           <div class="palette-box">
-            <div class="palette-color" style="background:#3C0016;color:#D1C0A5;">PC</div>
+            <div class="palette-color" style="background:#FFFBF5;color:#283845;border-bottom:1px solid var(--color-border);">CANVAS</div>
             <div class="palette-meta">
-              <div class="palette-name">Burgundy Brown</div>
-              <div class="palette-hex">#3C0016 · RGB 60, 0, 22</div>
+              <div class="palette-name">Linen Light</div>
+              <div class="palette-hex">#FFFBF5 · 98% Light</div>
             </div>
           </div>
           <div class="palette-box">
-            <div class="palette-color" style="background:#F92424;color:#3C0016;">PC</div>
+            <div class="palette-color" style="background:#283845;color:#FFFBF5;">CONTROLS</div>
             <div class="palette-meta">
-              <div class="palette-name">Bright Red Plus</div>
-              <div class="palette-hex">#F92424 · RGB 249, 36, 36</div>
+              <div class="palette-name">Slate Navy</div>
+              <div class="palette-hex">#283845 · Primary</div>
             </div>
           </div>
           <div class="palette-box">
-            <div class="palette-color" style="background:#D1C0A5;color:#3C0016;">PC</div>
+            <div class="palette-color" style="background:#151E25;color:#FFFBF5;">TEXT</div>
             <div class="palette-meta">
-              <div class="palette-name">Sand</div>
-              <div class="palette-hex">#D1C0A5 · RGB 209, 192, 165</div>
+              <div class="palette-name">Deep Slate</div>
+              <div class="palette-hex">#151E25 · 15.6:1 AAA</div>
+            </div>
+          </div>
+          <div class="palette-box">
+            <div class="palette-color" style="background:#FFA649;color:#283845;">ACCENT</div>
+            <div class="palette-meta">
+              <div class="palette-name">Tokyo Amber</div>
+              <div class="palette-hex">#FFA649 · Golden</div>
             </div>
           </div>
         </div>
+
         <div class="about-grid">
-          <div class="about-stat"><div class="about-stat-val">3</div><div class="about-stat-lbl">Exact Colors</div></div>
-          <div class="about-stat"><div class="about-stat-val">4</div><div class="about-stat-lbl">AI Platforms</div></div>
-          <div class="about-stat"><div class="about-stat-val" id="about-prompt-count">6</div><div class="about-stat-lbl">Prompt Templates</div></div>
+          <div class="about-stat">
+            <div class="about-stat-val">3</div>
+            <div class="about-stat-lbl">Curated Presets</div>
+          </div>
+          <div class="about-stat">
+            <div class="about-stat-val">4</div>
+            <div class="about-stat-lbl">AI Workspaces</div>
+          </div>
+          <div class="about-stat">
+            <div class="about-stat-val" id="about-prompt-count">6</div>
+            <div class="about-stat-lbl">Prompt Templates</div>
+          </div>
         </div>
-        <p style="font-size:12px;color:var(--muted);line-height:1.7;">PromptCanvas applies an uncompromising Swiss editorial design language across ChatGPT, Claude, DeepSeek, and Google Gemini. Zero gradients, zero glows, zero blur overhead.</p>
+
+        <p style="font-size:12px;color:var(--color-dark-muted);line-height:1.7;">PromptCanvas applies an architectural, distraction-free aesthetic across ChatGPT, Claude, DeepSeek, and Google Gemini. Zero gradients, zero neon glows, zero blur overhead.</p>
       </div>
     </div>
   </main>
 </div>
 
-<div id="options-toast"><span id="toast-msg">Saved</span></div>
+<!-- Toast -->
+<div id="options-toast">
+  <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+    <polyline points="20 6 9 17 4 12"/>
+  </svg>
+  <span id="toast-msg">Saved</span>
+</div>
+
 <script src="options.js"></script>
 </body>
 </html>
