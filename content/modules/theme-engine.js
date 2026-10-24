@@ -270,122 +270,292 @@
           background-color: transparent !important;
         }
 
-        /* Input Composer Outer Capsule - Unified Frosted Glass Container */
-        div[class*="composer-parent"] form > div,
-        form:has(#prompt-textarea) > div,
-        form:has(#composer-background) > div,
-        form > div[class*="rounded"],
+        /* ==========================================================================
+           Input Composer Capsule - Atmospheric Frosted Glass Container
+           Target the rounded pill container regardless of whether it's wrapped in form
+           ========================================================================== */
+        #composer-background,
+        div[id="composer-background"],
+        [data-testid*="composer-background"],
+        /* Any container with rounded borders containing prompt textarea or ProseMirror */
+        div[class*="rounded-3xl"]:has(#prompt-textarea),
+        div[class*="rounded-full"]:has(#prompt-textarea),
+        div[class*="rounded-[2"]:has(#prompt-textarea),
+        div[class*="rounded"]:has(#prompt-textarea),
+        div[class*="rounded"]:has(.ProseMirror),
+        div[class*="rounded"]:has(textarea:not(#pc-page-theme *)),
+        div[class*="rounded"]:has(div[contenteditable="true"]:not(#promptcanvas-root *)),
+        /* Modern ChatGPT pill classes */
+        div[class*="composer-parent"] div[class*="rounded"],
         div:has(> #composer-background),
-        div:has(> #prompt-textarea) {
+        form div[class*="rounded"]:has(#prompt-textarea),
+        form:has(#prompt-textarea) > div,
+        form:has(#composer-background) > div {
           background: ${isWp ? 'rgba(18, 15, 28, 0.88)' : c.inputBg} !important;
           background-color: ${isWp ? 'rgba(18, 15, 28, 0.88)' : c.inputBg} !important;
           border: 1px solid ${border} !important;
-          box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5), 0 0 16px ${sidebarHover} !important;
-          backdrop-filter: blur(20px) saturate(140%) !important;
-          -webkit-backdrop-filter: blur(20px) saturate(140%) !important;
-          border-radius: 26px !important;
+          box-shadow: 0 8px 32px rgba(0, 0, 0, 0.55), 0 0 18px ${sidebarHover} !important;
+          backdrop-filter: blur(24px) saturate(140%) !important;
+          -webkit-backdrop-filter: blur(24px) saturate(140%) !important;
+          border-radius: 28px !important;
+          transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease !important;
         }
 
-        /* Make all internal wrappers transparent so there's zero double capsule or white nesting */
-        form:has(#prompt-textarea) > div > div,
-        form:has(#composer-background) > div > div,
-        #composer-background,
-        div[id="composer-background"],
-        form div[class*="bg-token-main-surface-secondary"],
-        form div[class*="bg-white"],
-        form div[class*="border"] {
+        /* Hover & Focus state for the capsule */
+        #composer-background:hover,
+        div[class*="rounded"]:has(#prompt-textarea):hover,
+        form:has(#prompt-textarea) > div:hover {
+          border-color: ${border} !important;
+          box-shadow: 0 8px 36px rgba(0, 0, 0, 0.6), 0 0 22px ${sidebarHover} !important;
+        }
+
+        #composer-background:focus-within,
+        div[class*="rounded"]:has(#prompt-textarea):focus-within,
+        form:has(#prompt-textarea) > div:focus-within {
+          border-color: ${primary} !important;
+          box-shadow: 0 8px 40px rgba(0, 0, 0, 0.65), 0 0 24px ${sidebarHover}, 0 0 0 1px ${primary} !important;
+        }
+
+        /* Eliminate any white boxes, token backgrounds, or double borders inside the pill */
+        #composer-background > div,
+        div[class*="rounded"]:has(#prompt-textarea) > div,
+        #composer-background div[class*="bg-white"],
+        div[class*="rounded"]:has(#prompt-textarea) div[class*="bg-white"],
+        #composer-background div[class*="bg-token-"],
+        div[class*="rounded"]:has(#prompt-textarea) div[class*="bg-token-"],
+        #composer-background div[class*="bg-[#"],
+        div[class*="rounded"]:has(#prompt-textarea) div[class*="bg-[#"],
+        #composer-background [class*="bg-token-main-surface-primary"],
+        div[class*="rounded"]:has(#prompt-textarea) [class*="bg-token-main-surface-primary"],
+        #composer-background [class*="bg-token-main-surface-secondary"],
+        div[class*="rounded"]:has(#prompt-textarea) [class*="bg-token-main-surface-secondary"],
+        #composer-background [class*="bg-token-main-surface-tertiary"],
+        div[class*="rounded"]:has(#prompt-textarea) [class*="bg-token-main-surface-tertiary"],
+        #composer-background div[class*="border"],
+        div[class*="rounded"]:has(#prompt-textarea) div[class*="border"],
+        div[class*="rounded"]:has(#prompt-textarea) #composer-background {
           background: transparent !important;
           background-color: transparent !important;
-          border: none !important;
+          border-color: transparent !important;
           box-shadow: none !important;
         }
 
-        #prompt-textarea, textarea, .ProseMirror, div[contenteditable="true"] {
+        /* Force local CSS variable tokens inside the composer to transparent */
+        #composer-background,
+        div[class*="rounded"]:has(#prompt-textarea),
+        div:has(#prompt-textarea) {
+          --main-surface-primary: transparent !important;
+          --main-surface-secondary: transparent !important;
+          --main-surface-tertiary: transparent !important;
+        }
+
+        /* Input Textarea & Contenteditable - High Contrast & Crisp */
+        #prompt-textarea,
+        textarea:not(#promptcanvas-root *):not(#pc-page-theme *),
+        .ProseMirror,
+        div[contenteditable="true"]:not(#promptcanvas-root *),
+        div[id*="prompt-textarea"] {
           background: transparent !important;
           background-color: transparent !important;
           color: #FFFFFF !important;
           font-family: '${theme.font || 'Inter'}', sans-serif !important;
           font-size: ${theme.fontSize || '15px'} !important;
+          line-height: 1.5 !important;
           border: none !important;
           box-shadow: none !important;
+          outline: none !important;
         }
 
         #prompt-textarea::placeholder,
         textarea::placeholder,
         .ProseMirror p.is-editor-empty::before,
-        p[data-placeholder]::before {
+        p[data-placeholder]::before,
+        div[data-placeholder]::before,
+        div[class*="placeholder"] {
           color: rgba(255, 255, 255, 0.55) !important;
         }
 
-        /* "Think" button and Composer Toolbar buttons */
-        form button,
-        div[class*="composer-parent"] button {
+        /* General buttons inside the composer */
+        #composer-background button,
+        div[class*="rounded"]:has(#prompt-textarea) button,
+        div:has(> #prompt-textarea) button,
+        div[class*="composer-parent"] button,
+        button[data-testid*="send" i],
+        button[aria-label*="Think" i],
+        button[aria-label*="Attach" i],
+        button[aria-label*="Upload" i],
+        button[aria-label*="Voice" i],
+        button[aria-label*="Dictate" i] {
           color: #F8FAFC !important;
           transition: all 0.18s ease !important;
         }
 
-        form button svg,
-        div[class*="composer-parent"] button svg {
+        #composer-background button svg,
+        div[class*="rounded"]:has(#prompt-textarea) button svg,
+        div:has(> #prompt-textarea) button svg,
+        div[class*="composer-parent"] button svg,
+        button[data-testid*="send" i] svg,
+        button[aria-label*="Think" i] svg,
+        button[aria-label*="Attach" i] svg,
+        button[aria-label*="Upload" i] svg,
+        button[aria-label*="Voice" i] svg,
+        button[aria-label*="Dictate" i] svg {
           color: #F8FAFC !important;
           fill: currentColor !important;
           stroke: currentColor !important;
         }
 
-        /* "Think" pill button specifically */
-        form button[aria-label*="Think"],
-        form button:has(svg + span),
-        button[data-testid*="think"] {
-          background: rgba(255, 255, 255, 0.1) !important;
+        /* 1. "Think" / Reasoning Pill Button (circled in user screenshot) */
+        button[aria-label*="Think" i],
+        button[aria-label*="reason" i],
+        button[data-testid*="think" i],
+        button[data-testid*="reason" i],
+        #composer-background button:has(span),
+        div[class*="rounded"]:has(#prompt-textarea) button:has(span) {
+          background: rgba(255, 255, 255, 0.10) !important;
+          background-color: rgba(255, 255, 255, 0.10) !important;
           border: 1px solid ${border} !important;
           border-radius: 9999px !important;
           padding: 4px 12px !important;
           color: #F8FAFC !important;
           font-weight: 500 !important;
+          font-size: 13px !important;
+          display: inline-flex !important;
+          align-items: center !important;
+          gap: 6px !important;
+          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25) !important;
         }
 
-        form button[aria-label*="Think"]:hover,
-        form button:has(svg + span):hover,
-        button[data-testid*="think"]:hover {
+        button[aria-label*="Think" i]:hover,
+        button[aria-label*="reason" i]:hover,
+        button[data-testid*="think" i]:hover,
+        button[data-testid*="reason" i]:hover,
+        #composer-background button:has(span):hover,
+        div[class*="rounded"]:has(#prompt-textarea) button:has(span):hover {
           background: ${sidebarHover} !important;
-          border-color: ${border} !important;
+          background-color: ${sidebarHover} !important;
+          border-color: ${primary} !important;
           color: ${primary} !important;
+          box-shadow: 0 0 14px ${sidebarHover} !important;
         }
 
-        /* Plus (+) / Attach button */
-        form button[aria-label*="Attach"],
-        form button[aria-label*="Upload"],
-        form button[data-testid*="attach"],
-        form button:first-of-type {
+        button[aria-label*="Think" i] span,
+        #composer-background button:has(span) span,
+        div[class*="rounded"]:has(#prompt-textarea) button:has(span) span {
+          color: inherit !important;
+          font-weight: 500 !important;
+        }
+
+        button[aria-label*="Think" i] svg,
+        #composer-background button:has(span) svg,
+        div[class*="rounded"]:has(#prompt-textarea) button:has(span) svg {
+          color: inherit !important;
+          fill: currentColor !important;
+        }
+
+        /* 2. Plus (+) / Attach Button */
+        button[aria-label*="Attach" i],
+        button[aria-label*="Upload" i],
+        button[aria-label*="Add" i],
+        button[data-testid*="attach" i],
+        #composer-background button:first-of-type,
+        div[class*="rounded"]:has(#prompt-textarea) button:first-of-type {
           background: rgba(255, 255, 255, 0.08) !important;
+          background-color: rgba(255, 255, 255, 0.08) !important;
+          border: 1px solid rgba(255, 255, 255, 0.14) !important;
           border-radius: 50% !important;
           color: #F8FAFC !important;
-        }
-        form button[aria-label*="Attach"]:hover,
-        form button[aria-label*="Upload"]:hover {
-          background: ${sidebarHover} !important;
-          color: ${primary} !important;
+          width: 34px !important;
+          height: 34px !important;
+          min-width: 34px !important;
+          display: inline-flex !important;
+          align-items: center !important;
+          justify-content: center !important;
         }
 
-        /* Dictate / Microphone button */
-        form button[aria-label*="voice" i],
-        form button[aria-label*="dictat" i],
-        form button[aria-label*="record" i] {
-          background: rgba(255, 255, 255, 0.08) !important;
+        button[aria-label*="Attach" i]:hover,
+        button[aria-label*="Upload" i]:hover,
+        button[aria-label*="Add" i]:hover,
+        button[data-testid*="attach" i]:hover,
+        #composer-background button:first-of-type:hover,
+        div[class*="rounded"]:has(#prompt-textarea) button:first-of-type:hover {
+          background: ${sidebarHover} !important;
+          background-color: ${sidebarHover} !important;
+          border-color: ${primary} !important;
+          color: ${primary} !important;
+          box-shadow: 0 0 12px ${sidebarHover} !important;
+        }
+
+        /* 3. Dictate / Microphone & Voice Buttons */
+        button[aria-label*="voice" i],
+        button[aria-label*="dictat" i],
+        button[aria-label*="record" i],
+        button[aria-label*="microphone" i],
+        button[data-testid*="voice" i],
+        button[data-testid*="dictate" i] {
+          background: transparent !important;
+          background-color: transparent !important;
+          border: none !important;
           border-radius: 50% !important;
-          color: #F8FAFC !important;
+          color: #CBD5E1 !important;
+          width: 34px !important;
+          height: 34px !important;
+          min-width: 34px !important;
+          display: inline-flex !important;
+          align-items: center !important;
+          justify-content: center !important;
         }
-        form button[aria-label*="voice" i]:hover,
-        form button[aria-label*="dictat" i]:hover {
+
+        button[aria-label*="voice" i]:hover,
+        button[aria-label*="dictat" i]:hover,
+        button[aria-label*="record" i]:hover,
+        button[aria-label*="microphone" i]:hover,
+        button[data-testid*="voice" i]:hover,
+        button[data-testid*="dictate" i]:hover {
           background: ${sidebarHover} !important;
+          background-color: ${sidebarHover} !important;
           color: ${primary} !important;
         }
 
-        /* Glowing Voice Mode circle button */
+        /* 4. Glowing Voice Mode Pill/Circle */
         button[aria-label*="Voice mode" i],
         button[data-testid*="voice-mode"],
-        form button[class*="bg-black"]:has(svg),
-        form button[class*="bg-white"]:has(svg) {
+        button[data-testid*="voice"]:has(svg) {
           box-shadow: 0 0 16px ${primary} !important;
+        }
+
+        /* 5. Send / Submit Button */
+        button[data-testid*="send" i],
+        button[aria-label*="Send" i],
+        #composer-background button[data-testid*="send" i],
+        div[class*="rounded"]:has(#prompt-textarea) button[data-testid*="send" i] {
+          background: ${primary} !important;
+          background-color: ${primary} !important;
+          color: #FFFFFF !important;
+          border: none !important;
+          border-radius: 50% !important;
+          width: 34px !important;
+          height: 34px !important;
+          min-width: 34px !important;
+          display: inline-flex !important;
+          align-items: center !important;
+          justify-content: center !important;
+          box-shadow: 0 0 16px ${sidebarHover} !important;
+        }
+
+        button[data-testid*="send" i]:hover,
+        button[aria-label*="Send" i]:hover {
+          filter: brightness(1.15) !important;
+          box-shadow: 0 0 22px ${primary} !important;
+        }
+
+        button[data-testid*="send" i]:disabled,
+        button[aria-label*="Send" i]:disabled {
+          background: rgba(255, 255, 255, 0.12) !important;
+          background-color: rgba(255, 255, 255, 0.12) !important;
+          color: rgba(255, 255, 255, 0.35) !important;
+          box-shadow: none !important;
+          opacity: 0.5 !important;
         }
 
         /* User Message Bubble - High Quality Glass Capsule */
@@ -748,8 +918,8 @@
         button[aria-label*="Share"],
         button[data-testid*="share"],
         div[class*="draggable"] button,
-        button[class*="bg-token-main-surface-primary"]:not(form *):not(nav *),
-        button[class*="bg-white"]:not(form *):not(#promptcanvas-root *):not(nav *) {
+        button[class*="bg-token-main-surface-primary"]:not(#composer-background *):not(div:has(#prompt-textarea) *):not(form *):not(nav *),
+        button[class*="bg-white"]:not(#composer-background *):not(div:has(#prompt-textarea) *):not(form *):not(#promptcanvas-root *):not(nav *) {
           background: rgba(18, 15, 28, 0.75) !important;
           border: 1px solid ${border} !important;
           border-radius: 9999px !important;
@@ -791,8 +961,8 @@
         button:has(svg [d*="M12 4v16"]),
         button:has(svg path[d*="m19 14"]),
         button:has(svg [d*="M19 14l-7 7m0 0l-7-7"]),
-        button[class*="rounded-full"][class*="bottom-"]:not(form *),
-        button[class*="rounded-full"]:has(svg):not(form *):not(nav *):not(header *) {
+        button[class*="rounded-full"][class*="bottom-"]:not(#composer-background *):not(div:has(#prompt-textarea) *):not(form *),
+        button[class*="rounded-full"]:has(svg):not(#composer-background *):not(div:has(#prompt-textarea) *):not(form *):not(nav *):not(header *) {
           background: rgba(18, 15, 28, 0.85) !important;
           border: 1px solid ${border} !important;
           color: #F8FAFC !important;
