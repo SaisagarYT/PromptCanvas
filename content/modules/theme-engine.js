@@ -201,10 +201,10 @@
           --token-surface-tertiary: ${rootBg} !important;
           --composer-surface: ${rootBg} !important;
           --composer-background: ${rootBg} !important;
-          --sidebar-surface-primary: ${isWp ? 'rgba(15, 14, 23, 0.84)' : c.sidebar} !important;
+          --sidebar-surface-primary: ${isWp ? 'transparent' : c.sidebar} !important;
           --sidebar-surface-secondary: ${isWp ? 'rgba(255, 255, 255, 0.06)' : c.sidebarHover} !important;
           --sidebar-surface-tertiary: ${isWp ? 'rgba(255, 255, 255, 0.1)' : c.sidebarHover} !important;
-          --token-sidebar-surface-primary: ${isWp ? 'rgba(15, 14, 23, 0.84)' : c.sidebar} !important;
+          --token-sidebar-surface-primary: ${isWp ? 'transparent' : c.sidebar} !important;
           --token-sidebar-surface-secondary: ${isWp ? 'rgba(255, 255, 255, 0.06)' : c.sidebarHover} !important;
           --token-sidebar-surface-tertiary: ${isWp ? 'rgba(255, 255, 255, 0.1)' : c.sidebarHover} !important;
         }
@@ -254,28 +254,51 @@
           color: ${c.text} !important;
         }
 
-        /* Left Navigation Sidebar Glassmorphism Container - Deep Moody Slate Frosted Glass */
-        nav:not(#promptcanvas-root *),
-        aside,
-        [data-testid*="sidebar"] {
-          background: ${isWp ? 'rgba(14, 13, 22, 0.88)' : c.sidebar} !important;
-          backdrop-filter: blur(28px) saturate(150%) !important;
-          -webkit-backdrop-filter: blur(28px) saturate(150%) !important;
+        /* Left Navigation Sidebar Glassmorphism Container - Atmospheric Obsidian Frosted Glass */
+        aside:not(#promptcanvas-root *),
+        div.flex-shrink-0:has(nav),
+        div.flex-shrink-0:has(aside),
+        div[class*="sidebar"]:has(nav),
+        nav:not(#promptcanvas-root *):not(aside nav):not(div.flex-shrink-0 nav) {
+          background: ${isWp ? 'rgba(16, 13, 26, 0.58)' : c.sidebar} !important;
+          background-color: ${isWp ? 'rgba(16, 13, 26, 0.58)' : c.sidebar} !important;
+          backdrop-filter: blur(28px) saturate(160%) !important;
+          -webkit-backdrop-filter: blur(28px) saturate(160%) !important;
           border-right: 1px solid ${border} !important;
-          box-shadow: 4px 0 28px rgba(0, 0, 0, 0.5) !important;
+          box-shadow: 4px 0 32px rgba(0, 0, 0, 0.45) !important;
+        }
+
+        /* Prevent double opacity or double borders if nav is nested inside aside or flex-shrink-0 */
+        aside nav,
+        div.flex-shrink-0 nav,
+        [data-testid*="sidebar"] nav,
+        div[class*="sidebar"] nav {
+          background: transparent !important;
+          background-color: transparent !important;
+          backdrop-filter: none !important;
+          -webkit-backdrop-filter: none !important;
+          border-right: none !important;
+          box-shadow: none !important;
         }
 
         /* Outer wrappers and all inner nested wrappers inside the sidebar must be transparent to prevent double opacity */
-        div.flex-shrink-0:has(nav),
         div[class*="bg-token-sidebar-surface-primary"],
+        div[class*="bg-token-sidebar-surface-secondary"],
+        div[class*="bg-token-sidebar-surface-tertiary"],
         nav:not(#promptcanvas-root *) > div,
+        aside:not(#promptcanvas-root *) > div,
         nav:not(#promptcanvas-root *) div[class*="overflow-y-auto"],
         nav:not(#promptcanvas-root *) div[class*="overflow-x-hidden"],
+        nav:not(#promptcanvas-root *) div[class*="flex-1"],
+        nav:not(#promptcanvas-root *) div[class*="h-full"],
         nav:not(#promptcanvas-root *) ol,
         nav:not(#promptcanvas-root *) ul,
         nav:not(#promptcanvas-root *) div[class*="bg-[#171717]"],
         nav:not(#promptcanvas-root *) div[class*="bg-[#212121]"],
-        nav:not(#promptcanvas-root *) div[class*="bg-token-sidebar-surface-secondary"],
+        nav:not(#promptcanvas-root *) div[class*="bg-[#2f2f2f]"],
+        nav:not(#promptcanvas-root *) div[class*="bg-black"],
+        nav:not(#promptcanvas-root *) div[class*="bg-white"],
+        nav:not(#promptcanvas-root *) div[class*="bg-gray-"],
         nav:not(#promptcanvas-root *) div[class*="sticky"] {
           background: transparent !important;
           background-color: transparent !important;
@@ -844,62 +867,96 @@
         }
 
         /* Top Sidebar Header & Toggle */
+        div[class*="from-token-sidebar-surface-primary"],
+        div[class*="from-token-sidebar"],
+        div[class*="to-token-sidebar"],
+        div[class*="via-token-sidebar"],
+        nav div[class*="from-"],
+        nav div[class*="to-"],
+        nav div[class*="via-"],
+        nav div[class*="bg-gradient"],
+        nav [class*="gradient"],
+        aside div[class*="from-"],
+        aside div[class*="to-"],
+        aside div[class*="via-"],
+        aside div[class*="bg-gradient"],
+        aside [class*="gradient"],
         nav [class*="sticky top-0"],
         aside [class*="sticky top-0"],
         nav header, aside header,
         nav div[class*="bg-white"],
+        aside div[class*="bg-white"],
         nav button[class*="bg-white"],
+        aside button[class*="bg-white"],
         div[class*="bg-token-sidebar-surface-primary"] [class*="sticky top-0"] {
           background: transparent !important;
           background-color: transparent !important;
+          background-image: none !important;
+          box-shadow: none !important;
           border: none !important;
         }
 
         nav button[aria-label*="sidebar" i],
         nav button[aria-label*="Close sidebar" i],
-        nav button[aria-label*="Open sidebar" i] {
+        nav button[aria-label*="Open sidebar" i],
+        nav button[aria-label*="Search" i],
+        nav a[aria-label*="Search" i] {
           background: rgba(255, 255, 255, 0.05) !important;
           border: 1px solid rgba(255, 255, 255, 0.08) !important;
           border-radius: 7px !important;
           color: #CBD5E1 !important;
-          transition: all 0.15s ease !important;
+          transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1) !important;
         }
         nav button[aria-label*="sidebar" i]:hover,
-        nav button[aria-label*="Close sidebar" i]:hover {
+        nav button[aria-label*="Close sidebar" i]:hover,
+        nav button[aria-label*="Search" i]:hover,
+        nav a[aria-label*="Search" i]:hover {
           background: rgba(255, 255, 255, 0.1) !important;
           color: ${primary} !important;
           border-color: ${border} !important;
+          transform: scale(1.05) !important;
         }
 
         /* "New chat" Quick Action Pill */
         nav a[href="/"],
         nav button[data-testid*="new-chat"],
-        nav a:first-of-type {
-          background: rgba(255, 255, 255, 0.06) !important;
-          border: 1px solid rgba(255, 255, 255, 0.1) !important;
-          border-radius: 8px !important;
+        nav a:first-of-type:not([href*="/c/"]) {
+          background: rgba(255, 255, 255, 0.07) !important;
+          border: 1px solid rgba(255, 255, 255, 0.12) !important;
+          border-radius: 9px !important;
           color: #F8FAFC !important;
-          font-weight: 500 !important;
+          font-weight: 550 !important;
           font-size: 13.5px !important;
           padding: 8px 12px !important;
-          margin: 4px 2px 8px 2px !important;
+          margin: 6px 2px 10px 2px !important;
           display: flex !important;
           align-items: center !important;
-          gap: 8px !important;
-          box-shadow: none !important;
-          transition: all 0.18s ease !important;
+          gap: 10px !important;
+          box-shadow: 0 2px 10px rgba(0, 0, 0, 0.25) !important;
+          backdrop-filter: blur(12px) !important;
+          -webkit-backdrop-filter: blur(12px) !important;
+          transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
         }
 
         nav a[href="/"]:hover,
         nav button[data-testid*="new-chat"]:hover,
-        nav a:first-of-type:hover {
+        nav a:first-of-type:not([href*="/c/"]):hover {
           background: ${sidebarHover} !important;
-          border-color: ${border} !important;
-          color: ${primary} !important;
+          border-color: ${primary} !important;
+          color: #FFFFFF !important;
+          box-shadow: 0 0 16px ${sidebarHover}, 0 4px 14px rgba(0, 0, 0, 0.35) !important;
+          transform: translateY(-1px) !important;
         }
         nav a[href="/"] svg,
-        nav a:first-of-type svg {
+        nav button[data-testid*="new-chat"] svg,
+        nav a:first-of-type:not([href*="/c/"]) svg {
           color: ${primary} !important;
+          transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
+        }
+        nav a[href="/"]:hover svg,
+        nav button[data-testid*="new-chat"]:hover svg,
+        nav a:first-of-type:not([href*="/c/"]):hover svg {
+          transform: rotate(15deg) scale(1.15) !important;
         }
 
         /* Sidebar Top Navigation Items (Scheduled, Library, Plugins, Codex, Explore) */
@@ -929,7 +986,7 @@
         /* Section Headers ("Pinned", "Today", "Previous 7 Days") */
         nav h2, nav h3,
         nav [class*="text-token-text-tertiary"],
-        nav div[class*="text-xs"][class*="font-semibold"] {
+        nav div[class*="text-xs"][class*="font-semibold"]:not(button *) {
           font-size: 11px !important;
           font-weight: 600 !important;
           text-transform: uppercase !important;
@@ -939,7 +996,121 @@
           background: transparent !important;
         }
 
-        /* Chat History Rows - Professional, Flush, Calm (NO chunky orange pills) */
+        /* ==========================================================================
+           Sidebar Projects Section - Frosted Folder Structure & Action Chips
+           ========================================================================== */
+
+        /* Projects Section Header & Title */
+        nav div:has(> button[aria-label*="project" i]),
+        nav div:has(> button[aria-label*="Project" i]),
+        nav div:has(> [class*="font-semibold"]:not(button *)) {
+          background: transparent !important;
+        }
+
+        /* Projects Action Buttons: [...] options and [+] add project */
+        nav div:has(> [class*="font-semibold"]) button,
+        nav div:has(> h2) button,
+        nav div:has(> h3) button,
+        nav button[aria-label*="project" i],
+        nav button[aria-label*="Project" i],
+        nav button[aria-label*="Add project" i],
+        nav button[aria-label*="New project" i] {
+          background: rgba(255, 255, 255, 0.06) !important;
+          border: 1px solid rgba(255, 255, 255, 0.1) !important;
+          border-radius: 7px !important;
+          color: #CBD5E1 !important;
+          padding: 3px 6px !important;
+          box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2) !important;
+          transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1) !important;
+        }
+
+        nav div:has(> [class*="font-semibold"]) button:hover,
+        nav div:has(> h2) button:hover,
+        nav div:has(> h3) button:hover,
+        nav button[aria-label*="project" i]:hover,
+        nav button[aria-label*="Project" i]:hover,
+        nav button[aria-label*="Add project" i]:hover,
+        nav button[aria-label*="New project" i]:hover {
+          background: ${sidebarHover} !important;
+          border-color: ${border} !important;
+          color: #FFFFFF !important;
+          box-shadow: 0 0 10px ${sidebarHover} !important;
+          transform: scale(1.06) !important;
+        }
+
+        nav div:has(> [class*="font-semibold"]) button svg,
+        nav button[aria-label*="project" i] svg,
+        nav button[aria-label*="Project" i] svg {
+          color: #CBD5E1 !important;
+          transition: color 0.15s ease, transform 0.2s ease !important;
+        }
+
+        nav div:has(> [class*="font-semibold"]) button:hover svg,
+        nav button[aria-label*="project" i]:hover svg,
+        nav button[aria-label*="Project" i]:hover svg {
+          color: ${primary} !important;
+          transform: rotate(90deg) scale(1.1) !important;
+        }
+
+        /* Project Folder Rows (Darkcry, ResumeMaker, braintumer detection, Agentic Web Browser) */
+        nav div[class*="group"]:has(svg path[d*="M2 6"]),
+        nav div[class*="group"]:has(svg path[d*="M3 7"]),
+        nav div[class*="group"]:has(svg path[d*="M4 4"]),
+        nav button:has(svg path[d*="M2 6"]),
+        nav button:has(svg path[d*="M3 7"]),
+        nav a:has(svg path[d*="M2 6"]),
+        nav a:has(svg path[d*="M3 7"]) {
+          background: transparent !important;
+          border-radius: 8px !important;
+          padding: 6px 10px !important;
+          margin: 1px 0 !important;
+          color: #F1F5F9 !important;
+          font-weight: 550 !important;
+          font-size: 13.5px !important;
+          transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1) !important;
+        }
+
+        nav div[class*="group"]:has(svg path[d*="M2 6"]):hover,
+        nav div[class*="group"]:has(svg path[d*="M3 7"]):hover,
+        nav button:has(svg path[d*="M2 6"]):hover,
+        nav button:has(svg path[d*="M3 7"]):hover,
+        nav a:has(svg path[d*="M2 6"]):hover,
+        nav a:has(svg path[d*="M3 7"]):hover {
+          background: rgba(255, 255, 255, 0.07) !important;
+          color: #FFFFFF !important;
+          box-shadow: 0 0 12px rgba(255, 255, 255, 0.04) !important;
+          transform: translateX(2px) !important;
+        }
+
+        /* Folder Icon Tint */
+        nav svg path[d*="M2 6"],
+        nav svg path[d*="M3 7"],
+        nav svg path[d*="M4 4"],
+        nav svg[class*="folder"] {
+          color: ${primary} !important;
+        }
+
+        /* Project Sub-items (DarkCry Settings Guide, Choose Case Details, etc.) */
+        nav div[class*="group"]:has(svg path[d*="M2 6"]) ~ div a,
+        nav div[class*="group"]:has(svg path[d*="M3 7"]) ~ div a,
+        nav div[class*="pl-"],
+        nav div[class*="ml-"] a,
+        nav div[class*="pl-"] a {
+          color: #94A3B8 !important;
+          font-size: 13px !important;
+          border-radius: 7px !important;
+          padding: 5px 10px !important;
+          transition: all 0.15s ease !important;
+        }
+
+        nav div[class*="pl-"] a:hover,
+        nav div[class*="ml-"] a:hover {
+          background: rgba(255, 255, 255, 0.06) !important;
+          color: #FFFFFF !important;
+          padding-left: 14px !important;
+        }
+
+        /* Chat History Rows - Professional, Flush, Calm */
         nav ol li,
         nav ul li,
         nav ol li div[class*="group"],
@@ -961,7 +1132,9 @@
         nav ul a,
         nav li a,
         nav ol li div[class*="grow"],
-        nav ul li div[class*="grow"] {
+        nav ul li div[class*="grow"],
+        nav ol li span,
+        nav ul li span {
           color: #CBD5E1 !important;
           font-size: 13.5px !important;
           font-weight: 400 !important;
@@ -981,8 +1154,16 @@
         }
 
         nav ol li:hover div[class*="grow"],
-        nav ul li:hover div[class*="grow"] {
+        nav ul li:hover div[class*="grow"],
+        nav ol li:hover span,
+        nav ul li:hover span {
           color: #FFFFFF !important;
+        }
+
+        nav ol li:hover svg,
+        nav ul li:hover svg,
+        nav a[href*="/c/"]:hover svg {
+          color: ${primary} !important;
         }
 
         /* Active / Currently Open Chat - Linear Style Indicator & Glowing State */
@@ -1000,6 +1181,7 @@
           border: 1px solid ${border} !important;
           border-left: 3px solid ${primary} !important;
           border-radius: 8px !important;
+          box-shadow: 0 0 16px ${sidebarHover} !important;
         }
 
         nav a[aria-current="page"],
@@ -1039,56 +1221,88 @@
         nav ol li button:hover {
           background: ${sidebarHover} !important;
           color: ${primary} !important;
+          transform: scale(1.08) !important;
         }
 
         /* Bottom User Profile Card ("Saisagar") */
         nav div[class*="sticky bottom-0"],
-        aside div[class*="sticky bottom-0"] {
+        aside div[class*="sticky bottom-0"],
+        nav > div:last-child:has([data-testid*="user-menu"]),
+        nav > div:last-child:has([data-testid*="profile"]) {
           background: transparent !important;
+          background-color: transparent !important;
           border-top: 1px solid rgba(255, 255, 255, 0.08) !important;
-          padding: 8px 6px 10px 6px !important;
+          padding: 10px 6px 12px 6px !important;
           margin-top: 8px !important;
         }
 
         nav div[class*="sticky bottom-0"] button,
         nav [data-testid*="user-menu"],
-        nav [data-testid*="profile"] {
-          background: rgba(255, 255, 255, 0.04) !important;
-          border: 1px solid rgba(255, 255, 255, 0.08) !important;
-          border-radius: 10px !important;
-          padding: 7px 10px !important;
+        nav [data-testid*="profile"],
+        nav div[class*="sticky bottom-0"] [role="button"],
+        nav > div:last-child [role="button"] {
+          background: rgba(255, 255, 255, 0.05) !important;
+          border: 1px solid rgba(255, 255, 255, 0.1) !important;
+          border-radius: 12px !important;
+          padding: 8px 12px !important;
           width: 100% !important;
-          transition: all 0.18s ease !important;
+          box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25) !important;
+          backdrop-filter: blur(14px) !important;
+          -webkit-backdrop-filter: blur(14px) !important;
+          transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1) !important;
         }
 
         nav div[class*="sticky bottom-0"] button:hover,
         nav [data-testid*="user-menu"]:hover,
-        nav [data-testid*="profile"]:hover {
-          background: rgba(255, 255, 255, 0.08) !important;
+        nav [data-testid*="profile"]:hover,
+        nav div[class*="sticky bottom-0"] [role="button"]:hover,
+        nav > div:last-child [role="button"]:hover {
+          background: rgba(255, 255, 255, 0.09) !important;
           border-color: ${border} !important;
+          box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4), 0 0 14px ${sidebarHover} !important;
+          transform: translateY(-1px) !important;
         }
 
-        /* User Avatar Circle */
+        /* User Avatar Circle ("SA") */
         nav div[class*="sticky bottom-0"] button div[class*="rounded-full"],
-        nav [data-testid*="user-menu"] div[class*="rounded-full"] {
+        nav [data-testid*="user-menu"] div[class*="rounded-full"],
+        nav [data-testid*="profile"] div[class*="rounded-full"],
+        nav div[class*="sticky bottom-0"] button span[class*="rounded-full"],
+        nav div[class*="sticky bottom-0"] img[class*="rounded-full"],
+        nav [data-testid*="user-menu"] img[class*="rounded-full"],
+        nav [data-testid*="profile"] img[class*="rounded-full"] {
           background: linear-gradient(135deg, ${primary}, ${secondary}) !important;
           color: #FFFFFF !important;
           font-weight: 700 !important;
-          box-shadow: 0 0 10px ${sidebarHover} !important;
+          font-size: 13px !important;
+          border: 1.5px solid rgba(255, 255, 255, 0.25) !important;
+          box-shadow: 0 0 12px ${sidebarHover} !important;
         }
 
-        /* User Name & Subscription */
+        /* User Name ("Saisagar") */
         nav div[class*="sticky bottom-0"] button [class*="font-semibold"],
-        nav div[class*="sticky bottom-0"] button div[class*="text-token-text-primary"] {
+        nav div[class*="sticky bottom-0"] button div[class*="text-token-text-primary"],
+        nav [data-testid*="user-menu"] [class*="font-semibold"],
+        nav [data-testid*="user-menu"] div[class*="text-token-text-primary"],
+        nav [data-testid*="profile"] [class*="font-semibold"],
+        nav [data-testid*="profile"] div[class*="text-token-text-primary"] {
           color: #F8FAFC !important;
           font-size: 13.5px !important;
+          font-weight: 600 !important;
+          letter-spacing: 0.01em !important;
         }
 
+        /* Subtitle / Plan ("Go") */
         nav div[class*="sticky bottom-0"] button [class*="text-xs"],
-        nav div[class*="sticky bottom-0"] button div[class*="text-token-text-tertiary"] {
-          color: ${primary} !important;
-          font-size: 11px !important;
+        nav div[class*="sticky bottom-0"] button div[class*="text-token-text-tertiary"],
+        nav [data-testid*="user-menu"] [class*="text-xs"],
+        nav [data-testid*="user-menu"] div[class*="text-token-text-tertiary"],
+        nav [data-testid*="profile"] [class*="text-xs"],
+        nav [data-testid*="profile"] div[class*="text-token-text-tertiary"] {
+          color: ${secondary} !important;
+          font-size: 11.5px !important;
           font-weight: 600 !important;
+          letter-spacing: 0.04em !important;
         }
 
         /* Sidebar Custom Scrollbar */
