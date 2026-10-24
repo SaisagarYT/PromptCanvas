@@ -276,33 +276,70 @@
           p = p.parentElement;
         }
 
-        // Ensure inner container divs (except buttons) don't paint solid white
-        const innerDivs = capsule.querySelectorAll('div');
+        // Ensure ALL inner container divs inside capsule don't paint solid white
+        const innerDivs = capsule.querySelectorAll('div, span');
         innerDivs.forEach((d) => {
-          if (d !== capsule && !d.querySelector('button') && !d.hasAttribute('data-pc-composer')) {
-            const bg = window.getComputedStyle ? window.getComputedStyle(d).backgroundColor : '';
-            if (bg && bg !== 'rgba(0, 0, 0, 0)' && bg !== 'transparent') {
-              d.style.setProperty('background', 'transparent', 'important');
-              d.style.setProperty('background-color', 'transparent', 'important');
-            }
+          if (d !== capsule && !d.matches('button') && !d.hasAttribute('data-pc-composer')) {
+            d.style.setProperty('background', 'transparent', 'important');
+            d.style.setProperty('background-color', 'transparent', 'important');
+            d.style.setProperty('box-shadow', 'none', 'important');
           }
         });
 
-        // Tag and enhance all buttons inside capsule
-        const buttons = capsule.querySelectorAll('button');
+        // Tag and directly style all buttons and interactive controls inside capsule and form
+        const buttons = capsule.querySelectorAll('button, [role="button"]');
         buttons.forEach((btn, idx) => {
           const aria = (btn.getAttribute('aria-label') || '').toLowerCase();
           const testid = (btn.getAttribute('data-testid') || '').toLowerCase();
           const txt = (btn.innerText || '').toLowerCase();
 
+          // Reset parent wrappers between button and capsule to transparent
+          let par = btn.parentElement;
+          while (par && par !== capsule) {
+            par.style.setProperty('background', 'transparent', 'important');
+            par.style.setProperty('background-color', 'transparent', 'important');
+            par.style.setProperty('box-shadow', 'none', 'important');
+            par = par.parentElement;
+          }
+
+          // Clear any background on internal child nodes inside the button
+          btn.querySelectorAll('*').forEach((el) => {
+            el.style.setProperty('background', 'transparent', 'important');
+            el.style.setProperty('background-color', 'transparent', 'important');
+            el.style.setProperty('color', 'inherit', 'important');
+          });
+
+          // Style according to button type
           if (aria.includes('think') || testid.includes('think') || txt.includes('think') || aria.includes('reason')) {
             btn.setAttribute('data-pc-btn', 'think');
+            btn.style.setProperty('background', 'rgba(255, 255, 255, 0.09)', 'important');
+            btn.style.setProperty('background-color', 'rgba(255, 255, 255, 0.09)', 'important');
+            btn.style.setProperty('border', '1px solid rgba(255, 255, 255, 0.18)', 'important');
+            btn.style.setProperty('border-radius', '9999px', 'important');
+            btn.style.setProperty('color', '#F8FAFC', 'important');
+            btn.style.setProperty('box-shadow', '0 2px 8px rgba(0, 0, 0, 0.25)', 'important');
           } else if (aria.includes('send') || testid.includes('send')) {
             btn.setAttribute('data-pc-btn', 'send');
-          } else if (aria.includes('voice') || aria.includes('dictat') || testid.includes('voice') || aria.includes('microphone') || aria.includes('record')) {
-            btn.setAttribute('data-pc-btn', 'voice');
+            btn.style.setProperty('border-radius', '50%', 'important');
+            btn.style.setProperty('border', 'none', 'important');
+            btn.style.setProperty('color', '#FFFFFF', 'important');
           } else if (idx === 0 || aria.includes('attach') || aria.includes('upload') || aria.includes('add') || aria.includes('file') || aria.includes('tool') || aria.includes('more') || testid.includes('attach')) {
             btn.setAttribute('data-pc-btn', 'attach');
+            btn.style.setProperty('background', 'rgba(255, 255, 255, 0.08)', 'important');
+            btn.style.setProperty('background-color', 'rgba(255, 255, 255, 0.08)', 'important');
+            btn.style.setProperty('border', '1px solid rgba(255, 255, 255, 0.15)', 'important');
+            btn.style.setProperty('border-radius', '50%', 'important');
+            btn.style.setProperty('color', '#F8FAFC', 'important');
+            btn.style.setProperty('box-shadow', '0 2px 8px rgba(0, 0, 0, 0.25)', 'important');
+          } else {
+            // Voice, dictation, microphone, or any other trailing right-side action buttons
+            btn.setAttribute('data-pc-btn', 'voice');
+            btn.style.setProperty('background', 'rgba(255, 255, 255, 0.06)', 'important');
+            btn.style.setProperty('background-color', 'rgba(255, 255, 255, 0.06)', 'important');
+            btn.style.setProperty('border', '1px solid rgba(255, 255, 255, 0.12)', 'important');
+            btn.style.setProperty('border-radius', '50%', 'important');
+            btn.style.setProperty('color', '#CBD5E1', 'important');
+            btn.style.setProperty('box-shadow', '0 2px 8px rgba(0, 0, 0, 0.2)', 'important');
           }
         });
       }

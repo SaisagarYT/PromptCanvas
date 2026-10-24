@@ -467,6 +467,28 @@
         }
 
         /* 1. "Think" / Reasoning Pill Button */
+        /* General fallback: ALL buttons inside the composer capsule must have dark glass */
+        [data-pc-composer="true"] button,
+        [data-pc-composer="true"] [role="button"],
+        .pc-composer-capsule button,
+        .pc-composer-capsule [role="button"],
+        form:has(#prompt-textarea) button,
+        form:has(#prompt-textarea) [role="button"],
+        form:has(#prompt-textarea) button[class*="bg-white"],
+        form:has(#prompt-textarea) button[class*="bg-token-"],
+        [data-pc-composer="true"] button[class*="bg-white"],
+        [data-pc-composer="true"] button[class*="bg-token-"],
+        .pc-composer-capsule button[class*="bg-white"],
+        .pc-composer-capsule button[class*="bg-token-"] {
+          background: rgba(255, 255, 255, 0.07) !important;
+          background-color: rgba(255, 255, 255, 0.07) !important;
+          border: 1px solid rgba(255, 255, 255, 0.14) !important;
+          color: #F8FAFC !important;
+          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25) !important;
+          transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
+        }
+
+        /* 1. "Think" / Reasoning Pill Button */
         [data-pc-btn="think"],
         button[aria-label*="Think" i],
         button[aria-label*="reason" i],
@@ -474,7 +496,9 @@
         button[data-testid*="reason" i],
         #composer-background button:has(span),
         div[class*="rounded"]:has(#prompt-textarea) button:has(span),
-        .pc-composer-capsule button:has(span) {
+        .pc-composer-capsule button:has(span),
+        [data-pc-composer="true"] button:has(span),
+        form:has(#prompt-textarea) button:has(span) {
           background: rgba(255, 255, 255, 0.09) !important;
           background-color: rgba(255, 255, 255, 0.09) !important;
           border: 1px solid ${border} !important;
@@ -579,7 +603,7 @@
           transform: scale(1.08) rotate(90deg) !important;
         }
 
-        /* 3. Dictate / Microphone & Voice Buttons */
+        /* 3. Dictate / Microphone, Voice, and all other trailing action buttons */
         [data-pc-btn="voice"],
         button[aria-label*="voice" i],
         button[aria-label*="dictat" i],
@@ -587,12 +611,12 @@
         button[aria-label*="microphone" i],
         button[data-testid*="voice" i],
         button[data-testid*="dictate" i],
-        [data-pc-composer="true"] button:not([data-pc-btn="attach"]):not([data-pc-btn="think"]):not([data-pc-btn="send"]):not(:first-of-type),
-        .pc-composer-capsule button:not([data-pc-btn="attach"]):not([data-pc-btn="think"]):not([data-pc-btn="send"]):not(:first-of-type),
-        form:has(#prompt-textarea) button:not([data-pc-btn="attach"]):not([data-pc-btn="think"]):not([data-pc-btn="send"]):not(:first-of-type) {
-          background: rgba(255, 255, 255, 0.05) !important;
-          background-color: rgba(255, 255, 255, 0.05) !important;
-          border: 1px solid rgba(255, 255, 255, 0.08) !important;
+        [data-pc-composer="true"] button:not(:first-of-type):not([data-pc-btn="think"]):not([data-pc-btn="send"]),
+        .pc-composer-capsule button:not(:first-of-type):not([data-pc-btn="think"]):not([data-pc-btn="send"]),
+        form:has(#prompt-textarea) button:not(:first-of-type):not([data-pc-btn="think"]):not([data-pc-btn="send"]) {
+          background: rgba(255, 255, 255, 0.07) !important;
+          background-color: rgba(255, 255, 255, 0.07) !important;
+          border: 1px solid rgba(255, 255, 255, 0.14) !important;
           border-radius: 50% !important;
           color: #CBD5E1 !important;
           width: 36px !important;
@@ -611,7 +635,10 @@
         button[aria-label*="record" i]:hover,
         button[aria-label*="microphone" i]:hover,
         button[data-testid*="voice" i]:hover,
-        button[data-testid*="dictate" i]:hover {
+        button[data-testid*="dictate" i]:hover,
+        [data-pc-composer="true"] button:not(:first-of-type):not([data-pc-btn="think"]):not([data-pc-btn="send"]):hover,
+        .pc-composer-capsule button:not(:first-of-type):not([data-pc-btn="think"]):not([data-pc-btn="send"]):hover,
+        form:has(#prompt-textarea) button:not(:first-of-type):not([data-pc-btn="think"]):not([data-pc-btn="send"]):hover {
           background: ${sidebarHover} !important;
           background-color: ${sidebarHover} !important;
           border-color: ${border} !important;
@@ -651,12 +678,19 @@
           transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
         }
 
-        /* Ensure all SVGs inside composer buttons inherit crisp text colors */
+        /* Ensure all SVGs and text inside composer buttons inherit crisp colors */
+        [data-pc-composer="true"] button *,
+        .pc-composer-capsule button *,
+        form:has(#prompt-textarea) button * {
+          background: transparent !important;
+          background-color: transparent !important;
+        }
+
         [data-pc-composer="true"] button svg,
         .pc-composer-capsule button svg,
         form:has(#prompt-textarea) button svg,
         [data-pc-btn] svg {
-          color: currentColor !important;
+          color: inherit !important;
           fill: currentColor !important;
         }
 
