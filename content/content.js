@@ -196,6 +196,7 @@
       }
 
       applyTheme();
+      observeComposer();
 
       // Listen for Chrome storage changes
       try {
@@ -210,6 +211,65 @@
       } catch (e) {}
 
       setupKeyboardShortcuts();
+    } catch (e) {}
+  }
+
+  function observeComposer() {
+    function tagComposer() {
+      if (state.settings?.themeEnabled === false) return;
+
+      const input = document.querySelector('#prompt-textarea') ||
+                    document.querySelector('.ProseMirror') ||
+                    document.querySelector('textarea[placeholder]') ||
+                    document.querySelector('div[contenteditable="true"]:not(#promptcanvas-root *)');
+      if (!input) return;
+
+      let pill = input.closest('#composer-background') ||
+                 input.closest('[data-testid*="composer"]') ||
+                 input.closest('form > div') ||
+                 input.closest('form');
+
+      if (!pill) {
+        let parent = input.parentElement;
+        while (parent && parent !== document.body && parent !== document.documentElement) {
+          const cls = parent.className || '';
+          if (typeof cls === 'string' && (cls.includes('rounded') || cls.includes('composer'))) {
+            pill = parent;
+            break;
+          }
+          parent = parent.parentElement;
+        }
+      }
+
+      if (pill) {
+        if (!pill.hasAttribute('data-pc-composer')) {
+          pill.setAttribute('data-pc-composer', 'true');
+          pill.classList.add('pc-composer-capsule');
+        }
+
+        const buttons = pill.querySelectorAll('button');
+        buttons.forEach((btn) => {
+          const aria = (btn.getAttribute('aria-label') || '').toLowerCase();
+          const testid = (btn.getAttribute('data-testid') || '').toLowerCase();
+          const txt = (btn.innerText || '').toLowerCase();
+
+          if (aria.includes('think') || testid.includes('think') || txt.includes('think')) {
+            btn.setAttribute('data-pc-btn', 'think');
+          } else if (aria.includes('attach') || aria.includes('upload') || testid.includes('attach') || aria.includes('add')) {
+            btn.setAttribute('data-pc-btn', 'attach');
+          } else if (aria.includes('voice') || aria.includes('dictat') || testid.includes('voice') || aria.includes('microphone')) {
+            btn.setAttribute('data-pc-btn', 'voice');
+          } else if (aria.includes('send') || testid.includes('send')) {
+            btn.setAttribute('data-pc-btn', 'send');
+          }
+        });
+      }
+    }
+
+    tagComposer();
+    try {
+      const observer = new MutationObserver(() => tagComposer());
+      observer.observe(document.body, { childList: true, subtree: true });
     } catch (e) {}
   }
 
