@@ -90,11 +90,9 @@
       </svg>`,
 
     variable: `
-      <svg viewBox="0 0 24 24" width="10" height="10" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M4 7c0-2 1-3 3-3h1"/>
-        <path d="M4 17c0 2 1 3 3 3h1"/>
-        <path d="M20 7c0-2-1-3-3-3h-1"/>
-        <path d="M20 17c0 2-1 3-3 3h-1"/>
+      <svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M8 3H6a2 2 0 0 0-2 2v4a2 2 0 0 1-2 2 2 2 0 0 1 2 2v4a2 2 0 0 0 2 2h2"/>
+        <path d="M16 3h2a2 2 0 0 1 2 2v4a2 2 0 0 0 2 2 2 2 0 0 0-2 2v4a2 2 0 0 1-2 2h-2"/>
       </svg>`,
 
     copy: `

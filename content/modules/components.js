@@ -21,8 +21,9 @@
         /\[([^\]]+)\]/g,
         '<span class="pc-prompt-var-pill">[$1]</span>'
       );
-      const cat = p.category ? escapeHtml(p.category.trim()) : 'General';
-      const catKey = cat.toLowerCase();
+      const rawCat = p.category ? p.category.trim() : 'General';
+      const cat = escapeHtml(rawCat.charAt(0).toUpperCase() + rawCat.slice(1));
+      const catKey = rawCat.toLowerCase();
 
       return `
         <div class="pc-prompt-card" data-prompt-id="${p.id}">
@@ -56,8 +57,7 @@
 
           <div class="pc-card-footer">
             <span class="pc-card-hint">
-              ${root.PCIcons.enterHint}
-              <span>Click card to insert</span>
+              <span>Click to insert</span>
             </span>
             <button class="pc-card-insert-btn" data-action="insert" data-prompt-id="${p.id}" title="Insert into chat">
               <span>Insert</span>
@@ -69,34 +69,42 @@
 
     // Renders a category filter chip
     renderCategoryChip(cat, count, isActive) {
+      const rawCat = cat ? cat.trim() : 'General';
+      const catDisplay = rawCat.charAt(0).toUpperCase() + rawCat.slice(1);
+      const catKey = rawCat.toLowerCase();
       return `
         <button class="pc-cat-chip ${isActive ? 'pc-active' : ''}" data-cat="${escapeHtml(cat)}">
-          <span>${escapeHtml(cat)}</span>
+          <span class="pc-tag-dot pc-cat-dot pc-cat-dot-${catKey}"></span>
+          <span>${escapeHtml(catDisplay)}</span>
           <span class="pc-cat-count">${count || 0}</span>
         </button>`;
     },
 
-    // Renders a theme card with simulated mini chat bubble preview
+    // Renders a theme card with simulated mini chat bubble preview (collision-free)
     renderThemeCard(theme, isSelected) {
       const c = theme.colors;
       return `
         <div class="pc-theme-card ${isSelected ? 'pc-selected' : ''}" data-theme-id="${theme.id}">
-          <div class="pc-theme-check">ACTIVE</div>
-          <div class="pc-theme-mini-chat" style="background:${c.background}; border-color:${c.border};">
+          <div class="pc-theme-card-header">
+            <div class="pc-theme-header-left">
+              <span class="pc-theme-name">${escapeHtml(theme.name)}</span>
+              <div class="pc-theme-swatches">
+                <span class="pc-theme-swatch" style="background:${c.background};" title="Canvas"></span>
+                <span class="pc-theme-swatch" style="background:${c.primary};" title="Primary"></span>
+                <span class="pc-theme-swatch" style="background:${c.secondary};" title="Secondary"></span>
+              </div>
+            </div>
+            ${isSelected ? `<span class="pc-theme-active-pill">ACTIVE ✓</span>` : ''}
+          </div>
+          <div class="pc-theme-mini-chat" style="background:${c.background}; border: 1px solid ${c.border};">
             <div class="pc-mini-bubble-user" style="background:${c.userBubble}; color:${c.userBubbleText || '#FFF'};">
               User Prompt
             </div>
-            <div class="pc-mini-bubble-ai" style="color:${c.text};">
+            <div class="pc-mini-bubble-ai" style="background:${c.aiBubble || 'rgba(0,0,0,0.04)'}; color:${c.text}; border: 1px solid ${c.border};">
               AI Response Preview
             </div>
           </div>
-          <div class="pc-theme-swatches">
-            <div class="pc-theme-swatch" style="background:${c.background};" title="Background"></div>
-            <div class="pc-theme-swatch" style="background:${c.primary};" title="Primary"></div>
-            <div class="pc-theme-swatch" style="background:${c.secondary};" title="Secondary"></div>
-          </div>
-          <div class="pc-theme-name">${theme.name}</div>
-          <div class="pc-theme-desc">${theme.description}</div>
+          <div class="pc-theme-desc">${escapeHtml(theme.description)}</div>
         </div>`;
     },
 
@@ -249,10 +257,28 @@
             </div>
 
             <div class="pc-section-label" style="margin-top:10px;">Keyboard Shortcuts</div>
-            <div class="pc-shortcuts-card">
-              <div class="pc-shortcut-row"><span class="pc-shortcut-label">Toggle Sidebar</span><kbd class="pc-kbd">Alt + P</kbd></div>
-              <div class="pc-shortcut-row"><span class="pc-shortcut-label">Close Sidebar / Modal</span><kbd class="pc-kbd">Esc</kbd></div>
-              <div class="pc-shortcut-row"><span class="pc-shortcut-label">Focus Prompt Search</span><kbd class="pc-kbd">/</kbd></div>
+            <div class="pc-settings-section">
+              <div class="pc-settings-item">
+                <div class="pc-settings-info">
+                  <div class="pc-settings-title">Toggle Sidebar</div>
+                  <div class="pc-settings-desc">Show or hide the PromptCanvas panel</div>
+                </div>
+                <kbd class="pc-kbd">Alt + P</kbd>
+              </div>
+              <div class="pc-settings-item">
+                <div class="pc-settings-info">
+                  <div class="pc-settings-title">Close Sidebar / Modal</div>
+                  <div class="pc-settings-desc">Dismiss active drawer or dialog</div>
+                </div>
+                <kbd class="pc-kbd">Esc</kbd>
+              </div>
+              <div class="pc-settings-item">
+                <div class="pc-settings-info">
+                  <div class="pc-settings-title">Focus Search</div>
+                  <div class="pc-settings-desc">Jump straight to prompt search</div>
+                </div>
+                <kbd class="pc-kbd">/</kbd>
+              </div>
             </div>
 
             <div class="pc-section-label" style="margin-top:10px;">System & Storage</div>

@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>PromptCanvas Live Sidebar Preview Harness</title>
+  <link rel="stylesheet" href="../content/content.css">
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background: #FFFFFF;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      display: flex;
+      height: 100vh;
+      overflow: hidden;
+    }
+    .mock-chat-main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 40px;
+      color: #1F2937;
+    }
+    .mock-chat-title {
+      font-size: 28px;
+      font-weight: 600;
+      margin-bottom: 24px;
+    }
+    .mock-input-box {
+      width: 100%;
+      max-width: 680px;
+      height: 110px;
+      border: 1px solid #E5E7EB;
+      border-radius: 16px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+      padding: 16px;
+      box-sizing: border-box;
+      font-size: 14px;
+      color: #374151;
+    }
+  </style>
+</head>
+<body>
+  <div class="mock-chat-main">
+    <div class="mock-chat-title">Good to see you, Sagar.</div>
+    <textarea class="mock-input-box" id="prompt-textarea" placeholder="Message ChatGPT..."></textarea>
+  </div>
+
+  <script src="../content/modules/icons.js"></script>
+  <script src="../content/modules/theme-engine.js"></script>
+  <script src="../content/modules/composer.js"></script>
+  <script src="../content/modules/components.js"></script>
+  <script>
+    // Mock chrome.storage and runtime for standalone preview
+    window.chrome = {
+      runtime: {
+        id: 'mock-extension-id',
+        lastError: null,
+        openOptionsPage: () => window.open('../options/options.html', '_blank')
+      },
+      storage: {
+        local: {
+          get: (keys, cb) => {
+            const data = {
+              themes: {
+                amberDuo: {
+                  id: 'amberDuo',
+                  name: 'Tokyo Amber',
+                  description: 'Ultra-light #FFFBF5 linen canvas with Slate Navy #283845 elements',
+                  colors: {
+                    primary: '#283845',
+                    secondary: '#FFA649',
+                    accent: '#283845',
+                    background: '#FFFBF5',
+                    surface: '#FFFBF5',
+                    surfaceGlass: '#FFFBF5',
+                    text: '#151E25',
+                    border: 'rgba(40, 56, 69, 0.12)',
+                    userBubble: '#283845',
+                    userBubbleText: '#FFFBF5',
+                    aiBubble: 'rgba(40, 56, 69, 0.04)'
+                  }
+                },
+                slateDuo: {
+                  id: 'slateDuo',
+                  name: 'Tokyo Slate',
+                  description: 'Deep Slate Navy #283845 canvas with Golden Amber #FFA649 accents',
+                  colors: {
+                    primary: '#FFA649',
+                    secondary: '#283845',
+                    accent: '#FFA649',
+                    background: '#283845',
+                    surface: '#283845',
+                    surfaceGlass: '#283845',
+                    text: '#FFA649',
+                    border: 'rgba(255, 166, 73, 0.25)',
+                    userBubble: '#FFA649',
+                    userBubbleText: '#151E25',
+                    aiBubble: 'rgba(255, 166, 73, 0.08)'
+                  }
+                },
+                contrastDuo: {
+                  id: 'contrastDuo',
+                  name: 'Tokyo Dual',
+                  description: 'High-contrast Slate borders & deep accents on warm linen',
+                  colors: {
+                    primary: '#283845',
+                    secondary: '#FFA649',
+                    accent: '#283845',
+                    background: '#FFFBF5',
+                    surface: '#FFFBF5',
+                    surfaceGlass: '#FFFBF5',
+                    text: '#151E25',
+                    border: '#283845',
+                    userBubble: '#151E25',
+                    userBubbleText: '#FFFBF5',
+                    aiBubble: 'rgba(40, 56, 69, 0.06)'
+                  }
+                }
+              },
+              prompts: [
+                {
+                  id: 'p0',
+                  title: 'Calculator in Python',
+                  category: 'Coding',
+                  text: 'Write a clean, modular calculator program in Python with unit tests.',
+                  tags: ['python', 'coding']
+                },
+                {
+                  id: 'p1',
+                  title: 'Expert Mode',
+                  category: 'Productivity',
+                  text: 'You are an expert in [FIELD]. Respond with deep technical precision, be concise, and use examples where helpful.',
+                  tags: ['expert', 'productivity']
+                },
+                {
+                  id: 'p2',
+                  title: 'Summarize & Bullet',
+                  category: 'Writing',
+                  text: 'Summarize the following text into 5-7 key bullet points. Be concise, clear, and preserve important insights: [PASTE TEXT HERE]',
+                  tags: ['summary', 'writing']
+                },
+                {
+                  id: 'p3',
+                  title: 'Debug My Code',
+                  category: 'Coding',
+                  text: 'I have a bug in my [LANGUAGE] code. Expected behavior: [EXPECTED]. Actual behavior: [ACTUAL]. Code:\n\n```\n[CODE]\n```',
+                  tags: ['coding', 'debug']
+                },
+                {
+                  id: 'p4',
+                  title: 'Idea Critic & Stress-Tester',
+                  category: 'Strategy',
+                  text: 'Critique this concept: [IDEA]. Evaluate target audience, defensibility, and competitive moats.',
+                  tags: ['strategy']
+                }
+              ],
+              settings: {
+                activeTheme: 'slateDuo',
+                sidebarOpen: true,
+                themeEnabled: true,
+                promptsEnabled: true
+              },
+              uiPalette: null
+            };
+            if (cb) cb(data);
+            return Promise.resolve(data);
+          },
+          set: (obj, cb) => {
+            if (cb) cb();
+            return Promise.resolve();
+          }
+        },
+        onChanged: {
+          addListener: () => {}
+        }
+      }
+    };
+  </script>
+  <script src="../content/content.js"></script>
+</body>
+</html>

@@ -251,7 +251,8 @@
     const counts = { All: state.prompts.length };
 
     state.prompts.forEach(p => {
-      const c = p.category ? p.category.trim() : 'General';
+      const raw = p.category ? p.category.trim() : 'General';
+      const c = raw.charAt(0).toUpperCase() + raw.slice(1).toLowerCase();
       if (!cats.includes(c)) cats.push(c);
       counts[c] = (counts[c] || 0) + 1;
     });
@@ -558,6 +559,8 @@
     window.addEventListener('keydown', (e) => {
       if (e.altKey && (e.key === 'p' || e.key === 'P')) {
         e.preventDefault();
+        e.stopPropagation();
+        e.stopImmediatePropagation();
         toggleSidebar();
         return;
       }
