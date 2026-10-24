@@ -53,7 +53,115 @@
   <script src="../content/modules/composer.js"></script>
   <script src="../content/modules/components.js"></script>
   <script>
-    // Mock chrome.storage and runtime for standalone preview
+    // In-memory mock chrome.storage for full interactive standalone preview
+    const mockStorage = {
+      themes: {
+        amberDuo: {
+          id: 'amberDuo',
+          name: 'Tokyo Amber',
+          description: 'Ultra-light #FFFBF5 linen canvas with Slate Navy #283845 elements',
+          colors: {
+            primary: '#283845',
+            secondary: '#FFA649',
+            accent: '#283845',
+            background: '#FFFBF5',
+            surface: '#FFFBF5',
+            surfaceGlass: '#FFFBF5',
+            text: '#151E25',
+            border: 'rgba(40, 56, 69, 0.12)',
+            inputBg: '#FFFFFF',
+            userBubble: '#283845',
+            userBubbleText: '#FFFBF5',
+            aiBubble: 'rgba(40, 56, 69, 0.04)'
+          }
+        },
+        slateDuo: {
+          id: 'slateDuo',
+          name: 'Tokyo Slate',
+          description: 'Deep Slate Navy #283845 canvas with Golden Amber #FFA649 accents',
+          colors: {
+            primary: '#FFA649',
+            secondary: '#283845',
+            accent: '#FFA649',
+            background: '#283845',
+            surface: '#283845',
+            surfaceGlass: '#283845',
+            text: '#FFA649',
+            border: 'rgba(255, 166, 73, 0.25)',
+            inputBg: '#283845',
+            userBubble: '#FFA649',
+            userBubbleText: '#151E25',
+            aiBubble: 'rgba(255, 166, 73, 0.08)'
+          }
+        },
+        contrastDuo: {
+          id: 'contrastDuo',
+          name: 'Tokyo Dual',
+          description: 'High-contrast Slate borders & deep accents on warm linen',
+          colors: {
+            primary: '#283845',
+            secondary: '#FFA649',
+            accent: '#283845',
+            background: '#FFFBF5',
+            surface: '#FFFBF5',
+            surfaceGlass: '#FFFBF5',
+            text: '#151E25',
+            border: '#283845',
+            inputBg: '#FFFFFF',
+            userBubble: '#151E25',
+            userBubbleText: '#FFFBF5',
+            aiBubble: 'rgba(40, 56, 69, 0.06)'
+          }
+        }
+      },
+      prompts: [
+        {
+          id: 'p0',
+          title: 'Calculator in Python',
+          category: 'Coding',
+          text: 'Write a clean, modular calculator program in Python with unit tests.',
+          tags: ['python', 'coding']
+        },
+        {
+          id: 'p1',
+          title: 'Expert Mode',
+          category: 'Productivity',
+          text: 'You are an expert in [FIELD]. Respond with deep technical precision, be concise, and use examples where helpful.',
+          tags: ['expert', 'productivity']
+        },
+        {
+          id: 'p2',
+          title: 'Summarize & Bullet',
+          category: 'Writing',
+          text: 'Summarize the following text into 5-7 key bullet points. Be concise, clear, and preserve important insights: [PASTE TEXT HERE]',
+          tags: ['summary', 'writing']
+        },
+        {
+          id: 'p3',
+          title: 'Debug My Code',
+          category: 'Coding',
+          text: 'I have a bug in my [LANGUAGE] code. Expected behavior: [EXPECTED]. Actual behavior: [ACTUAL]. Code:\n\n```\n[CODE]\n```',
+          tags: ['coding', 'debug']
+        },
+        {
+          id: 'p4',
+          title: 'Idea Critic & Stress-Tester',
+          category: 'Strategy',
+          text: 'Critique this concept: [IDEA]. Evaluate target audience, defensibility, and competitive moats.',
+          tags: ['strategy']
+        }
+      ],
+      settings: {
+        activeTheme: 'amberDuo',
+        sidebarOpen: true,
+        themeEnabled: true,
+        promptsEnabled: true
+      },
+      uiPalette: null
+    };
+
+    const storageListeners = [];
+
     window.chrome = {
       runtime: {
         id: 'mock-extension-id',
@@ -63,118 +171,30 @@
       storage: {
         local: {
           get: (keys, cb) => {
-            const data = {
-              themes: {
-                amberDuo: {
-                  id: 'amberDuo',
-                  name: 'Tokyo Amber',
-                  description: 'Ultra-light #FFFBF5 linen canvas with Slate Navy #283845 elements',
-                  colors: {
-                    primary: '#283845',
-                    secondary: '#FFA649',
-                    accent: '#283845',
-                    background: '#FFFBF5',
-                    surface: '#FFFBF5',
-                    surfaceGlass: '#FFFBF5',
-                    text: '#151E25',
-                    border: 'rgba(40, 56, 69, 0.12)',
-                    userBubble: '#283845',
-                    userBubbleText: '#FFFBF5',
-                    aiBubble: 'rgba(40, 56, 69, 0.04)'
-                  }
-                },
-                slateDuo: {
-                  id: 'slateDuo',
-                  name: 'Tokyo Slate',
-                  description: 'Deep Slate Navy #283845 canvas with Golden Amber #FFA649 accents',
-                  colors: {
-                    primary: '#FFA649',
-                    secondary: '#283845',
-                    accent: '#FFA649',
-                    background: '#283845',
-                    surface: '#283845',
-                    surfaceGlass: '#283845',
-                    text: '#FFA649',
-                    border: 'rgba(255, 166, 73, 0.25)',
-                    userBubble: '#FFA649',
-                    userBubbleText: '#151E25',
-                    aiBubble: 'rgba(255, 166, 73, 0.08)'
-                  }
-                },
-                contrastDuo: {
-                  id: 'contrastDuo',
-                  name: 'Tokyo Dual',
-                  description: 'High-contrast Slate borders & deep accents on warm linen',
-                  colors: {
-                    primary: '#283845',
-                    secondary: '#FFA649',
-                    accent: '#283845',
-                    background: '#FFFBF5',
-                    surface: '#FFFBF5',
-                    surfaceGlass: '#FFFBF5',
-                    text: '#151E25',
-                    border: '#283845',
-                    userBubble: '#151E25',
-                    userBubbleText: '#FFFBF5',
-                    aiBubble: 'rgba(40, 56, 69, 0.06)'
-                  }
-                }
-              },
-              prompts: [
-                {
-                  id: 'p0',
-                  title: 'Calculator in Python',
-                  category: 'Coding',
-                  text: 'Write a clean, modular calculator program in Python with unit tests.',
-                  tags: ['python', 'coding']
-                },
-                {
-                  id: 'p1',
-                  title: 'Expert Mode',
-                  category: 'Productivity',
-                  text: 'You are an expert in [FIELD]. Respond with deep technical precision, be concise, and use examples where helpful.',
-                  tags: ['expert', 'productivity']
-                },
-                {
-                  id: 'p2',
-                  title: 'Summarize & Bullet',
-                  category: 'Writing',
-                  text: 'Summarize the following text into 5-7 key bullet points. Be concise, clear, and preserve important insights: [PASTE TEXT HERE]',
-                  tags: ['summary', 'writing']
-                },
-                {
-                  id: 'p3',
-                  title: 'Debug My Code',
-                  category: 'Coding',
-                  text: 'I have a bug in my [LANGUAGE] code. Expected behavior: [EXPECTED]. Actual behavior: [ACTUAL]. Code:\n\n```\n[CODE]\n```',
-                  tags: ['coding', 'debug']
-                },
-                {
-                  id: 'p4',
-                  title: 'Idea Critic & Stress-Tester',
-                  category: 'Strategy',
-                  text: 'Critique this concept: [IDEA]. Evaluate target audience, defensibility, and competitive moats.',
-                  tags: ['strategy']
-                }
-              ],
-              settings: {
-                activeTheme: 'slateDuo',
-                sidebarOpen: true,
-                themeEnabled: true,
-                promptsEnabled: true
-              },
-              uiPalette: null
-            };
-            if (cb) cb(data);
-            return Promise.resolve(data);
+            const res = {};
+            if (Array.isArray(keys)) {
+              keys.forEach(k => res[k] = mockStorage[k]);
+            } else if (typeof keys === 'string') {
+              res[keys] = mockStorage[keys];
+            } else {
+              Object.assign(res, mockStorage);
+            }
+            if (cb) cb(res);
+            return Promise.resolve(res);
           },
           set: (obj, cb) => {
+            const changes = {};
+            for (const k in obj) {
+              changes[k] = { oldValue: mockStorage[k], newValue: obj[k] };
+              mockStorage[k] = obj[k];
+            }
+            storageListeners.forEach(fn => fn(changes));
             if (cb) cb();
             return Promise.resolve();
           }
         },
         onChanged: {
-          addListener: () => {}
+          addListener: (fn) => storageListeners.push(fn)
         }
       }
     };

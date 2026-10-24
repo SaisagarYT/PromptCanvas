@@ -178,25 +178,24 @@
     const toggleBtn = document.getElementById('pc-toggle-btn');
     if (root) {
       if (p.canvas) {
-        root.style.setProperty('--pc-bg', p.canvas);
-        root.style.setProperty('--pc-surface', '#FFFFFF');
+        root.style.setProperty('--pc-ui-bg', p.canvas);
+        root.style.setProperty('--pc-ui-card', '#FFFFFF');
       }
       if (p.controls) {
-        root.style.setProperty('--pc-primary', p.controls);
+        root.style.setProperty('--pc-ui-primary', p.controls);
         const clean = (p.controls || '').replace('#', '');
         if (clean.length === 6) {
           const num = parseInt(clean, 16);
           const r = (num >> 16) & 255;
           const g = (num >> 8) & 255;
           const b = num & 255;
-          root.style.setProperty('--pc-border', `rgba(${r}, ${g}, ${b}, 0.12)`);
-          root.style.setProperty('--pc-border-strong', `rgba(${r}, ${g}, ${b}, 0.28)`);
-          root.style.setProperty('--pc-subtle', `rgba(${r}, ${g}, ${b}, 0.05)`);
-          root.style.setProperty('--pc-text-muted', `rgba(${r}, ${g}, ${b}, 0.70)`);
+          root.style.setProperty('--pc-ui-border', `rgba(${r}, ${g}, ${b}, 0.16)`);
+          root.style.setProperty('--pc-ui-border-strong', `rgba(${r}, ${g}, ${b}, 0.32)`);
+          root.style.setProperty('--pc-ui-muted', `rgba(${r}, ${g}, ${b}, 0.70)`);
         }
       }
-      if (p.text) root.style.setProperty('--pc-text', p.text);
-      if (p.accent) root.style.setProperty('--pc-accent', p.accent);
+      if (p.text) root.style.setProperty('--pc-ui-text', p.text);
+      if (p.accent) root.style.setProperty('--pc-ui-accent', p.accent);
     }
     if (toggleBtn) {
       if (p.controls) {
