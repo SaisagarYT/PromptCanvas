@@ -310,8 +310,19 @@
           });
 
           // Style according to button type
-          if (aria.includes('think') || testid.includes('think') || txt.includes('think') || aria.includes('reason')) {
+          const isReasoningBtn = aria.includes('think') || testid.includes('think') || txt.includes('think') || aria.includes('reason') || Boolean(btn.querySelector('span')) || Boolean(btn.innerText && btn.innerText.trim().length > 0);
+
+          if (isReasoningBtn && !aria.includes('send') && !testid.includes('send')) {
             btn.setAttribute('data-pc-btn', 'think');
+            btn.style.setProperty('width', 'auto', 'important');
+            btn.style.setProperty('min-width', 'fit-content', 'important');
+            btn.style.setProperty('max-width', 'none', 'important');
+            btn.style.setProperty('height', '36px', 'important');
+            btn.style.setProperty('padding', '0 12px 0 10px', 'important');
+            btn.style.setProperty('gap', '7px', 'important');
+            btn.style.setProperty('display', 'inline-flex', 'important');
+            btn.style.setProperty('align-items', 'center', 'important');
+            btn.style.setProperty('justify-content', 'center', 'important');
             btn.style.setProperty('background', 'rgba(255, 255, 255, 0.09)', 'important');
             btn.style.setProperty('background-color', 'rgba(255, 255, 255, 0.09)', 'important');
             btn.style.setProperty('border', '1px solid rgba(255, 255, 255, 0.18)', 'important');
@@ -320,11 +331,15 @@
             btn.style.setProperty('box-shadow', '0 2px 8px rgba(0, 0, 0, 0.25)', 'important');
           } else if (aria.includes('send') || testid.includes('send')) {
             btn.setAttribute('data-pc-btn', 'send');
+            btn.style.setProperty('width', '36px', 'important');
+            btn.style.setProperty('height', '36px', 'important');
             btn.style.setProperty('border-radius', '50%', 'important');
             btn.style.setProperty('border', 'none', 'important');
             btn.style.setProperty('color', '#FFFFFF', 'important');
           } else if (idx === 0 || aria.includes('attach') || aria.includes('upload') || aria.includes('add') || aria.includes('file') || aria.includes('tool') || aria.includes('more') || testid.includes('attach')) {
             btn.setAttribute('data-pc-btn', 'attach');
+            btn.style.setProperty('width', '36px', 'important');
+            btn.style.setProperty('height', '36px', 'important');
             btn.style.setProperty('background', 'rgba(255, 255, 255, 0.08)', 'important');
             btn.style.setProperty('background-color', 'rgba(255, 255, 255, 0.08)', 'important');
             btn.style.setProperty('border', '1px solid rgba(255, 255, 255, 0.15)', 'important');
@@ -332,8 +347,10 @@
             btn.style.setProperty('color', '#F8FAFC', 'important');
             btn.style.setProperty('box-shadow', '0 2px 8px rgba(0, 0, 0, 0.25)', 'important');
           } else {
-            // Voice, dictation, microphone, or any other trailing right-side action buttons
+            // Voice, dictation, microphone, or any other trailing circular action buttons
             btn.setAttribute('data-pc-btn', 'voice');
+            btn.style.setProperty('width', '36px', 'important');
+            btn.style.setProperty('height', '36px', 'important');
             btn.style.setProperty('background', 'rgba(255, 255, 255, 0.06)', 'important');
             btn.style.setProperty('background-color', 'rgba(255, 255, 255, 0.06)', 'important');
             btn.style.setProperty('border', '1px solid rgba(255, 255, 255, 0.12)', 'important');

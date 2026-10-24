@@ -498,19 +498,26 @@
         div[class*="rounded"]:has(#prompt-textarea) button:has(span),
         .pc-composer-capsule button:has(span),
         [data-pc-composer="true"] button:has(span),
-        form:has(#prompt-textarea) button:has(span) {
+        form:has(#prompt-textarea) button:has(span),
+        [data-pc-composer="true"] button:has(svg + span),
+        form:has(#prompt-textarea) button:has(svg + span) {
+          width: auto !important;
+          min-width: fit-content !important;
+          max-width: none !important;
+          height: 36px !important;
           background: rgba(255, 255, 255, 0.09) !important;
           background-color: rgba(255, 255, 255, 0.09) !important;
           border: 1px solid ${border} !important;
           border-radius: 9999px !important;
-          padding: 5px 14px !important;
+          padding: 0 14px 0 10px !important;
           color: #F8FAFC !important;
           font-weight: 500 !important;
           font-size: 13px !important;
           letter-spacing: 0.02em !important;
           display: inline-flex !important;
           align-items: center !important;
-          gap: 6px !important;
+          justify-content: center !important;
+          gap: 7px !important;
           box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25) !important;
           transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
         }
@@ -541,6 +548,9 @@
         form:has(#prompt-textarea) button:has(span) span {
           color: inherit !important;
           font-weight: 500 !important;
+          font-size: 13px !important;
+          white-space: nowrap !important;
+          line-height: 1 !important;
         }
 
         [data-pc-btn="think"] svg,
@@ -549,8 +559,21 @@
         div[class*="rounded"]:has(#prompt-textarea) button:has(span) svg,
         [data-pc-composer="true"] button:has(span) svg,
         form:has(#prompt-textarea) button:has(span) svg {
+          width: 17px !important;
+          height: 17px !important;
+          min-width: 17px !important;
+          min-height: 17px !important;
           color: inherit !important;
           fill: currentColor !important;
+          display: inline-block !important;
+          flex-shrink: 0 !important;
+          transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1) !important;
+        }
+
+        [data-pc-btn="think"]:hover svg,
+        button[aria-label*="Think" i]:hover svg,
+        form:has(#prompt-textarea) button:has(span):hover svg {
+          transform: rotate(18deg) scale(1.2) !important;
         }
 
         /* 2. Plus (+) / Attach Button */
@@ -575,9 +598,11 @@
           width: 36px !important;
           height: 36px !important;
           min-width: 36px !important;
+          max-width: 36px !important;
           display: inline-flex !important;
           align-items: center !important;
           justify-content: center !important;
+          padding: 0 !important;
           box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25) !important;
           transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
         }
@@ -600,10 +625,23 @@
           border-color: ${primary} !important;
           color: ${primary} !important;
           box-shadow: 0 0 14px ${sidebarHover} !important;
-          transform: scale(1.08) rotate(90deg) !important;
+          transform: scale(1.08) !important;
         }
 
-        /* 3. Dictate / Microphone, Voice, and all other trailing action buttons */
+        /* Attach (+) Icon smooth 90-degree rotation on hover */
+        [data-pc-btn="attach"]:hover svg,
+        button[aria-label*="Attach" i]:hover svg,
+        button[aria-label*="Upload" i]:hover svg,
+        button[aria-label*="Add" i]:hover svg,
+        button[data-testid*="attach" i]:hover svg,
+        #composer-background button:first-of-type:hover svg,
+        .pc-composer-capsule button:first-of-type:hover svg,
+        [data-pc-composer="true"] button:first-of-type:hover svg,
+        form:has(#prompt-textarea) button:first-of-type:hover svg {
+          transform: rotate(90deg) scale(1.2) !important;
+        }
+
+        /* 3. Dictate / Microphone, Voice, and trailing circular action buttons */
         [data-pc-btn="voice"],
         button[aria-label*="voice" i],
         button[aria-label*="dictat" i],
@@ -611,9 +649,9 @@
         button[aria-label*="microphone" i],
         button[data-testid*="voice" i],
         button[data-testid*="dictate" i],
-        [data-pc-composer="true"] button:not(:first-of-type):not([data-pc-btn="think"]):not([data-pc-btn="send"]),
-        .pc-composer-capsule button:not(:first-of-type):not([data-pc-btn="think"]):not([data-pc-btn="send"]),
-        form:has(#prompt-textarea) button:not(:first-of-type):not([data-pc-btn="think"]):not([data-pc-btn="send"]) {
+        [data-pc-composer="true"] button:not(:first-of-type):not([data-pc-btn="think"]):not([data-pc-btn="send"]):not(:has(span)),
+        .pc-composer-capsule button:not(:first-of-type):not([data-pc-btn="think"]):not([data-pc-btn="send"]):not(:has(span)),
+        form:has(#prompt-textarea) button:not(:first-of-type):not([data-pc-btn="think"]):not([data-pc-btn="send"]):not(:has(span)) {
           background: rgba(255, 255, 255, 0.07) !important;
           background-color: rgba(255, 255, 255, 0.07) !important;
           border: 1px solid rgba(255, 255, 255, 0.14) !important;
@@ -622,9 +660,11 @@
           width: 36px !important;
           height: 36px !important;
           min-width: 36px !important;
+          max-width: 36px !important;
           display: inline-flex !important;
           align-items: center !important;
           justify-content: center !important;
+          padding: 0 !important;
           box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2) !important;
           transition: all 0.2s ease !important;
         }
@@ -645,6 +685,20 @@
           color: ${primary} !important;
           transform: scale(1.08) !important;
           box-shadow: 0 0 12px ${sidebarHover} !important;
+        }
+
+        [data-pc-btn="voice"]:hover svg,
+        button[aria-label*="microphone" i]:hover svg,
+        button[data-testid*="voice" i]:hover svg {
+          transform: scale(1.22) !important;
+        }
+
+        /* Ensure clean spacing between all buttons on the right */
+        [data-pc-composer="true"] div:has(> button),
+        .pc-composer-capsule div:has(> button),
+        form:has(#prompt-textarea) div:has(> button),
+        form:has(#prompt-textarea) div[class*="flex"]:has(button) {
+          gap: 7px !important;
         }
 
         /* 4. Glowing Voice Mode Pill/Circle */
@@ -692,6 +746,8 @@
         [data-pc-btn] svg {
           color: inherit !important;
           fill: currentColor !important;
+          transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1), filter 0.2s ease !important;
+          transform-origin: center center !important;
         }
 
         [data-pc-btn="send"]:hover,
