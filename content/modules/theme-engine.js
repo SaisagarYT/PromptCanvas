@@ -193,9 +193,20 @@
           --main-surface-primary: ${rootBg} !important;
           --main-surface-secondary: ${rootBg} !important;
           --main-surface-tertiary: ${rootBg} !important;
+          --token-main-surface-primary: ${rootBg} !important;
+          --token-main-surface-secondary: ${rootBg} !important;
+          --token-main-surface-tertiary: ${rootBg} !important;
+          --token-surface-primary: ${rootBg} !important;
+          --token-surface-secondary: ${rootBg} !important;
+          --token-surface-tertiary: ${rootBg} !important;
+          --composer-surface: ${rootBg} !important;
+          --composer-background: ${rootBg} !important;
           --sidebar-surface-primary: ${isWp ? 'rgba(15, 14, 23, 0.84)' : c.sidebar} !important;
           --sidebar-surface-secondary: ${isWp ? 'rgba(255, 255, 255, 0.06)' : c.sidebarHover} !important;
           --sidebar-surface-tertiary: ${isWp ? 'rgba(255, 255, 255, 0.1)' : c.sidebarHover} !important;
+          --token-sidebar-surface-primary: ${isWp ? 'rgba(15, 14, 23, 0.84)' : c.sidebar} !important;
+          --token-sidebar-surface-secondary: ${isWp ? 'rgba(255, 255, 255, 0.06)' : c.sidebarHover} !important;
+          --token-sidebar-surface-tertiary: ${isWp ? 'rgba(255, 255, 255, 0.1)' : c.sidebarHover} !important;
         }
 
         html, body, #__next, #root,
@@ -277,8 +288,13 @@
         .pc-composer-capsule,
         #composer-background,
         div[id="composer-background"],
+        [data-composer-surface],
         [data-testid*="composer-background"],
         [data-testid*="composer"]:not(button):not(svg),
+        form:has(#prompt-textarea) [class*="rounded-3xl"],
+        form:has(#prompt-textarea) [class*="rounded-[2"],
+        form:has(#prompt-textarea) [class*="rounded-full"],
+        form div:has(#prompt-textarea):has(button),
         /* Any container with rounded borders containing prompt textarea or ProseMirror */
         div[class*="rounded-3xl"]:has(#prompt-textarea),
         div[class*="rounded-full"]:has(#prompt-textarea),
@@ -308,7 +324,8 @@
         .pc-composer-capsule:hover,
         #composer-background:hover,
         div[class*="rounded"]:has(#prompt-textarea):hover,
-        form:has(#prompt-textarea) > div:hover {
+        form:has(#prompt-textarea) > div:hover,
+        form div:has(#prompt-textarea):has(button):hover {
           border-color: ${primary} !important;
           box-shadow: 0 12px 44px rgba(0, 0, 0, 0.7), 0 0 26px ${sidebarHover}, inset 0 1px 0 rgba(255, 255, 255, 0.18) !important;
         }
@@ -317,7 +334,8 @@
         .pc-composer-capsule:focus-within,
         #composer-background:focus-within,
         div[class*="rounded"]:has(#prompt-textarea):focus-within,
-        form:has(#prompt-textarea) > div:focus-within {
+        form:has(#prompt-textarea) > div:focus-within,
+        form div:has(#prompt-textarea):has(button):focus-within {
           border-color: ${primary} !important;
           box-shadow: 0 14px 50px rgba(0, 0, 0, 0.75), 0 0 32px ${sidebarHover}, 0 0 0 1px ${primary}, inset 0 1px 0 rgba(255, 255, 255, 0.22) !important;
           transform: translateY(-1px) !important;
@@ -365,13 +383,26 @@
 
         /* Force local CSS variable tokens inside the composer to transparent */
         [data-pc-composer="true"],
+        [data-pc-composer="true"] *,
         .pc-composer-capsule,
+        .pc-composer-capsule *,
         #composer-background,
-        div[class*="rounded"]:has(#prompt-textarea),
-        div:has(#prompt-textarea) {
+        #composer-background *,
+        form:has(#prompt-textarea),
+        form:has(#prompt-textarea) *,
+        div:has(#prompt-textarea),
+        div:has(#prompt-textarea) * {
           --main-surface-primary: transparent !important;
           --main-surface-secondary: transparent !important;
           --main-surface-tertiary: transparent !important;
+          --token-main-surface-primary: transparent !important;
+          --token-main-surface-secondary: transparent !important;
+          --token-main-surface-tertiary: transparent !important;
+          --token-surface-primary: transparent !important;
+          --token-surface-secondary: transparent !important;
+          --token-surface-tertiary: transparent !important;
+          --composer-surface: transparent !important;
+          --composer-background: transparent !important;
         }
 
         /* Input Textarea & Contenteditable - High Contrast & Themed Cursor */
@@ -467,7 +498,9 @@
         button[data-testid*="reason" i]:hover,
         #composer-background button:has(span):hover,
         div[class*="rounded"]:has(#prompt-textarea) button:has(span):hover,
-        .pc-composer-capsule button:has(span):hover {
+        .pc-composer-capsule button:has(span):hover,
+        [data-pc-composer="true"] button:has(span):hover,
+        form:has(#prompt-textarea) button:has(span):hover {
           background: ${sidebarHover} !important;
           background-color: ${sidebarHover} !important;
           border-color: ${primary} !important;
@@ -479,7 +512,9 @@
         [data-pc-btn="think"] span,
         button[aria-label*="Think" i] span,
         #composer-background button:has(span) span,
-        div[class*="rounded"]:has(#prompt-textarea) button:has(span) span {
+        div[class*="rounded"]:has(#prompt-textarea) button:has(span) span,
+        [data-pc-composer="true"] button:has(span) span,
+        form:has(#prompt-textarea) button:has(span) span {
           color: inherit !important;
           font-weight: 500 !important;
         }
@@ -487,7 +522,9 @@
         [data-pc-btn="think"] svg,
         button[aria-label*="Think" i] svg,
         #composer-background button:has(span) svg,
-        div[class*="rounded"]:has(#prompt-textarea) button:has(span) svg {
+        div[class*="rounded"]:has(#prompt-textarea) button:has(span) svg,
+        [data-pc-composer="true"] button:has(span) svg,
+        form:has(#prompt-textarea) button:has(span) svg {
           color: inherit !important;
           fill: currentColor !important;
         }
@@ -497,10 +534,15 @@
         button[aria-label*="Attach" i],
         button[aria-label*="Upload" i],
         button[aria-label*="Add" i],
+        button[aria-label*="file" i],
+        button[aria-label*="tool" i],
+        button[aria-label*="more" i],
         button[data-testid*="attach" i],
         #composer-background button:first-of-type,
         div[class*="rounded"]:has(#prompt-textarea) button:first-of-type,
-        .pc-composer-capsule button:first-of-type {
+        .pc-composer-capsule button:first-of-type,
+        [data-pc-composer="true"] button:first-of-type,
+        form:has(#prompt-textarea) button:first-of-type {
           background: rgba(255, 255, 255, 0.08) !important;
           background-color: rgba(255, 255, 255, 0.08) !important;
           border: 1px solid rgba(255, 255, 255, 0.15) !important;
@@ -512,6 +554,7 @@
           display: inline-flex !important;
           align-items: center !important;
           justify-content: center !important;
+          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25) !important;
           transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
         }
 
@@ -519,10 +562,15 @@
         button[aria-label*="Attach" i]:hover,
         button[aria-label*="Upload" i]:hover,
         button[aria-label*="Add" i]:hover,
+        button[aria-label*="file" i]:hover,
+        button[aria-label*="tool" i]:hover,
+        button[aria-label*="more" i]:hover,
         button[data-testid*="attach" i]:hover,
         #composer-background button:first-of-type:hover,
         div[class*="rounded"]:has(#prompt-textarea) button:first-of-type:hover,
-        .pc-composer-capsule button:first-of-type:hover {
+        .pc-composer-capsule button:first-of-type:hover,
+        [data-pc-composer="true"] button:first-of-type:hover,
+        form:has(#prompt-textarea) button:first-of-type:hover {
           background: ${sidebarHover} !important;
           background-color: ${sidebarHover} !important;
           border-color: ${primary} !important;
@@ -538,10 +586,13 @@
         button[aria-label*="record" i],
         button[aria-label*="microphone" i],
         button[data-testid*="voice" i],
-        button[data-testid*="dictate" i] {
-          background: rgba(255, 255, 255, 0.04) !important;
-          background-color: rgba(255, 255, 255, 0.04) !important;
-          border: 1px solid transparent !important;
+        button[data-testid*="dictate" i],
+        [data-pc-composer="true"] button:not([data-pc-btn="attach"]):not([data-pc-btn="think"]):not([data-pc-btn="send"]):not(:first-of-type),
+        .pc-composer-capsule button:not([data-pc-btn="attach"]):not([data-pc-btn="think"]):not([data-pc-btn="send"]):not(:first-of-type),
+        form:has(#prompt-textarea) button:not([data-pc-btn="attach"]):not([data-pc-btn="think"]):not([data-pc-btn="send"]):not(:first-of-type) {
+          background: rgba(255, 255, 255, 0.05) !important;
+          background-color: rgba(255, 255, 255, 0.05) !important;
+          border: 1px solid rgba(255, 255, 255, 0.08) !important;
           border-radius: 50% !important;
           color: #CBD5E1 !important;
           width: 36px !important;
@@ -550,6 +601,7 @@
           display: inline-flex !important;
           align-items: center !important;
           justify-content: center !important;
+          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2) !important;
           transition: all 0.2s ease !important;
         }
 
@@ -581,7 +633,9 @@
         button[aria-label*="Send" i],
         #composer-background button[data-testid*="send" i],
         div[class*="rounded"]:has(#prompt-textarea) button[data-testid*="send" i],
-        .pc-composer-capsule button[data-testid*="send" i] {
+        .pc-composer-capsule button[data-testid*="send" i],
+        [data-pc-composer="true"] button[data-testid*="send" i],
+        form:has(#prompt-textarea) button[data-testid*="send" i] {
           background: linear-gradient(135deg, ${primary}, ${secondary || primary}) !important;
           background-color: ${primary} !important;
           color: #FFFFFF !important;
@@ -595,6 +649,15 @@
           justify-content: center !important;
           box-shadow: 0 0 18px ${sidebarHover}, 0 4px 14px rgba(0, 0, 0, 0.4) !important;
           transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
+        }
+
+        /* Ensure all SVGs inside composer buttons inherit crisp text colors */
+        [data-pc-composer="true"] button svg,
+        .pc-composer-capsule button svg,
+        form:has(#prompt-textarea) button svg,
+        [data-pc-btn] svg {
+          color: currentColor !important;
+          fill: currentColor !important;
         }
 
         [data-pc-btn="send"]:hover,
@@ -973,6 +1036,12 @@
           --main-surface-primary: transparent !important;
           --main-surface-secondary: transparent !important;
           --main-surface-tertiary: transparent !important;
+          --token-main-surface-primary: transparent !important;
+          --token-main-surface-secondary: transparent !important;
+          --token-main-surface-tertiary: transparent !important;
+          --token-surface-primary: transparent !important;
+          --token-surface-secondary: transparent !important;
+          --token-surface-tertiary: transparent !important;
         }
 
         header,

@@ -224,43 +224,85 @@
                     document.querySelector('div[contenteditable="true"]:not(#promptcanvas-root *)');
       if (!input) return;
 
-      let pill = input.closest('#composer-background') ||
-                 input.closest('[data-testid*="composer"]') ||
-                 input.closest('form > div') ||
-                 input.closest('form');
+      const formEl = input.closest('form');
+      let capsule = null;
 
-      if (!pill) {
-        let parent = input.parentElement;
-        while (parent && parent !== document.body && parent !== document.documentElement) {
-          const cls = parent.className || '';
-          if (typeof cls === 'string' && (cls.includes('rounded') || cls.includes('composer'))) {
-            pill = parent;
-            break;
-          }
-          parent = parent.parentElement;
+      // 1. Walk upward from input to find the immediate pill capsule that wraps input and buttons
+      let current = input.parentElement;
+      while (current && current !== formEl && current !== document.body && current !== document.documentElement) {
+        const cls = String(current.className || '');
+        const id = String(current.id || '');
+        const hasButtons = Boolean(current.querySelector('button'));
+
+        // Check if element has rounded styling (via Tailwind classes or computed style) and buttons
+        let isRounded = cls.includes('rounded') || id.includes('composer') || current.hasAttribute('data-composer-surface');
+        if (!isRounded && window.getComputedStyle) {
+          try {
+            const br = parseInt(window.getComputedStyle(current).borderRadius, 10);
+            if (br >= 14) isRounded = true;
+          } catch (e) {}
         }
+
+        if (isRounded && hasButtons) {
+          capsule = current;
+          break;
+        }
+        current = current.parentElement;
       }
 
-      if (pill) {
-        if (!pill.hasAttribute('data-pc-composer')) {
-          pill.setAttribute('data-pc-composer', 'true');
-          pill.classList.add('pc-composer-capsule');
+      // 2. Fallbacks if not found by the walk
+      if (!capsule) {
+        capsule = input.closest('#composer-background') ||
+                  input.closest('[data-composer-surface]') ||
+                  input.closest('[data-testid*="composer"]') ||
+                  input.closest('form div:has(button):has(#prompt-textarea)') ||
+                  input.parentElement;
+      }
+
+      if (capsule) {
+        // Tag the capsule
+        if (!capsule.hasAttribute('data-pc-composer')) {
+          capsule.setAttribute('data-pc-composer', 'true');
+          capsule.classList.add('pc-composer-capsule');
         }
 
-        const buttons = pill.querySelectorAll('button');
-        buttons.forEach((btn) => {
+        // Ensure outer form and parents do NOT paint white
+        let p = capsule.parentElement;
+        while (p && p !== document.body && p !== document.documentElement) {
+          if (p === formEl || (p.classList && (p.classList.contains('stretch') || p.className.includes('w-full')))) {
+            p.style.setProperty('background', 'transparent', 'important');
+            p.style.setProperty('background-color', 'transparent', 'important');
+          }
+          p = p.parentElement;
+        }
+
+        // Ensure inner container divs (except buttons) don't paint solid white
+        const innerDivs = capsule.querySelectorAll('div');
+        innerDivs.forEach((d) => {
+          if (d !== capsule && !d.querySelector('button') && !d.hasAttribute('data-pc-composer')) {
+            const bg = window.getComputedStyle ? window.getComputedStyle(d).backgroundColor : '';
+            if (bg && bg !== 'rgba(0, 0, 0, 0)' && bg !== 'transparent') {
+              d.style.setProperty('background', 'transparent', 'important');
+              d.style.setProperty('background-color', 'transparent', 'important');
+            }
+          }
+        });
+
+        // Tag and enhance all buttons inside capsule
+        const buttons = capsule.querySelectorAll('button');
+        buttons.forEach((btn, idx) => {
           const aria = (btn.getAttribute('aria-label') || '').toLowerCase();
           const testid = (btn.getAttribute('data-testid') || '').toLowerCase();
           const txt = (btn.innerText || '').toLowerCase();
 
-          if (aria.includes('think') || testid.includes('think') || txt.includes('think')) {
+          if (aria.includes('think') || testid.includes('think') || txt.includes('think') || aria.includes('reason')) {
             btn.setAttribute('data-pc-btn', 'think');
-          } else if (aria.includes('attach') || aria.includes('upload') || testid.includes('attach') || aria.includes('add')) {
-            btn.setAttribute('data-pc-btn', 'attach');
-          } else if (aria.includes('voice') || aria.includes('dictat') || testid.includes('voice') || aria.includes('microphone')) {
-            btn.setAttribute('data-pc-btn', 'voice');
           } else if (aria.includes('send') || testid.includes('send')) {
             btn.setAttribute('data-pc-btn', 'send');
+          } else if (aria.includes('voice') || aria.includes('dictat') || testid.includes('voice') || aria.includes('microphone') || aria.includes('record')) {
+            btn.setAttribute('data-pc-btn', 'voice');
+          } else if (idx === 0 || aria.includes('attach') || aria.includes('upload') || aria.includes('add') || aria.includes('file') || aria.includes('tool') || aria.includes('more') || testid.includes('attach')) {
+            btn.setAttribute('data-pc-btn', 'attach');
           }
         });
       }
