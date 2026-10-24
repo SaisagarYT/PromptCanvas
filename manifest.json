@@ -39,7 +39,13 @@
         "https://claude.ai/*",
         "https://chat.deepseek.com/*"
       ],
-      "js": ["content/content.js"],
+      "js": [
+        "content/modules/icons.js",
+        "content/modules/theme-engine.js",
+        "content/modules/composer.js",
+        "content/modules/components.js",
+        "content/content.js"
+      ],
       "css": ["content/content.css"],
       "run_at": "document_end"
     }
