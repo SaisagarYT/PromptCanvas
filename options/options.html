@@ -207,7 +207,54 @@
       line-height: 1.5;
     }
 
-    /* ===== THEME GRID (PRESETS) ===== */
+    /* ===== THEME GRID (20 CURATED PRESETS) ===== */
+    .theme-filter-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 20px;
+    }
+
+    .theme-filter-chip {
+      background: var(--color-light);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-sm);
+      padding: 6px 12px;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--color-dark-muted);
+      cursor: pointer;
+      transition: all 0.15s ease;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .theme-filter-chip:hover {
+      border-color: var(--color-dark);
+      color: var(--color-darker);
+    }
+
+    .theme-filter-chip.active {
+      background: var(--color-dark);
+      border-color: var(--color-dark);
+      color: var(--color-light);
+    }
+
+    .theme-filter-chip .chip-count {
+      font-size: 9px;
+      font-family: 'JetBrains Mono', monospace;
+      padding: 1px 5px;
+      border-radius: 2px;
+      background: rgba(40, 56, 69, 0.08);
+      color: inherit;
+    }
+
+    .theme-filter-chip.active .chip-count {
+      background: rgba(255, 255, 255, 0.2);
+    }
+
     .theme-grid-full {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
@@ -219,59 +266,134 @@
       padding: 16px;
       border: 1px solid var(--color-border);
       cursor: pointer;
-      transition: all 0.15s ease;
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
       position: relative;
+      background: #FFFFFF;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
     }
 
     .theme-card-full:hover {
       border-color: var(--color-dark);
-      transform: translateY(-1px);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 14px rgba(40, 56, 69, 0.08);
     }
 
     .theme-card-full.selected {
       border-color: var(--color-dark);
-      box-shadow: 0 0 0 1px var(--color-dark);
+      box-shadow: 0 0 0 1.5px var(--color-dark), 0 4px 16px rgba(40, 56, 69, 0.12);
     }
 
-    .theme-preview-full {
-      height: 72px;
-      border-radius: var(--radius-sm);
-      margin-bottom: 12px;
+    .theme-card-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .theme-card-title-group {
       display: flex;
       flex-direction: column;
-      justify-content: center;
-      padding: 10px 12px;
-      gap: 7px;
+      gap: 3px;
     }
 
-    .theme-preview-msg {
-      height: 9px;
-      border-radius: 2px;
-      width: 68%;
-    }
-
-    .theme-preview-msg.short {
-      width: 44%;
-      align-self: flex-end;
-    }
-
-    .theme-name-full {
+    .theme-card-name {
       font-family: 'Plus Jakarta Sans', sans-serif;
       font-size: 13px;
       font-weight: 800;
-      margin-bottom: 4px;
-      letter-spacing: 0.2px;
+      color: var(--color-darker);
+      letter-spacing: -0.1px;
+    }
+
+    .theme-category-tag {
+      font-size: 9px;
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      padding: 2px 6px;
+      border-radius: 2px;
+      background: var(--color-dark-subtle);
+      color: var(--color-dark-muted);
+      width: fit-content;
+    }
+
+    /* 4-Stripe Color Palette Harmony Bar */
+    .opt-palette-harmony-bar {
+      display: flex;
+      height: 22px;
+      border-radius: 4px;
+      overflow: hidden;
+      border: 1px solid rgba(40, 56, 69, 0.14);
+      box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+    }
+
+    .opt-palette-stripe {
+      flex: 1;
+      height: 100%;
+      position: relative;
+      cursor: pointer;
+      transition: flex 0.15s ease, filter 0.15s ease;
+    }
+
+    .opt-palette-stripe:hover {
+      flex: 1.4;
+      filter: brightness(1.08);
+      z-index: 2;
+    }
+
+    .opt-palette-stripe:hover::after {
+      content: attr(data-hex);
+      position: absolute;
+      bottom: calc(100% + 4px);
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--color-dark);
+      color: #FFFFFF;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 9px;
+      font-weight: 700;
+      padding: 2px 5px;
+      border-radius: 3px;
+      white-space: nowrap;
+      pointer-events: none;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.25);
+    }
+
+    .theme-preview-full {
+      height: 64px;
+      border-radius: var(--radius-sm);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 8px 10px;
+      gap: 6px;
+      border: 1px solid rgba(40, 56, 69, 0.12);
+    }
+
+    .theme-preview-msg {
+      height: 8px;
+      border-radius: 2px;
+      width: 70%;
+    }
+
+    .theme-preview-msg.short {
+      width: 46%;
+      align-self: flex-end;
     }
 
     .theme-desc-full {
       font-size: 11px;
+      color: var(--color-dark-muted);
       line-height: 1.45;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
     }
 
     .theme-selected-badge {
-      position: absolute;
-      top: 10px;
-      right: 10px;
       background: var(--color-dark);
       color: var(--color-light);
       font-family: 'Plus Jakarta Sans', sans-serif;
@@ -279,12 +401,163 @@
       font-weight: 800;
       padding: 3px 8px;
       border-radius: 2px;
-      display: none;
       letter-spacing: 0.6px;
+      display: none;
     }
 
     .theme-card-full.selected .theme-selected-badge {
-      display: block;
+      display: inline-block;
+    }
+
+    /* ===== WALLPAPER STUDIO ===== */
+    .wallpaper-workbench {
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 24px;
+      margin-top: 16px;
+    }
+
+    .wallpaper-preset-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .wallpaper-preset-card {
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-sm);
+      overflow: hidden;
+      cursor: pointer;
+      background: #FFFFFF;
+      transition: all 0.15s ease;
+      text-align: left;
+    }
+
+    .wallpaper-preset-card:hover {
+      border-color: var(--color-dark);
+      transform: translateY(-1px);
+    }
+
+    .wallpaper-preset-card.active {
+      border-color: var(--color-dark);
+      box-shadow: 0 0 0 1.5px var(--color-dark);
+    }
+
+    .wallpaper-preset-thumb {
+      height: 52px;
+      background-size: cover;
+      background-position: center;
+      position: relative;
+    }
+
+    .wallpaper-preset-name {
+      padding: 6px 8px;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--color-darker);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .slider-group {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      background: var(--color-dark-subtle);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-sm);
+      padding: 14px 16px;
+    }
+
+    .slider-row {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .slider-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .slider-label {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 11px;
+      font-weight: 800;
+      color: var(--color-darker);
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+    }
+
+    .slider-val {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--color-dark);
+      background: #FFFFFF;
+      padding: 1px 6px;
+      border-radius: 2px;
+      border: 1px solid var(--color-border);
+    }
+
+    .slider-input {
+      -webkit-appearance: none;
+      width: 100%;
+      height: 4px;
+      background: var(--color-border);
+      border-radius: 2px;
+      outline: none;
+    }
+
+    .slider-input::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: var(--color-dark);
+      cursor: pointer;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+      transition: transform 0.1s ease;
+    }
+
+    .slider-input::-webkit-slider-thumb:hover {
+      transform: scale(1.2);
+    }
+
+    .wallpaper-live-preview {
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-sm);
+      height: 230px;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-size: cover;
+      background-position: center;
+    }
+
+    .wallpaper-live-overlay {
+      position: absolute;
+      inset: 0;
+      transition: background-color 0.2s ease;
+    }
+
+    .wallpaper-live-glass-card {
+      position: relative;
+      z-index: 2;
+      background: rgba(255, 255, 255, 0.12);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      border-radius: 8px;
+      padding: 16px 20px;
+      color: #FFFFFF;
+      text-align: center;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+      max-width: 82%;
     }
 
     /* ===== PROMPT TABLE ===== */
@@ -1070,11 +1343,94 @@
     <main class="options-content">
       <!-- Themes Panel -->
       <div class="panel active" id="panel-themes">
+        <!-- Section 1: 20 Curated Color Palette Themes -->
         <div class="card">
-          <div class="card-title">Tokyo Duo Presets</div>
-          <div class="card-desc">Select an active palette arrangement. Changes sync instantly across the popup and all
-            active AI workspaces.</div>
+          <div class="card-title">Curated Color Palette Themes (20 Masterpieces)</div>
+          <div class="card-desc">Select an extraordinary color palette. Each palette styles the chat surface, composer pill, buttons, and accents across ChatGPT, Claude, Gemini, DeepSeek, and LeetCode.</div>
+          
+          <!-- Category Filter Bar -->
+          <div class="theme-filter-bar" id="options-theme-filter-bar"></div>
+
+          <!-- Theme Grid -->
           <div class="theme-grid-full" id="options-theme-grid"></div>
+        </div>
+
+        <!-- Section 2: Decoupled Wallpaper & Atmosphere Studio -->
+        <div class="card">
+          <div class="card-title">Atmospheric Wallpaper & Glassmorphism Studio</div>
+          <div class="card-desc">Decoupled background atmosphere system. Pair any color palette above with your favorite backdrop artwork or ultra-clean solid acrylic glass.</div>
+
+          <div class="settings-row" style="padding-top: 0;">
+            <div class="settings-row-info">
+              <h3>Enable Atmospheric Wallpaper</h3>
+              <p>Display full-bleed backdrop behind floating glass chat interfaces</p>
+            </div>
+            <label class="toggle-wrap">
+              <input type="checkbox" id="opt-wallpaper-enabled" checked>
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+
+          <div class="wallpaper-workbench" id="wallpaper-workbench">
+            <!-- Left Column: Presets & Custom -->
+            <div>
+              <div class="form-label" style="margin-bottom: 8px;">Curated Backdrop Presets</div>
+              <div class="wallpaper-preset-grid" id="wallpaper-presets-grid"></div>
+
+              <div style="margin-top: 18px;">
+                <div class="form-label">Custom Image URL</div>
+                <input type="text" class="form-input" id="opt-wallpaper-url" placeholder="https://example.com/wallpaper.jpg">
+              </div>
+            </div>
+
+            <!-- Right Column: Atmospheric Controls & Live Preview -->
+            <div>
+              <div class="slider-group">
+                <div class="slider-row">
+                  <div class="slider-header">
+                    <span class="slider-label">Background Blur</span>
+                    <span class="slider-val" id="val-wallpaper-blur">0px</span>
+                  </div>
+                  <input type="range" class="slider-input" id="opt-wallpaper-blur" min="0" max="30" value="0">
+                </div>
+
+                <div class="slider-row">
+                  <div class="slider-header">
+                    <span class="slider-label">Atmosphere Brightness</span>
+                    <span class="slider-val" id="val-wallpaper-brightness">85%</span>
+                  </div>
+                  <input type="range" class="slider-input" id="opt-wallpaper-brightness" min="30" max="130" value="85">
+                </div>
+
+                <div class="slider-row">
+                  <div class="slider-header">
+                    <span class="slider-label">Glass Tint Overlay</span>
+                    <span class="slider-val" id="val-wallpaper-overlay">35%</span>
+                  </div>
+                  <input type="range" class="slider-input" id="opt-wallpaper-overlay" min="0" max="90" value="35">
+                </div>
+
+                <div class="slider-row">
+                  <div class="slider-header">
+                    <span class="slider-label">Chat Panel Frosted Blur</span>
+                    <span class="slider-val" id="val-wallpaper-panelblur">14px</span>
+                  </div>
+                  <input type="range" class="slider-input" id="opt-wallpaper-panelblur" min="0" max="40" value="14">
+                </div>
+              </div>
+
+              <!-- Live Mini Preview -->
+              <div style="margin-top: 14px;">
+                <div class="wallpaper-live-preview" id="wallpaper-live-preview">
+                  <div class="wallpaper-live-overlay" id="wallpaper-live-overlay"></div>
+                  <div class="wallpaper-live-glass-card" id="wallpaper-live-glass-card">
+                    <div style="font-size: 11px; font-weight: 800; margin-bottom: 4px; letter-spacing: 0.5px; text-transform: uppercase;">Frosted Glass Preview</div>
+                    <div style="font-size: 10px; opacity: 0.85;">Chat messages and composer floating in atmospheric glass</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 

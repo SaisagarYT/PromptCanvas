@@ -377,8 +377,8 @@
       const newTheme = state.settings.activeTheme;
       if (newTheme && newTheme !== state.activeTheme) {
         state.activeTheme = newTheme;
-        applyTheme();
       }
+      applyTheme();
     }
     if (changes.uiPalette) {
       state.uiPalette = changes.uiPalette.newValue || null;
@@ -391,6 +391,7 @@
     if (changes.themes) {
       state.themes = changes.themes.newValue || {};
       updates.themes = state.themes;
+      applyTheme();
     }
 
     window.PCSidebar?.updateState(updates);
@@ -399,8 +400,9 @@
   function applyTheme() {
     const theme = state.themes[state.activeTheme] || Object.values(state.themes)[0];
     if (!theme) return;
-    window.PCThemeEngine?.applyCSSVars(theme, state.settings.themeEnabled);
-    window.PCThemeEngine?.applyPageTheme(theme, PLATFORM, state.settings.themeEnabled);
+    const globalWp = state.settings.wallpaper;
+    window.PCThemeEngine?.applyCSSVars(theme, state.settings.themeEnabled, globalWp);
+    window.PCThemeEngine?.applyPageTheme(theme, PLATFORM, state.settings.themeEnabled, globalWp);
   }
 
   function applyCustomFont(font) {

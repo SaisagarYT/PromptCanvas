@@ -59,9 +59,17 @@
       return wp.url || '';
     },
 
-    applyWallpaper(theme, themeEnabled) {
-      const wp = theme?.wallpaper;
-      const isEnabled = Boolean(themeEnabled && wp && wp.enabled);
+    applyWallpaper(themeOrWp, themeEnabled, globalWallpaper) {
+      let wp = null;
+      if (globalWallpaper !== undefined && globalWallpaper !== null) {
+        wp = globalWallpaper;
+      } else if (themeOrWp && (themeOrWp.presetId || themeOrWp.url || typeof themeOrWp.enabled !== 'undefined')) {
+        wp = themeOrWp;
+      } else if (themeOrWp && themeOrWp.wallpaper) {
+        wp = themeOrWp.wallpaper;
+      }
+
+      const isEnabled = Boolean(themeEnabled && wp && wp.enabled && wp.presetId !== 'none' && (wp.presetId || wp.url || wp.dataUrl));
 
       if (!isEnabled) {
         if (wallpaperHostEl) {
@@ -115,7 +123,7 @@
       }
     },
 
-    applyCSSVars(theme, themeEnabled) {
+    applyCSSVars(theme, themeEnabled, globalWallpaper) {
       if (!themeEnabled || !theme) return;
       const docRoot = document.documentElement;
       const c = theme.colors;
@@ -137,13 +145,15 @@
       docRoot.style.setProperty('--pc-radius', theme.borderRadius || '4px');
       docRoot.style.setProperty('--pc-msg-radius', theme.messageBorderRadius || '4px');
 
-      const isWp = Boolean(themeEnabled && theme?.wallpaper?.enabled);
-      const panelBlur = isWp ? (theme.wallpaper?.panelBlur || 14) : 0;
+      const wp = globalWallpaper || theme?.wallpaper;
+      const isWp = Boolean(themeEnabled && wp && wp.enabled && wp.presetId !== 'none' && (wp.presetId || wp.url || wp.dataUrl));
+      const panelBlur = isWp ? (wp?.panelBlur || 14) : 0;
       docRoot.style.setProperty('--pc-panel-blur', `${panelBlur}px`);
     },
 
-    applyPageTheme(theme, platform, themeEnabled) {
-      this.applyWallpaper(theme, themeEnabled);
+    applyPageTheme(theme, platform, themeEnabled, globalWallpaper) {
+      const wp = globalWallpaper || theme?.wallpaper;
+      this.applyWallpaper(wp, themeEnabled);
 
       if (!themeEnabled) {
         if (themeStyleEl) themeStyleEl.textContent = '';
@@ -158,8 +168,8 @@
       }
 
       const c = theme.colors;
-      const isWp = Boolean(themeEnabled && theme?.wallpaper?.enabled);
-      const glassBlur = isWp ? (theme.wallpaper?.panelBlur || 14) : 0;
+      const isWp = Boolean(themeEnabled && wp && wp.enabled && wp.presetId !== 'none' && (wp.presetId || wp.url || wp.dataUrl));
+      const glassBlur = isWp ? (wp?.panelBlur || 14) : 0;
 
       let css = '';
       if (platform === 'chatgpt') css = this.buildChatGPTTheme(c, theme, isWp, glassBlur);

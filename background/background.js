@@ -1,70 +1,43 @@
 // PromptCanvas Background Service Worker
 // Theme Engine: Tokyo Duo, Anime Dusk & Curated Wallpaper Atmospheres
 
-const DEFAULT_THEMES = {
-  ferrariCorse: {
-    id: 'ferrariCorse',
-    name: 'Scuderia Corse',
-    description: 'Italian Ferrari racing red with sleek carbon fiber glass and golden emblem accents',
-    category: 'Racing',
+function hexToRgba(hex, alpha) {
+  const clean = hex.replace('#', '');
+  const r = parseInt(clean.substring(0, 2), 16) || 0;
+  const g = parseInt(clean.substring(2, 4), 16) || 0;
+  const b = parseInt(clean.substring(4, 6), 16) || 0;
+  return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+}
+
+function buildTheme(id, name, category, desc, swatches, defaultWpPreset = 'abstract-purple') {
+  const [c1, c2, c3, c4] = swatches;
+  return {
+    id,
+    name,
+    category,
+    description: desc,
     colors: {
-      primary: '#EF4444',
-      secondary: '#F59E0B',
-      accent: '#EF4444',
-      background: 'rgba(20, 16, 22, 0.80)',
-      surface: 'rgba(28, 20, 26, 0.82)',
-      surfaceGlass: 'rgba(34, 24, 32, 0.70)',
+      primary: c2,
+      secondary: c3,
+      accent: c2,
+      background: hexToRgba(c1, 0.82),
+      surface: hexToRgba(c1, 0.88),
+      surfaceGlass: hexToRgba(c1, 0.70),
       text: '#F8FAFC',
-      textMuted: '#CBD5E1',
-      border: 'rgba(239, 68, 68, 0.32)',
-      inputBg: 'rgba(20, 16, 22, 0.85)',
-      userBubble: 'rgba(239, 68, 68, 0.28)',
+      textMuted: hexToRgba(c4, 0.75),
+      border: hexToRgba(c2, 0.35),
+      inputBg: hexToRgba(c1, 0.86),
+      userBubble: hexToRgba(c2, 0.28),
       userBubbleText: '#FFFFFF',
-      aiBubble: 'rgba(28, 20, 26, 0.55)',
-      sidebar: 'rgba(16, 12, 18, 0.88)',
-      sidebarHover: 'rgba(239, 68, 68, 0.14)',
+      aiBubble: hexToRgba(c1, 0.60),
+      sidebar: hexToRgba(c1, 0.88),
+      sidebarHover: hexToRgba(c2, 0.14),
+      swatches
     },
     wallpaper: {
-      enabled: true,
+      enabled: false,
       type: 'preset',
-      presetId: 'ferrari-racing',
-      url: '',
-      blur: 0,
-      brightness: 85,
-      overlayOpacity: 38,
-      panelBlur: 14
-    },
-    font: 'Inter',
-    fontSize: '15px',
-    borderRadius: '6px',
-    messageBorderRadius: '6px',
-  },
-  violetRadiance: {
-    id: 'violetRadiance',
-    name: 'Violet Radiance',
-    description: 'Luminous cybernetic purple pillar glow with deep midnight indigo glass',
-    category: 'Cyber',
-    colors: {
-      primary: '#A855F7',
-      secondary: '#C084FC',
-      accent: '#A855F7',
-      background: 'rgba(14, 10, 30, 0.80)',
-      surface: 'rgba(20, 14, 40, 0.82)',
-      surfaceGlass: 'rgba(26, 18, 52, 0.70)',
-      text: '#F8FAFC',
-      textMuted: '#D8B4FE',
-      border: 'rgba(168, 85, 247, 0.35)',
-      inputBg: 'rgba(14, 10, 30, 0.85)',
-      userBubble: 'rgba(168, 85, 247, 0.30)',
-      userBubbleText: '#FFFFFF',
-      aiBubble: 'rgba(24, 16, 48, 0.55)',
-      sidebar: 'rgba(12, 8, 26, 0.88)',
-      sidebarHover: 'rgba(168, 85, 247, 0.14)',
-    },
-    wallpaper: {
-      enabled: true,
-      type: 'preset',
-      presetId: 'abstract-purple',
+      presetId: defaultWpPreset,
       url: '',
       blur: 0,
       brightness: 85,
@@ -73,121 +46,47 @@ const DEFAULT_THEMES = {
     },
     font: 'Inter',
     fontSize: '15px',
-    borderRadius: '6px',
-    messageBorderRadius: '6px',
-  },
-  spidermanAction: {
-    id: 'spidermanAction',
-    name: 'Spider-Man Skyline',
-    description: 'Dynamic heroic crimson and electric web-blue battle across Manhattan dusk',
-    category: 'Heroic',
-    colors: {
-      primary: '#EF4444',
-      secondary: '#38BDF8',
-      accent: '#EF4444',
-      background: 'rgba(16, 18, 28, 0.82)',
-      surface: 'rgba(22, 26, 38, 0.82)',
-      surfaceGlass: 'rgba(26, 32, 48, 0.70)',
-      text: '#F8FAFC',
-      textMuted: '#CBD5E1',
-      border: 'rgba(239, 68, 68, 0.32)',
-      inputBg: 'rgba(16, 18, 28, 0.85)',
-      userBubble: 'rgba(239, 68, 68, 0.28)',
-      userBubbleText: '#FFFFFF',
-      aiBubble: 'rgba(20, 24, 40, 0.55)',
-      sidebar: 'rgba(14, 16, 26, 0.88)',
-      sidebarHover: 'rgba(239, 68, 68, 0.14)',
-    },
-    wallpaper: {
-      enabled: true,
-      type: 'preset',
-      presetId: 'spiderman-action',
-      url: '',
-      blur: 0,
-      brightness: 85,
-      overlayOpacity: 38,
-      panelBlur: 14
-    },
-    font: 'Inter',
-    fontSize: '15px',
-    borderRadius: '6px',
-    messageBorderRadius: '6px',
-  },
-  spidermanNight: {
-    id: 'spidermanNight',
-    name: 'Spider-Man Noir City',
-    description: 'Iconic white spider emblem with deep urban midnight and amber streetlight bokeh',
-    category: 'Heroic',
-    colors: {
-      primary: '#F43F5E',
-      secondary: '#FBBF24',
-      accent: '#F43F5E',
-      background: 'rgba(12, 18, 24, 0.84)',
-      surface: 'rgba(18, 26, 36, 0.84)',
-      surfaceGlass: 'rgba(24, 34, 46, 0.70)',
-      text: '#F8FAFC',
-      textMuted: '#94A3B8',
-      border: 'rgba(244, 63, 94, 0.32)',
-      inputBg: 'rgba(12, 18, 24, 0.88)',
-      userBubble: 'rgba(244, 63, 94, 0.26)',
-      userBubbleText: '#FFFFFF',
-      aiBubble: 'rgba(18, 26, 36, 0.55)',
-      sidebar: 'rgba(10, 15, 20, 0.90)',
-      sidebarHover: 'rgba(244, 63, 94, 0.14)',
-    },
-    wallpaper: {
-      enabled: true,
-      type: 'preset',
-      presetId: 'spiderman-night',
-      url: '',
-      blur: 0,
-      brightness: 85,
-      overlayOpacity: 42,
-      panelBlur: 14
-    },
-    font: 'Inter',
-    fontSize: '15px',
-    borderRadius: '6px',
-    messageBorderRadius: '6px',
-  },
-  twilightMirage: {
-    id: 'twilightMirage',
-    name: 'Twilight Mirage',
-    description: 'Radiant neon sunset reflection with vivid magenta, coral glow, and twilight purple sea',
-    category: 'Scenery',
-    colors: {
-      primary: '#F43F5E',
-      secondary: '#FB923C',
-      accent: '#F43F5E',
-      background: 'rgba(24, 12, 28, 0.78)',
-      surface: 'rgba(32, 16, 38, 0.80)',
-      surfaceGlass: 'rgba(40, 20, 48, 0.68)',
-      text: '#F8FAFC',
-      textMuted: '#FDA4AF',
-      border: 'rgba(244, 63, 94, 0.36)',
-      inputBg: 'rgba(24, 12, 28, 0.82)',
-      userBubble: 'rgba(244, 63, 94, 0.30)',
-      userBubbleText: '#FFFFFF',
-      aiBubble: 'rgba(36, 18, 42, 0.55)',
-      sidebar: 'rgba(20, 10, 24, 0.88)',
-      sidebarHover: 'rgba(244, 63, 94, 0.14)',
-    },
-    wallpaper: {
-      enabled: true,
-      type: 'preset',
-      presetId: 'cosmic-sunset',
-      url: '',
-      blur: 0,
-      brightness: 85,
-      overlayOpacity: 35,
-      panelBlur: 14
-    },
-    font: 'Inter',
-    fontSize: '15px',
-    borderRadius: '6px',
-    messageBorderRadius: '6px',
-  },
-};
+    borderRadius: '8px',
+    messageBorderRadius: '14px'
+  };
+}
+
+const PALETTE_DEFINITIONS = [
+  // Row 13 from reference image
+  { id: 'orchidNoir', name: 'Orchid Noir', category: 'Luxury', desc: 'Velvet plum and mauve orchid with rose mist glass', swatches: ['#4D3A4D', '#BE5CA9', '#D59CC5', '#EADADA'] },
+  { id: 'cyberTeal', name: 'Electric Cyber Teal', category: 'Cyber', desc: 'Deep space indigo with high-voltage electric cyan', swatches: ['#2A2C5F', '#43D9E7', '#3EC4D0', '#393C83'] },
+  { id: 'crimsonVelvet', name: 'Crimson Velvet', category: 'Vibrant', desc: 'Espresso charcoal with radiant neon cerise and crisp white', swatches: ['#2B2024', '#FD0053', '#A80139', '#FFFFFF'] },
+  { id: 'abyssalGold', name: 'Abyssal Gold', category: 'Luxury', desc: 'Midnight oceanic navy with sunburst gold and emerald jade', swatches: ['#001F3E', '#FFD716', '#0DA574', '#073358'] },
+
+  // Row 14 from reference image
+  { id: 'denimSunset', name: 'Denim Sunset', category: 'Warm', desc: 'Classic denim slate with crimson flame and sky turquoise', swatches: ['#3B4A6B', '#F23456', '#23B2DA', '#F1D43A'] },
+  { id: 'neonSeafoam', name: 'Neon Seafoam', category: 'Cyber', desc: 'Electric violet with refreshing mint seafoam and sky blue', swatches: ['#7A56D0', '#5BE7C4', '#4FC0E8', '#F6F7FB'] },
+  { id: 'ultramarineMagenta', name: 'Ultramarine Magenta', category: 'Vibrant', desc: 'Cobalt ultramarine with fluorescent neon magenta', swatches: ['#124E96', '#FF008E', '#0C8ABC', '#DAEAF7'] },
+  { id: 'peacockNoir', name: 'Peacock Noir', category: 'Nature', desc: 'Pitch obsidian black with teal peacock and lime chartreuse', swatches: ['#000000', '#1A8B9D', '#B1D430', '#FFF5F4'] },
+
+  // Row 15 from reference image
+  { id: 'terracottaSlate', name: 'Terracotta Slate', category: 'Warm', desc: 'Midnight steel with warm burnt terracotta and silver ash', swatches: ['#1A273A', '#C24D2C', '#3E4A62', '#D9D9D7'] },
+  { id: 'alpineMeadow', name: 'Alpine Meadow', category: 'Nature', desc: 'Deep alpine spruce with fresh matcha green and pale lemon', swatches: ['#073835', '#66D47E', '#C6E772', '#FAFFA3'] },
+  { id: 'apricotEmerald', name: 'Apricot Emerald', category: 'Nature', desc: 'Persian pine teal with warm apricot sand and almond cream', swatches: ['#007064', '#F4C180', '#00A79D', '#FFEED0'] },
+  { id: 'amethystMint', name: 'Amethyst Mint', category: 'Luxury', desc: 'Velvet amethyst purple with radiant turquoise mint', swatches: ['#9765C8', '#15CDA9', '#099A97', '#F0E4E4'] },
+
+  // Row 16 from reference image
+  { id: 'mandarinEmber', name: 'Mandarin Ember', category: 'Warm', desc: 'Dark roasted espresso with electric mandarin flame', swatches: ['#4E413B', '#FF6D24', '#857671', '#E2DED3'] },
+  { id: 'nordicGlacier', name: 'Nordic Glacier', category: 'Cool', desc: 'Nordic fjord blue with dandelion gold and glacier mint', swatches: ['#4A89AC', '#FAEE5A', '#ACE5F6', '#E3FCF9'] },
+  { id: 'twilightPersimmon', name: 'Twilight Persimmon', category: 'Warm', desc: 'Twilight plum purple with sunset persimmon and marigold', swatches: ['#423465', '#ED743F', '#FFAF50', '#824C97'] },
+  { id: 'sageOlive', name: 'Sage & Olive', category: 'Nature', desc: 'Charcoal graphite with sage evergreen and vanilla cream', swatches: ['#3F3F3F', '#437A5B', '#B4CD93', '#FBF5B7'] },
+
+  // Flagship luxury palettes to complete 20
+  { id: 'ferrariCorse', name: 'Scuderia Corse', category: 'Vibrant', desc: 'Italian racing red with carbon fiber glass and gold emblem', swatches: ['#141016', '#EF4444', '#F59E0B', '#F8FAFC'], defaultWp: 'ferrari-racing' },
+  { id: 'cyberpunkTokyo', name: 'Cyberpunk Tokyo', category: 'Cyber', desc: 'High-voltage Tokyo cyan with neon pink and laser yellow', swatches: ['#0B0C16', '#00F0FF', '#FF0055', '#FFE600'], defaultWp: 'abstract-purple' },
+  { id: 'roseGoldMirage', name: 'Rose Gold Mirage', category: 'Luxury', desc: 'Luxurious rose gold velvet with coral blush and champagne', swatches: ['#1C131D', '#FB7185', '#F43F5E', '#FFE4E6'], defaultWp: 'cosmic-sunset' },
+  { id: 'solarFlare', name: 'Solar Flare Obsidian', category: 'Warm', desc: 'Midnight slate obsidian with molten amber and sunset gold', swatches: ['#0F172A', '#F59E0B', '#FB923C', '#FEF3C7'], defaultWp: 'spiderman-night' }
+];
+
+const DEFAULT_THEMES = PALETTE_DEFINITIONS.reduce((acc, p) => {
+  acc[p.id] = buildTheme(p.id, p.name, p.category, p.desc, p.swatches, p.defaultWp || 'abstract-purple');
+  return acc;
+}, {});
 
 const DEFAULT_PROMPTS = [
   {
@@ -235,11 +134,21 @@ const DEFAULT_PROMPTS = [
 ];
 
 const DEFAULT_SETTINGS = {
-  activeTheme: 'ferrariCorse',
+  activeTheme: 'orchidNoir',
   sidebarOpen: false,
   sidebarPosition: 'right',
   promptsEnabled: true,
   themeEnabled: true,
+  wallpaper: {
+    enabled: true,
+    type: 'preset',
+    presetId: 'abstract-purple',
+    url: '',
+    blur: 0,
+    brightness: 85,
+    overlayOpacity: 35,
+    panelBlur: 14
+  },
   customTheme: null,
 };
 
@@ -251,10 +160,22 @@ chrome.runtime.onInstalled.addListener(async () => {
     delete userThemes[id];
   });
 
+  // Always ensure all 20 curated themes are present and refreshed with full swatch palettes
   const mergedThemes = Object.assign({}, DEFAULT_THEMES, userThemes);
+  for (const [id, theme] of Object.entries(DEFAULT_THEMES)) {
+    if (!userThemes[id] || !userThemes[id].colors?.swatches) {
+      mergedThemes[id] = theme;
+    }
+  }
+
   const currentSettings = existing.settings || {};
   if (!mergedThemes[currentSettings.activeTheme]) {
-    currentSettings.activeTheme = 'ferrariCorse';
+    currentSettings.activeTheme = 'orchidNoir';
+  }
+
+  // Ensure decoupled wallpaper settings exist
+  if (!currentSettings.wallpaper) {
+    currentSettings.wallpaper = Object.assign({}, DEFAULT_SETTINGS.wallpaper);
   }
 
   await chrome.storage.local.set({
@@ -264,7 +185,7 @@ chrome.runtime.onInstalled.addListener(async () => {
   if (!existing.prompts || existing.prompts.length === 0) {
     await chrome.storage.local.set({ prompts: DEFAULT_PROMPTS });
   }
-  console.log('[PromptCanvas] Initialized with 5 Curated Atmospheric Wallpapers.');
+  console.log('[PromptCanvas] Initialized with 20 Curated Palette Themes.');
 });
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {

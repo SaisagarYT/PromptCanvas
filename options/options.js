@@ -1,46 +1,101 @@
 // PromptCanvas Options Page Script
 // Theme: Tokyo Duo & Active Color Studio
 
-const THEME_PREVIEWS = {
-  ferrariCorse: { bg: 'rgba(20, 16, 22, 0.9)', bar1: '#EF4444', bar2: '#F59E0B', border: 'rgba(239, 68, 68, 0.4)' },
-  violetRadiance: { bg: 'rgba(14, 10, 30, 0.9)', bar1: '#A855F7', bar2: '#C084FC', border: 'rgba(168, 85, 247, 0.4)' },
-  spidermanAction: { bg: 'rgba(16, 18, 28, 0.9)', bar1: '#EF4444', bar2: '#38BDF8', border: 'rgba(239, 68, 68, 0.4)' },
-  spidermanNight: { bg: 'rgba(12, 18, 24, 0.9)', bar1: '#F43F5E', bar2: '#FBBF24', border: 'rgba(244, 63, 94, 0.4)' },
-  twilightMirage: { bg: 'rgba(24, 12, 28, 0.9)', bar1: '#F43F5E', bar2: '#FB923C', border: 'rgba(244, 63, 94, 0.4)' },
-};
+function hexToRgba(hex, alpha) {
+  const clean = (hex || '#000000').replace('#', '');
+  const r = parseInt(clean.substring(0, 2), 16) || 0;
+  const g = parseInt(clean.substring(2, 4), 16) || 0;
+  const b = parseInt(clean.substring(4, 6), 16) || 0;
+  return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+}
 
-const FALLBACK_THEMES = {
-  ferrariCorse: {
-    id: 'ferrariCorse',
-    name: 'Scuderia Corse',
-    description: 'Italian Ferrari racing red with carbon fiber glass',
-    colors: { text: '#F8FAFC', textMuted: '#CBD5E1' }
-  },
-  violetRadiance: {
-    id: 'violetRadiance',
-    name: 'Violet Radiance',
-    description: 'Luminous cybernetic purple glow with midnight glass',
-    colors: { text: '#F8FAFC', textMuted: '#D8B4FE' }
-  },
-  spidermanAction: {
-    id: 'spidermanAction',
-    name: 'Spider-Man Skyline',
-    description: 'Dynamic crimson and web-blue battle across dusk skyline',
-    colors: { text: '#F8FAFC', textMuted: '#CBD5E1' }
-  },
-  spidermanNight: {
-    id: 'spidermanNight',
-    name: 'Spider-Man Noir City',
-    description: 'Iconic white spider emblem with amber streetlight bokeh',
-    colors: { text: '#F8FAFC', textMuted: '#94A3B8' }
-  },
-  twilightMirage: {
-    id: 'twilightMirage',
-    name: 'Twilight Mirage',
-    description: 'Radiant neon sunset reflection with coral glow',
-    colors: { text: '#F8FAFC', textMuted: '#FDA4AF' }
-  }
-};
+function buildTheme(id, name, category, desc, swatches, defaultWpPreset = 'abstract-purple') {
+  const [c1, c2, c3, c4] = swatches;
+  return {
+    id,
+    name,
+    category,
+    description: desc,
+    colors: {
+      primary: c2,
+      secondary: c3,
+      accent: c2,
+      background: hexToRgba(c1, 0.82),
+      surface: hexToRgba(c1, 0.88),
+      surfaceGlass: hexToRgba(c1, 0.70),
+      text: '#F8FAFC',
+      textMuted: hexToRgba(c4, 0.75),
+      border: hexToRgba(c2, 0.35),
+      inputBg: hexToRgba(c1, 0.86),
+      userBubble: hexToRgba(c2, 0.28),
+      userBubbleText: '#FFFFFF',
+      aiBubble: hexToRgba(c1, 0.60),
+      sidebar: hexToRgba(c1, 0.88),
+      sidebarHover: hexToRgba(c2, 0.14),
+      swatches
+    },
+    wallpaper: {
+      enabled: false,
+      type: 'preset',
+      presetId: defaultWpPreset,
+      url: '',
+      blur: 0,
+      brightness: 85,
+      overlayOpacity: 35,
+      panelBlur: 14
+    },
+    font: 'Inter',
+    fontSize: '15px',
+    borderRadius: '8px',
+    messageBorderRadius: '14px'
+  };
+}
+
+const PALETTE_DEFINITIONS = [
+  // Row 13 from reference image
+  { id: 'orchidNoir', name: 'Orchid Noir', category: 'Luxury', desc: 'Velvet plum and mauve orchid with rose mist glass', swatches: ['#4D3A4D', '#BE5CA9', '#D59CC5', '#EADADA'] },
+  { id: 'cyberTeal', name: 'Electric Cyber Teal', category: 'Cyber', desc: 'Deep space indigo with high-voltage electric cyan', swatches: ['#2A2C5F', '#43D9E7', '#3EC4D0', '#393C83'] },
+  { id: 'crimsonVelvet', name: 'Crimson Velvet', category: 'Vibrant', desc: 'Espresso charcoal with radiant neon cerise and crisp white', swatches: ['#2B2024', '#FD0053', '#A80139', '#FFFFFF'] },
+  { id: 'abyssalGold', name: 'Abyssal Gold', category: 'Luxury', desc: 'Midnight oceanic navy with sunburst gold and emerald jade', swatches: ['#001F3E', '#FFD716', '#0DA574', '#073358'] },
+
+  // Row 14 from reference image
+  { id: 'denimSunset', name: 'Denim Sunset', category: 'Warm', desc: 'Classic denim slate with crimson flame and sky turquoise', swatches: ['#3B4A6B', '#F23456', '#23B2DA', '#F1D43A'] },
+  { id: 'neonSeafoam', name: 'Neon Seafoam', category: 'Cyber', desc: 'Electric violet with refreshing mint seafoam and sky blue', swatches: ['#7A56D0', '#5BE7C4', '#4FC0E8', '#F6F7FB'] },
+  { id: 'ultramarineMagenta', name: 'Ultramarine Magenta', category: 'Vibrant', desc: 'Cobalt ultramarine with fluorescent neon magenta', swatches: ['#124E96', '#FF008E', '#0C8ABC', '#DAEAF7'] },
+  { id: 'peacockNoir', name: 'Peacock Noir', category: 'Nature', desc: 'Pitch obsidian black with teal peacock and lime chartreuse', swatches: ['#000000', '#1A8B9D', '#B1D430', '#FFF5F4'] },
+
+  // Row 15 from reference image
+  { id: 'terracottaSlate', name: 'Terracotta Slate', category: 'Warm', desc: 'Midnight steel with warm burnt terracotta and silver ash', swatches: ['#1A273A', '#C24D2C', '#3E4A62', '#D9D9D7'] },
+  { id: 'alpineMeadow', name: 'Alpine Meadow', category: 'Nature', desc: 'Deep alpine spruce with fresh matcha green and pale lemon', swatches: ['#073835', '#66D47E', '#C6E772', '#FAFFA3'] },
+  { id: 'apricotEmerald', name: 'Apricot Emerald', category: 'Nature', desc: 'Persian pine teal with warm apricot sand and almond cream', swatches: ['#007064', '#F4C180', '#00A79D', '#FFEED0'] },
+  { id: 'amethystMint', name: 'Amethyst Mint', category: 'Luxury', desc: 'Velvet amethyst purple with radiant turquoise mint', swatches: ['#9765C8', '#15CDA9', '#099A97', '#F0E4E4'] },
+
+  // Row 16 from reference image
+  { id: 'mandarinEmber', name: 'Mandarin Ember', category: 'Warm', desc: 'Dark roasted espresso with electric mandarin flame', swatches: ['#4E413B', '#FF6D24', '#857671', '#E2DED3'] },
+  { id: 'nordicGlacier', name: 'Nordic Glacier', category: 'Cool', desc: 'Nordic fjord blue with dandelion gold and glacier mint', swatches: ['#4A89AC', '#FAEE5A', '#ACE5F6', '#E3FCF9'] },
+  { id: 'twilightPersimmon', name: 'Twilight Persimmon', category: 'Warm', desc: 'Twilight plum purple with sunset persimmon and marigold', swatches: ['#423465', '#ED743F', '#FFAF50', '#824C97'] },
+  { id: 'sageOlive', name: 'Sage & Olive', category: 'Nature', desc: 'Charcoal graphite with sage evergreen and vanilla cream', swatches: ['#3F3F3F', '#437A5B', '#B4CD93', '#FBF5B7'] },
+
+  // Flagship luxury palettes to complete 20
+  { id: 'ferrariCorse', name: 'Scuderia Corse', category: 'Vibrant', desc: 'Italian racing red with carbon fiber glass and gold emblem', swatches: ['#141016', '#EF4444', '#F59E0B', '#F8FAFC'], defaultWp: 'ferrari-racing' },
+  { id: 'cyberpunkTokyo', name: 'Cyberpunk Tokyo', category: 'Cyber', desc: 'High-voltage Tokyo cyan with neon pink and laser yellow', swatches: ['#0B0C16', '#00F0FF', '#FF0055', '#FFE600'], defaultWp: 'abstract-purple' },
+  { id: 'roseGoldMirage', name: 'Rose Gold Mirage', category: 'Luxury', desc: 'Luxurious rose gold velvet with coral blush and champagne', swatches: ['#1C131D', '#FB7185', '#F43F5E', '#FFE4E6'], defaultWp: 'cosmic-sunset' },
+  { id: 'solarFlare', name: 'Solar Flare Obsidian', category: 'Warm', desc: 'Midnight slate obsidian with molten amber and sunset gold', swatches: ['#0F172A', '#F59E0B', '#FB923C', '#FEF3C7'], defaultWp: 'spiderman-night' }
+];
+
+const DEFAULT_THEMES = PALETTE_DEFINITIONS.reduce((acc, p) => {
+  acc[p.id] = buildTheme(p.id, p.name, p.category, p.desc, p.swatches, p.defaultWp || 'abstract-purple');
+  return acc;
+}, {});
+
+const WALLPAPER_PRESETS = [
+  { id: 'ferrari-racing', name: 'Ferrari Sunset', path: '../assets/wallpapers/ferrari-racing.jpg' },
+  { id: 'abstract-purple', name: 'Violet Radiance', path: '../assets/wallpapers/abstract-purple.jpg' },
+  { id: 'spiderman-action', name: 'Spider-Man Skyline', path: '../assets/wallpapers/spiderman-action.jpg' },
+  { id: 'spiderman-night', name: 'Spider-Man Noir', path: '../assets/wallpapers/spiderman-night.jpg' },
+  { id: 'cosmic-sunset', name: 'Twilight Mirage', path: '../assets/wallpapers/cosmic-sunset.jpg' },
+  { id: 'none', name: 'Solid Acrylic', path: '' }
+];
 
 // Curated Designer Presets (based on UI Color Palette reference)
 const DESIGNER_PRESETS = [
@@ -176,7 +231,9 @@ async function init() {
     applyRootStyles(storageData.uiPalette);
   }
 
+  renderThemeFilterBar();
   renderThemeGrid();
+  initWallpaperStudio();
   renderPromptTable();
   loadSettings();
   setupNavigation();
@@ -206,29 +263,83 @@ function setupNavigation() {
   }
 }
 
+let currentThemeCategory = 'all';
+
+function renderThemeFilterBar() {
+  const filterBar = document.getElementById('options-theme-filter-bar');
+  if (!filterBar) return;
+
+  const themes = (storageData.themes && Object.keys(storageData.themes).length) ? storageData.themes : DEFAULT_THEMES;
+  const allThemesList = Object.values(themes);
+
+  const categories = [
+    { id: 'all', label: 'All', count: allThemesList.length },
+    { id: 'Luxury', label: 'Luxury', count: allThemesList.filter(t => t.category === 'Luxury').length },
+    { id: 'Cyber', label: 'Cyber', count: allThemesList.filter(t => t.category === 'Cyber').length },
+    { id: 'Vibrant', label: 'Vibrant', count: allThemesList.filter(t => t.category === 'Vibrant').length },
+    { id: 'Nature', label: 'Nature', count: allThemesList.filter(t => t.category === 'Nature').length },
+    { id: 'Warm', label: 'Warm', count: allThemesList.filter(t => t.category === 'Warm').length },
+    { id: 'Cool', label: 'Cool', count: allThemesList.filter(t => t.category === 'Cool').length }
+  ];
+
+  filterBar.innerHTML = categories.map(cat => `
+    <button class="theme-filter-chip ${currentThemeCategory === cat.id ? 'active' : ''}" data-category="${cat.id}">
+      <span>${cat.label}</span>
+      <span class="chip-count">${cat.count}</span>
+    </button>
+  `).join('');
+
+  filterBar.querySelectorAll('.theme-filter-chip').forEach(chip => {
+    chip.addEventListener('click', () => {
+      currentThemeCategory = chip.dataset.category;
+      filterBar.querySelectorAll('.theme-filter-chip').forEach(c => c.classList.remove('active'));
+      chip.classList.add('active');
+      renderThemeGrid();
+    });
+  });
+}
+
 function renderThemeGrid() {
   const grid = document.getElementById('options-theme-grid');
   if (!grid) return;
-  const themes = (storageData.themes && Object.keys(storageData.themes).length) ? storageData.themes : FALLBACK_THEMES;
+  const themes = (storageData.themes && Object.keys(storageData.themes).length) ? storageData.themes : DEFAULT_THEMES;
   const settings = storageData.settings || {};
-  const activeId = settings.activeTheme || 'ferrariCorse';
+  const activeId = settings.activeTheme || 'orchidNoir';
 
-  grid.innerHTML = Object.values(themes).map(theme => {
-    const prev = THEME_PREVIEWS[theme.id] || { bg: 'rgba(20, 16, 22, 0.9)', bar1: '#EF4444', bar2: '#F59E0B', border: 'rgba(239, 68, 68, 0.4)' };
-    const textColor = theme.colors?.text || '#F8FAFC';
-    const textMutedColor = theme.colors?.textMuted || 'rgba(255, 255, 255, 0.70)';
-    const name = FALLBACK_THEMES[theme.id]?.name || theme.name;
-    const desc = FALLBACK_THEMES[theme.id]?.description || theme.description;
+  let filtered = Object.values(themes);
+  if (currentThemeCategory !== 'all') {
+    filtered = filtered.filter(t => t.category === currentThemeCategory);
+  }
+
+  grid.innerHTML = filtered.map(theme => {
+    const swatches = theme.colors?.swatches || ['#141016', '#EF4444', '#F59E0B', '#F8FAFC'];
+    const [c1, c2, c3, c4] = swatches;
+    const isSelected = activeId === theme.id;
+    const cat = theme.category || 'Luxury';
+
     return `
-      <div class="theme-card-full ${activeId === theme.id ? 'selected' : ''}" data-theme-id="${theme.id}" style="background:${prev.bg};border-color:${prev.border};">
-        <div class="theme-selected-badge">ACTIVE</div>
-        <div class="theme-preview-full" style="background:${prev.bg};border:1px solid ${prev.border};">
-          <div class="theme-preview-msg" style="background:${prev.bar1};"></div>
-          <div class="theme-preview-msg short" style="background:${prev.bar2};"></div>
-          <div class="theme-preview-msg" style="background:${prev.bar1};opacity:0.6;width:80%;"></div>
+      <div class="theme-card-full ${isSelected ? 'selected' : ''}" data-theme-id="${theme.id}">
+        <div class="theme-card-header">
+          <div class="theme-card-title-group">
+            <span class="theme-category-tag">${escapeHtml(cat)}</span>
+            <span class="theme-card-name">${escapeHtml(theme.name)}</span>
+          </div>
+          <div class="theme-selected-badge">ACTIVE</div>
         </div>
-        <div class="theme-name-full" style="color:${textColor};">${name}</div>
-        <div class="theme-desc-full" style="color:${textMutedColor};">${desc}</div>
+
+        <!-- 4-Stripe Color Palette Harmony Bar with Tooltip Hex Codes -->
+        <div class="opt-palette-harmony-bar" title="Palette Swatches">
+          ${swatches.map(hex => `<div class="opt-palette-stripe" data-hex="${hex}" style="background-color: ${hex};"></div>`).join('')}
+        </div>
+
+        <!-- Live Chat Bubble Preview -->
+        <div class="theme-preview-full" style="background: ${c1};">
+          <div class="theme-preview-msg" style="background: ${c2}; box-shadow: 0 1px 4px rgba(0,0,0,0.2);"></div>
+          <div class="theme-preview-msg short" style="background: ${c3};"></div>
+          <div class="theme-preview-msg" style="background: ${c2}; opacity: 0.6; width: 85%;"></div>
+        </div>
+
+        <div class="theme-desc-full">${escapeHtml(theme.description || '')}</div>
       </div>`;
   }).join('');
 
@@ -239,11 +350,189 @@ function renderThemeGrid() {
       settings.activeTheme = themeId;
       storageData.settings = settings;
       await chrome.storage.local.set({ settings });
-      document.querySelectorAll('.theme-card-full').forEach(c => c.classList.remove('selected'));
+      grid.querySelectorAll('.theme-card-full').forEach(c => c.classList.remove('selected'));
       card.classList.add('selected');
-      showToast('Theme preset applied');
+      showToast('Theme palette activated: ' + (themes[themeId]?.name || themeId));
     });
   });
+}
+
+function initWallpaperStudio() {
+  const wp = storageData.settings?.wallpaper || {
+    enabled: true,
+    type: 'preset',
+    presetId: 'abstract-purple',
+    url: '',
+    blur: 0,
+    brightness: 85,
+    overlayOpacity: 35,
+    panelBlur: 14
+  };
+
+  const toggle = document.getElementById('opt-wallpaper-enabled');
+  const workbench = document.getElementById('wallpaper-workbench');
+  const presetsGrid = document.getElementById('wallpaper-presets-grid');
+  const urlInput = document.getElementById('opt-wallpaper-url');
+
+  const blurSlider = document.getElementById('opt-wallpaper-blur');
+  const brightSlider = document.getElementById('opt-wallpaper-brightness');
+  const overlaySlider = document.getElementById('opt-wallpaper-overlay');
+  const panelBlurSlider = document.getElementById('opt-wallpaper-panelblur');
+
+  const valBlur = document.getElementById('val-wallpaper-blur');
+  const valBright = document.getElementById('val-wallpaper-brightness');
+  const valOverlay = document.getElementById('val-wallpaper-overlay');
+  const valPanelBlur = document.getElementById('val-wallpaper-panelblur');
+
+  const preview = document.getElementById('wallpaper-live-preview');
+  const overlay = document.getElementById('wallpaper-live-overlay');
+  const glassCard = document.getElementById('wallpaper-live-glass-card');
+
+  function updateLivePreview() {
+    if (!preview) return;
+    const isEnabled = toggle ? toggle.checked : true;
+    if (workbench) workbench.style.opacity = isEnabled ? '1' : '0.45';
+
+    let bgUrl = '';
+    if (wp.presetId && wp.presetId !== 'none') {
+      const p = WALLPAPER_PRESETS.find(item => item.id === wp.presetId);
+      if (p && p.path) bgUrl = p.path;
+    } else if (wp.url) {
+      bgUrl = wp.url;
+    }
+
+    if (bgUrl) {
+      preview.style.backgroundImage = `url("${bgUrl}")`;
+      preview.style.backgroundColor = '#111827';
+    } else {
+      preview.style.backgroundImage = 'none';
+      preview.style.backgroundColor = '#18181B';
+    }
+
+    const blur = blurSlider ? blurSlider.value : (wp.blur || 0);
+    const brightness = brightSlider ? brightSlider.value : (wp.brightness || 85);
+    preview.style.filter = `blur(${blur}px) brightness(${brightness}%)`;
+
+    const overlayPct = overlaySlider ? overlaySlider.value : (wp.overlayOpacity || 35);
+    if (overlay) overlay.style.backgroundColor = `rgba(10, 8, 18, ${overlayPct / 100})`;
+
+    const panelBlur = panelBlurSlider ? panelBlurSlider.value : (wp.panelBlur || 14);
+    if (glassCard) {
+      glassCard.style.backdropFilter = `blur(${panelBlur}px) saturate(140%)`;
+      glassCard.style.webkitBackdropFilter = `blur(${panelBlur}px) saturate(140%)`;
+    }
+  }
+
+  // Populate presets
+  if (presetsGrid) {
+    presetsGrid.innerHTML = WALLPAPER_PRESETS.map(preset => {
+      const isActive = wp.presetId === preset.id;
+      const bgStyle = preset.path ? `background-image: url('${preset.path}');` : 'background: #27272A; display: flex; align-items: center; justify-content: center; font-size: 10px; color: #A1A1AA; font-weight: 700;';
+      return `
+        <div class="wallpaper-preset-card ${isActive ? 'active' : ''}" data-preset-id="${preset.id}">
+          <div class="wallpaper-preset-thumb" style="${bgStyle}">
+            ${preset.id === 'none' ? '<span>NO WALLPAPER</span>' : ''}
+          </div>
+          <div class="wallpaper-preset-name">${escapeHtml(preset.name)}</div>
+        </div>
+      `;
+    }).join('');
+
+    presetsGrid.querySelectorAll('.wallpaper-preset-card').forEach(card => {
+      card.addEventListener('click', async () => {
+        const presetId = card.dataset.presetId;
+        wp.presetId = presetId;
+        wp.type = presetId === 'none' ? 'none' : 'preset';
+        if (urlInput) urlInput.value = '';
+        wp.url = '';
+
+        presetsGrid.querySelectorAll('.wallpaper-preset-card').forEach(c => c.classList.remove('active'));
+        card.classList.add('active');
+
+        await saveWallpaperSettings();
+        updateLivePreview();
+        showToast('Wallpaper backdrop updated');
+      });
+    });
+  }
+
+  // Set initial slider & toggle values
+  if (toggle) {
+    toggle.checked = wp.enabled !== false;
+    toggle.addEventListener('change', async (e) => {
+      wp.enabled = e.target.checked;
+      await saveWallpaperSettings();
+      updateLivePreview();
+      showToast(wp.enabled ? 'Atmospheric wallpaper enabled' : 'Wallpaper disabled (clean glass mode)');
+    });
+  }
+
+  if (urlInput) {
+    urlInput.value = wp.url || '';
+    urlInput.addEventListener('input', async (e) => {
+      wp.url = e.target.value.trim();
+      if (wp.url) {
+        wp.type = 'custom_url';
+        wp.presetId = '';
+        presetsGrid?.querySelectorAll('.wallpaper-preset-card').forEach(c => c.classList.remove('active'));
+      }
+      await saveWallpaperSettings();
+      updateLivePreview();
+    });
+  }
+
+  if (blurSlider && valBlur) {
+    blurSlider.value = typeof wp.blur !== 'undefined' ? wp.blur : 0;
+    valBlur.textContent = `${blurSlider.value}px`;
+    blurSlider.addEventListener('input', (e) => {
+      valBlur.textContent = `${e.target.value}px`;
+      wp.blur = parseInt(e.target.value, 10);
+      updateLivePreview();
+    });
+    blurSlider.addEventListener('change', saveWallpaperSettings);
+  }
+
+  if (brightSlider && valBright) {
+    brightSlider.value = typeof wp.brightness !== 'undefined' ? wp.brightness : 85;
+    valBright.textContent = `${brightSlider.value}%`;
+    brightSlider.addEventListener('input', (e) => {
+      valBright.textContent = `${e.target.value}%`;
+      wp.brightness = parseInt(e.target.value, 10);
+      updateLivePreview();
+    });
+    brightSlider.addEventListener('change', saveWallpaperSettings);
+  }
+
+  if (overlaySlider && valOverlay) {
+    overlaySlider.value = typeof wp.overlayOpacity !== 'undefined' ? wp.overlayOpacity : 35;
+    valOverlay.textContent = `${overlaySlider.value}%`;
+    overlaySlider.addEventListener('input', (e) => {
+      valOverlay.textContent = `${e.target.value}%`;
+      wp.overlayOpacity = parseInt(e.target.value, 10);
+      updateLivePreview();
+    });
+    overlaySlider.addEventListener('change', saveWallpaperSettings);
+  }
+
+  if (panelBlurSlider && valPanelBlur) {
+    panelBlurSlider.value = typeof wp.panelBlur !== 'undefined' ? wp.panelBlur : 14;
+    valPanelBlur.textContent = `${panelBlurSlider.value}px`;
+    panelBlurSlider.addEventListener('input', (e) => {
+      valPanelBlur.textContent = `${e.target.value}px`;
+      wp.panelBlur = parseInt(e.target.value, 10);
+      updateLivePreview();
+    });
+    panelBlurSlider.addEventListener('change', saveWallpaperSettings);
+  }
+
+  async function saveWallpaperSettings() {
+    const settings = storageData.settings || {};
+    settings.wallpaper = wp;
+    storageData.settings = settings;
+    await chrome.storage.local.set({ settings });
+  }
+
+  updateLivePreview();
 }
 
 function renderPromptTable() {

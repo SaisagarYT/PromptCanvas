@@ -9,17 +9,38 @@ const SUPPORTED_PLATFORMS = {
   'chat.deepseek.com': { name: 'DeepSeek', id: 'deepseek' },
 };
 
-const THEME_COLORS = {
-  ferrariCorse: { dot: '#EF4444', name: 'Ferrari' },
-  violetRadiance: { dot: '#A855F7', name: 'Violet' },
-  spidermanAction: { dot: '#38BDF8', name: 'Spider-Man' },
-  spidermanNight: { dot: '#F43F5E', name: 'Noir' },
-  twilightMirage: { dot: '#FB923C', name: 'Mirage' },
-};
+const PALETTE_DEFINITIONS = [
+  { id: 'orchidNoir', name: 'Orchid Noir', dot: '#BE5CA9' },
+  { id: 'cyberTeal', name: 'Electric Teal', dot: '#43D9E7' },
+  { id: 'crimsonVelvet', name: 'Crimson Velvet', dot: '#FD0053' },
+  { id: 'abyssalGold', name: 'Abyssal Gold', dot: '#FFD716' },
+  { id: 'denimSunset', name: 'Denim Sunset', dot: '#F23456' },
+  { id: 'neonSeafoam', name: 'Neon Seafoam', dot: '#5BE7C4' },
+  { id: 'ultramarineMagenta', name: 'Ultramarine', dot: '#FF008E' },
+  { id: 'peacockNoir', name: 'Peacock Noir', dot: '#1A8B9D' },
+  { id: 'terracottaSlate', name: 'Terracotta', dot: '#C24D2C' },
+  { id: 'alpineMeadow', name: 'Alpine Meadow', dot: '#66D47E' },
+  { id: 'apricotEmerald', name: 'Apricot Emerald', dot: '#F4C180' },
+  { id: 'amethystMint', name: 'Amethyst Mint', dot: '#15CDA9' },
+  { id: 'mandarinEmber', name: 'Mandarin Ember', dot: '#FF6D24' },
+  { id: 'nordicGlacier', name: 'Nordic Glacier', dot: '#FAEE5A' },
+  { id: 'twilightPersimmon', name: 'Twilight Persimmon', dot: '#ED743F' },
+  { id: 'sageOlive', name: 'Sage & Olive', dot: '#437A5B' },
+  { id: 'ferrariCorse', name: 'Scuderia Corse', dot: '#EF4444' },
+  { id: 'cyberpunkTokyo', name: 'Cyberpunk Tokyo', dot: '#00F0FF' },
+  { id: 'roseGoldMirage', name: 'Rose Gold', dot: '#FB7185' },
+  { id: 'solarFlare', name: 'Solar Flare', dot: '#F59E0B' }
+];
 
 let currentTabId = null;
 let currentPlatform = null;
 let storageData = {};
+
+function escapeHtml(str) {
+  const d = document.createElement('div');
+  d.textContent = str || '';
+  return d.innerHTML;
+}
 
 async function init() {
   const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
@@ -96,11 +117,11 @@ function updateStats() {
   const settings = storageData.settings || {};
   const prompts = storageData.prompts || [];
   const themes = storageData.themes || {};
-  const activeThemeId = settings.activeTheme || 'ferrariCorse';
-  const activeTheme = themes[activeThemeId] || themes['ferrariCorse'] || Object.values(themes)[0];
+  const activeThemeId = settings.activeTheme || 'orchidNoir';
+  const activeTheme = themes[activeThemeId] || Object.values(themes)[0] || { name: 'Orchid Noir' };
   const statTheme = document.getElementById('stat-theme');
   const statPrompts = document.getElementById('stat-prompts');
-  if (statTheme) statTheme.textContent = activeTheme?.name || 'Corse';
+  if (statTheme) statTheme.textContent = activeTheme?.name || 'Theme';
   if (statPrompts) statPrompts.textContent = prompts.length;
 }
 
@@ -108,12 +129,22 @@ function renderThemeChips() {
   const container = document.getElementById('theme-chips');
   if (!container) return;
   const settings = storageData.settings || {};
-  const activeThemeId = settings.activeTheme || 'ferrariCorse';
+  const activeThemeId = settings.activeTheme || 'orchidNoir';
 
-  container.innerHTML = Object.entries(THEME_COLORS).map(([id, info]) => `
-    <div class="theme-chip ${activeThemeId === id ? 'active' : ''}" data-theme="${id}">
-      <div class="theme-chip-dot" style="background:${info.dot};"></div>
-      <span class="theme-chip-name">${info.name}</span>
+  const themes = storageData.themes || {};
+  const palettes = PALETTE_DEFINITIONS.map(p => {
+    const t = themes[p.id];
+    return {
+      id: p.id,
+      name: t?.name || p.name,
+      dot: t?.colors?.primary || p.dot
+    };
+  });
+
+  container.innerHTML = palettes.map(item => `
+    <div class="theme-chip ${activeThemeId === item.id ? 'active' : ''}" data-theme="${item.id}" title="${escapeHtml(item.name)}">
+      <div class="theme-chip-dot" style="background:${item.dot};"></div>
+      <span class="theme-chip-name">${escapeHtml(item.name)}</span>
       <span class="theme-chip-check">
         <svg class="icon-svg icon-tiny" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
           <polyline points="20 6 9 17 4 12"/>
