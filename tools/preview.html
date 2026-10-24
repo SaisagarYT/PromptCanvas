@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <title>PromptCanvas Live Sidebar Preview Harness</title>
-  <link rel="stylesheet" href="../content/content.css">
+  <link rel="stylesheet" href="../sidebar/sidebar.css">
   <style>
     body {
       margin: 0;
@@ -51,66 +51,139 @@
   <script src="../content/modules/icons.js"></script>
   <script src="../content/modules/theme-engine.js"></script>
   <script src="../content/modules/composer.js"></script>
-  <script src="../content/modules/components.js"></script>
+  <script src="../sidebar/sidebar.js"></script>
   <script>
     // In-memory mock chrome.storage for full interactive standalone preview
     const mockStorage = {
       themes: {
-        amberDuo: {
-          id: 'amberDuo',
-          name: 'Tokyo Amber',
-          description: 'Ultra-light #FFFBF5 linen canvas with Slate Navy #283845 elements',
+        ferrariCorse: {
+          id: 'ferrariCorse',
+          name: 'Scuderia Corse',
+          description: 'Italian Ferrari racing red with sleek carbon fiber glass and golden emblem accents',
+          category: 'Racing',
           colors: {
-            primary: '#283845',
-            secondary: '#FFA649',
-            accent: '#283845',
-            background: '#FFFBF5',
-            surface: '#FFFBF5',
-            surfaceGlass: '#FFFBF5',
-            text: '#151E25',
-            border: 'rgba(40, 56, 69, 0.12)',
-            inputBg: '#FFFFFF',
-            userBubble: '#283845',
-            userBubbleText: '#FFFBF5',
-            aiBubble: 'rgba(40, 56, 69, 0.04)'
+            background: 'rgba(20, 16, 22, 0.80)',
+            primary: '#EF4444',
+            secondary: '#F59E0B',
+            border: 'rgba(239, 68, 68, 0.32)',
+            text: '#F8FAFC',
+            userBubble: 'rgba(239, 68, 68, 0.28)',
+            userBubbleText: '#FFFFFF',
+            aiBubble: 'rgba(28, 20, 26, 0.55)'
+          },
+          wallpaper: {
+            enabled: true,
+            type: 'preset',
+            presetId: 'ferrari-racing',
+            url: '../assets/wallpapers/ferrari-racing.jpg',
+            blur: 0,
+            brightness: 85,
+            overlayOpacity: 38,
+            panelBlur: 14
           }
         },
-        slateDuo: {
-          id: 'slateDuo',
-          name: 'Tokyo Slate',
-          description: 'Deep Slate Navy #283845 canvas with Golden Amber #FFA649 accents',
+        violetRadiance: {
+          id: 'violetRadiance',
+          name: 'Violet Radiance',
+          description: 'Luminous cybernetic purple pillar glow with deep midnight indigo glass',
+          category: 'Cyber',
           colors: {
-            primary: '#FFA649',
-            secondary: '#283845',
-            accent: '#FFA649',
-            background: '#283845',
-            surface: '#283845',
-            surfaceGlass: '#283845',
-            text: '#FFA649',
-            border: 'rgba(255, 166, 73, 0.25)',
-            inputBg: '#283845',
-            userBubble: '#FFA649',
-            userBubbleText: '#151E25',
-            aiBubble: 'rgba(255, 166, 73, 0.08)'
+            background: 'rgba(14, 10, 30, 0.80)',
+            primary: '#A855F7',
+            secondary: '#C084FC',
+            border: 'rgba(168, 85, 247, 0.35)',
+            text: '#F8FAFC',
+            userBubble: 'rgba(168, 85, 247, 0.30)',
+            userBubbleText: '#FFFFFF',
+            aiBubble: 'rgba(24, 16, 48, 0.55)'
+          },
+          wallpaper: {
+            enabled: true,
+            type: 'preset',
+            presetId: 'abstract-purple',
+            url: '../assets/wallpapers/abstract-purple.jpg',
+            blur: 0,
+            brightness: 85,
+            overlayOpacity: 35,
+            panelBlur: 14
           }
         },
-        contrastDuo: {
-          id: 'contrastDuo',
-          name: 'Tokyo Dual',
-          description: 'High-contrast Slate borders & deep accents on warm linen',
+        spidermanAction: {
+          id: 'spidermanAction',
+          name: 'Spider-Man Skyline',
+          description: 'Dynamic heroic crimson and electric web-blue battle across Manhattan dusk',
+          category: 'Heroic',
           colors: {
-            primary: '#283845',
-            secondary: '#FFA649',
-            accent: '#283845',
-            background: '#FFFBF5',
-            surface: '#FFFBF5',
-            surfaceGlass: '#FFFBF5',
-            text: '#151E25',
-            border: '#283845',
-            inputBg: '#FFFFFF',
-            userBubble: '#151E25',
-            userBubbleText: '#FFFBF5',
-            aiBubble: 'rgba(40, 56, 69, 0.06)'
+            background: 'rgba(16, 18, 28, 0.82)',
+            primary: '#EF4444',
+            secondary: '#38BDF8',
+            border: 'rgba(239, 68, 68, 0.32)',
+            text: '#F8FAFC',
+            userBubble: 'rgba(239, 68, 68, 0.28)',
+            userBubbleText: '#FFFFFF',
+            aiBubble: 'rgba(20, 24, 40, 0.55)'
+          },
+          wallpaper: {
+            enabled: true,
+            type: 'preset',
+            presetId: 'spiderman-action',
+            url: '../assets/wallpapers/spiderman-action.jpg',
+            blur: 0,
+            brightness: 85,
+            overlayOpacity: 38,
+            panelBlur: 14
+          }
+        },
+        spidermanNight: {
+          id: 'spidermanNight',
+          name: 'Spider-Man Noir City',
+          description: 'Iconic white spider emblem with deep urban midnight and amber streetlight bokeh',
+          category: 'Heroic',
+          colors: {
+            background: 'rgba(12, 18, 24, 0.84)',
+            primary: '#F43F5E',
+            secondary: '#FBBF24',
+            border: 'rgba(244, 63, 94, 0.32)',
+            text: '#F8FAFC',
+            userBubble: 'rgba(244, 63, 94, 0.26)',
+            userBubbleText: '#FFFFFF',
+            aiBubble: 'rgba(18, 26, 36, 0.55)'
+          },
+          wallpaper: {
+            enabled: true,
+            type: 'preset',
+            presetId: 'spiderman-night',
+            url: '../assets/wallpapers/spiderman-night.jpg',
+            blur: 0,
+            brightness: 85,
+            overlayOpacity: 42,
+            panelBlur: 14
+          }
+        },
+        twilightMirage: {
+          id: 'twilightMirage',
+          name: 'Twilight Mirage',
+          description: 'Radiant neon sunset reflection with vivid magenta, coral glow, and twilight purple sea',
+          category: 'Scenery',
+          colors: {
+            background: 'rgba(24, 12, 28, 0.78)',
+            primary: '#F43F5E',
+            secondary: '#FB923C',
+            border: 'rgba(244, 63, 94, 0.36)',
+            text: '#F8FAFC',
+            userBubble: 'rgba(244, 63, 94, 0.30)',
+            userBubbleText: '#FFFFFF',
+            aiBubble: 'rgba(36, 18, 42, 0.55)'
+          },
+          wallpaper: {
+            enabled: true,
+            type: 'preset',
+            presetId: 'cosmic-sunset',
+            url: '../assets/wallpapers/cosmic-sunset.jpg',
+            blur: 0,
+            brightness: 85,
+            overlayOpacity: 35,
+            panelBlur: 14
           }
         }
       },
@@ -152,7 +225,7 @@
         }
       ],
       settings: {
-        activeTheme: 'amberDuo',
+        activeTheme: 'ferrariCorse',
         sidebarOpen: true,
         themeEnabled: true,
         promptsEnabled: true

@@ -1,12 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>PromptCanvas — Options & Settings</title>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600&display=swap"
+    rel="stylesheet">
   <style>
-    *, *::before, *::after {
+    *,
+    *::before,
+    *::after {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
@@ -16,9 +21,9 @@
     :root {
       --color-light: #FFFBF5;
       --color-dark: #283845;
-      --color-darker: #151E25;
+      --color-darker: #0F172A;
       --color-amber: #FFA649;
-      --color-dark-muted: rgba(40, 56, 69, 0.70);
+      --color-dark-muted: #475569;
       --color-dark-subtle: rgba(40, 56, 69, 0.04);
       --color-border: rgba(40, 56, 69, 0.12);
       --color-border-strong: rgba(40, 56, 69, 0.28);
@@ -61,6 +66,7 @@
       justify-content: center;
       box-shadow: 0 1px 3px rgba(40, 56, 69, 0.2);
     }
+
     .hero-logo svg {
       width: 22px;
       height: 22px;
@@ -279,11 +285,6 @@
 
     .theme-card-full.selected .theme-selected-badge {
       display: block;
-    }
-
-    .theme-card-full[data-theme-id="slateDuo"] .theme-selected-badge {
-      background: var(--color-amber);
-      color: #151E25;
     }
 
     /* ===== PROMPT TABLE ===== */
@@ -510,12 +511,12 @@
       transition: transform 0.15s ease;
     }
 
-    .toggle-wrap input:checked + .toggle-slider {
+    .toggle-wrap input:checked+.toggle-slider {
       background: var(--color-dark);
       border-color: var(--color-dark);
     }
 
-    .toggle-wrap input:checked + .toggle-slider::before {
+    .toggle-wrap input:checked+.toggle-slider::before {
       transform: translateX(16px);
       background: var(--color-light);
     }
@@ -533,6 +534,7 @@
       font-size: 12px;
       color: var(--color-dark-muted);
     }
+
     .studio-notice svg {
       flex-shrink: 0;
       color: var(--color-dark);
@@ -548,6 +550,7 @@
       justify-content: space-between;
       margin-bottom: 12px;
     }
+
     .presets-title {
       font-family: 'Plus Jakarta Sans', sans-serif;
       font-size: 11px;
@@ -556,6 +559,7 @@
       text-transform: uppercase;
       letter-spacing: 0.8px;
     }
+
     .presets-sub {
       font-size: 11px;
       color: var(--color-dark-muted);
@@ -569,9 +573,11 @@
       overflow-y: auto;
       padding: 2px;
     }
+
     .presets-grid::-webkit-scrollbar {
       width: 4px;
     }
+
     .presets-grid::-webkit-scrollbar-thumb {
       background: var(--color-border);
       border-radius: 2px;
@@ -589,10 +595,12 @@
       gap: 8px;
       text-align: left;
     }
+
     .preset-chip-card:hover {
       border-color: var(--color-dark);
       transform: translateY(-1px);
     }
+
     .preset-chip-card.active {
       border-color: var(--color-dark);
       box-shadow: 0 0 0 1.5px var(--color-dark);
@@ -604,12 +612,14 @@
       align-items: center;
       justify-content: space-between;
     }
+
     .preset-name {
       font-family: 'Plus Jakarta Sans', sans-serif;
       font-size: 11px;
       font-weight: 800;
       color: var(--color-darker);
     }
+
     .preset-num {
       font-size: 9px;
       font-family: 'JetBrains Mono', monospace;
@@ -627,6 +637,7 @@
       overflow: hidden;
       border: 1px solid rgba(40, 56, 69, 0.12);
     }
+
     .preset-swatch {
       flex: 1;
       height: 100%;
@@ -671,6 +682,7 @@
       gap: 2px;
       flex: 1;
     }
+
     .color-info-title {
       font-family: 'Plus Jakarta Sans', sans-serif;
       font-size: 11px;
@@ -679,6 +691,7 @@
       text-transform: uppercase;
       letter-spacing: 0.4px;
     }
+
     .color-info-role {
       font-size: 10px;
       color: var(--color-dark-muted);
@@ -689,6 +702,7 @@
       align-items: center;
       gap: 8px;
     }
+
     .color-picker-input {
       -webkit-appearance: none;
       -moz-appearance: none;
@@ -702,9 +716,11 @@
       padding: 0;
       overflow: hidden;
     }
+
     .color-picker-input::-webkit-color-swatch-wrapper {
       padding: 0;
     }
+
     .color-picker-input::-webkit-color-swatch {
       border: none;
       border-radius: var(--radius-sm);
@@ -724,6 +740,7 @@
       text-align: center;
       outline: none;
     }
+
     .color-hex-input:focus {
       border-color: var(--color-dark);
     }
@@ -738,6 +755,7 @@
       border-radius: var(--radius-sm);
       margin-top: 4px;
     }
+
     .contrast-label {
       font-family: 'Plus Jakarta Sans', sans-serif;
       font-size: 11px;
@@ -745,6 +763,7 @@
       color: var(--color-darker);
       text-transform: uppercase;
     }
+
     .contrast-badge {
       font-family: 'JetBrains Mono', monospace;
       font-size: 10px;
@@ -778,6 +797,7 @@
       align-items: center;
       justify-content: space-between;
     }
+
     .mock-live-pill {
       font-size: 8px;
       font-weight: 800;
@@ -808,11 +828,13 @@
       padding-bottom: 8px;
       border-bottom: 1px solid rgba(40, 56, 69, 0.1);
     }
+
     .mock-logo {
       display: flex;
       align-items: center;
       gap: 6px;
     }
+
     .mock-logo-box {
       width: 20px;
       height: 20px;
@@ -825,6 +847,7 @@
       font-size: 9px;
       font-weight: 900;
     }
+
     .mock-logo-name {
       font-family: 'Plus Jakarta Sans', sans-serif;
       font-size: 11px;
@@ -832,6 +855,7 @@
       color: var(--prev-text, #151E25);
       letter-spacing: -0.2px;
     }
+
     .mock-pill {
       font-size: 8px;
       font-weight: 800;
@@ -851,20 +875,24 @@
       align-items: center;
       justify-content: space-between;
     }
+
     .mock-banner-text {
       display: flex;
       flex-direction: column;
     }
+
     .mock-banner-sub {
       font-size: 7px;
       font-weight: 800;
       letter-spacing: 0.5px;
       opacity: 0.7;
     }
+
     .mock-banner-title {
       font-size: 10px;
       font-weight: 800;
     }
+
     .mock-btn-sm {
       background: var(--prev-controls, #283845);
       color: var(--prev-canvas, #FFFBF5);
@@ -881,6 +909,7 @@
       grid-template-columns: repeat(3, 1fr);
       gap: 6px;
     }
+
     .mock-card {
       background: rgba(40, 56, 69, 0.05);
       border: 1px solid rgba(40, 56, 69, 0.1);
@@ -902,6 +931,7 @@
       font-size: 8px;
       font-weight: 800;
     }
+
     .mock-slider-switch {
       width: 22px;
       height: 12px;
@@ -909,6 +939,7 @@
       border-radius: 6px;
       position: relative;
     }
+
     .mock-slider-switch::after {
       content: '';
       position: absolute;
@@ -950,337 +981,359 @@
     }
   </style>
 </head>
+
 <body>
 
-<!-- Header -->
-<div class="hero">
-  <div class="hero-content">
-    <div class="hero-logo">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M12 2L2 7l10 5 10-5-10-5Z"/>
-        <path d="m2 17 10 5 10-5"/>
-        <path d="m2 12 10 5 10-5"/>
-      </svg>
+  <!-- Header -->
+  <div class="hero">
+    <div class="hero-content">
+      <div class="hero-logo">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round"
+          stroke-linejoin="round">
+          <path d="M12 2L2 7l10 5 10-5-10-5Z" />
+          <path d="m2 17 10 5 10-5" />
+          <path d="m2 12 10 5 10-5" />
+        </svg>
+      </div>
+      <div class="hero-text">
+        <h1>PromptCanvas Dashboard</h1>
+        <p>Tokyo Duo Theme Engine · Curated Palettes & Prompt Library Management</p>
+      </div>
+      <div class="hero-badge">TOKYO DUO</div>
     </div>
-    <div class="hero-text">
-      <h1>PromptCanvas Dashboard</h1>
-      <p>Tokyo Duo Theme Engine · Curated Palettes & Prompt Library Management</p>
-    </div>
-    <div class="hero-badge">TOKYO DUO PRO</div>
   </div>
-</div>
 
-<!-- Main Content -->
-<div class="main-layout">
-  <!-- Nav -->
-  <nav class="options-nav">
-    <div class="nav-label">Dashboard</div>
-    <button class="nav-item active" data-panel="themes">
-      <span class="nav-icon">
-        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <circle cx="13.5" cy="6.5" r=".5" fill="currentColor"/>
-          <circle cx="17.5" cy="10.5" r=".5" fill="currentColor"/>
-          <circle cx="8.5" cy="7.5" r=".5" fill="currentColor"/>
-          <circle cx="6.5" cy="12.5" r=".5" fill="currentColor"/>
-          <path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"/>
-        </svg>
-      </span>
-      <span>Themes</span>
-    </button>
-    <button class="nav-item" data-panel="prompts">
-      <span class="nav-icon">
-        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="m18 16 4-4-4-4"/>
-          <path d="m6 8-4 4 4 4"/>
-          <path d="m14.5 4-5 16"/>
-        </svg>
-      </span>
-      <span>Prompts</span>
-    </button>
-    <button class="nav-item" data-panel="new-prompt">
-      <span class="nav-icon">
-        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M5 12h14"/>
-          <path d="M12 5v14"/>
-        </svg>
-      </span>
-      <span>Add Prompt</span>
-    </button>
-    <button class="nav-item" data-panel="palette">
-      <span class="nav-icon">
-        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/>
-        </svg>
-      </span>
-      <span>Color Studio</span>
-    </button>
-    <button class="nav-item" data-panel="settings">
-      <span class="nav-icon">
-        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <circle cx="12" cy="12" r="3"/>
-          <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
-        </svg>
-      </span>
-      <span>Settings</span>
-    </button>
-  </nav>
-
-  <!-- Content Panels -->
-  <main class="options-content">
-    <!-- Themes Panel -->
-    <div class="panel active" id="panel-themes">
-      <div class="card">
-        <div class="card-title">Tokyo Duo Presets</div>
-        <div class="card-desc">Select an active palette arrangement. Changes sync instantly across the popup and all active AI workspaces.</div>
-        <div class="theme-grid-full" id="options-theme-grid"></div>
-      </div>
-    </div>
-
-    <!-- Prompts Panel -->
-    <div class="panel" id="panel-prompts">
-      <div class="card">
-        <div class="card-title">Prompt Template Library</div>
-        <div class="card-desc">Manage reusable prompt templates. Use dynamic placeholders like <code>[FIELD]</code> to fill values quickly.</div>
-        <div class="prompt-table-wrap">
-          <table class="prompt-table">
-            <thead>
-              <tr>
-                <th style="width: 22%;">Title</th>
-                <th style="width: 18%;">Category</th>
-                <th style="width: 50%;">Prompt Snippet</th>
-                <th style="width: 10%; text-align: right;">Action</th>
-              </tr>
-            </thead>
-            <tbody id="options-prompt-body"></tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-
-    <!-- Add Prompt Panel -->
-    <div class="panel" id="panel-new-prompt">
-      <div class="card">
-        <div class="card-title">Create Prompt Template</div>
-        <div class="card-desc">Save a new template into your local library. Available immediately in ChatGPT, Claude, DeepSeek, and Gemini.</div>
-        <div class="form-group">
-          <label class="form-label">Template Title</label>
-          <input type="text" class="form-input" id="new-title" placeholder="e.g. Code Reviewer, System Architect">
-        </div>
-        <div class="form-group">
-          <label class="form-label">Category</label>
-          <input type="text" class="form-input" id="new-category" placeholder="e.g. Coding, Writing, Analysis">
-        </div>
-        <div class="form-group">
-          <label class="form-label">Prompt Content</label>
-          <textarea class="form-input form-textarea" id="new-text" placeholder="Enter your prompt instructions. Use [BRACKETS] for dynamic placeholders..."></textarea>
-        </div>
-        <div class="btn-row">
-          <button class="btn-primary" id="btn-save-prompt">
-            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-              <polyline points="20 6 9 17 4 12"/>
-            </svg>
-            <span>Save Template</span>
-          </button>
-          <button class="btn-ghost" id="btn-clear-form">Clear Form</button>
-        </div>
-      </div>
-    </div>
-
-    <!-- Active Color Studio Panel -->
-    <div class="panel" id="panel-palette">
-      <div class="card">
-        <div class="card-title">Extension UI Color Studio</div>
-        <div class="card-desc">Customize the theme of the Toolbar Popup, In-Page Sidebar, and Options Page.</div>
-        
-        <div class="studio-notice">
-          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="12" cy="12" r="10"/>
-            <line x1="12" y1="16" x2="12" y2="12"/>
-            <line x1="12" y1="8" x2="12.01" y2="8"/>
+  <!-- Main Content -->
+  <div class="main-layout">
+    <!-- Nav -->
+    <nav class="options-nav">
+      <div class="nav-label">Dashboard</div>
+      <button class="nav-item active" data-panel="themes">
+        <span class="nav-icon">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="13.5" cy="6.5" r=".5" fill="currentColor" />
+            <circle cx="17.5" cy="10.5" r=".5" fill="currentColor" />
+            <circle cx="8.5" cy="7.5" r=".5" fill="currentColor" />
+            <circle cx="6.5" cy="12.5" r=".5" fill="currentColor" />
+            <path
+              d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z" />
           </svg>
-          <span><strong>Notice:</strong> This studio styles the PromptCanvas Extension UI only (Popup, Sidebar, & Options). It does <strong>not</strong> alter underlying AI chat workspace content.</span>
-        </div>
+        </span>
+        <span>Themes</span>
+      </button>
+      <button class="nav-item" data-panel="prompts">
+        <span class="nav-icon">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <path d="m18 16 4-4-4-4" />
+            <path d="m6 8-4 4 4 4" />
+            <path d="m14.5 4-5 16" />
+          </svg>
+        </span>
+        <span>Prompts</span>
+      </button>
+      <button class="nav-item" data-panel="new-prompt">
+        <span class="nav-icon">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5"
+            stroke-linecap="round" stroke-linejoin="round">
+            <path d="M5 12h14" />
+            <path d="M12 5v14" />
+          </svg>
+        </span>
+        <span>Add Prompt</span>
+      </button>
+      <button class="nav-item" data-panel="palette">
+        <span class="nav-icon">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <path
+              d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z" />
+          </svg>
+        </span>
+        <span>Color Studio</span>
+      </button>
+      <button class="nav-item" data-panel="settings">
+        <span class="nav-icon">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="3" />
+            <path
+              d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z" />
+          </svg>
+        </span>
+        <span>Settings</span>
+      </button>
+    </nav>
 
-        <!-- Designer Preset Gallery -->
-        <div class="presets-carousel-wrap">
-          <div class="presets-title-row">
-            <span class="presets-title">Curated UI Color Palettes</span>
-            <span class="presets-sub">Click any preset to preview & load</span>
-          </div>
-          <div class="presets-grid" id="designer-presets-grid"></div>
-        </div>
-
-        <!-- Workbench: Customizer + Live Preview -->
-        <div class="studio-workbench">
-          <!-- Left: Controls -->
-          <div class="color-editor-form">
-            <div class="color-control-row">
-              <div class="color-info-group">
-                <span class="color-info-title">Canvas (Background)</span>
-                <span class="color-info-role">60% dominant light surface</span>
-              </div>
-              <div class="color-input-group">
-                <input type="color" class="color-picker-input" id="picker-canvas" value="#FFFBF5">
-                <input type="text" class="color-hex-input" id="hex-canvas" value="#FFFBF5" maxlength="7">
-              </div>
-            </div>
-
-            <div class="color-control-row">
-              <div class="color-info-group">
-                <span class="color-info-title">Controls (Buttons & Chips)</span>
-                <span class="color-info-role">30% structural UI elements</span>
-              </div>
-              <div class="color-input-group">
-                <input type="color" class="color-picker-input" id="picker-controls" value="#283845">
-                <input type="text" class="color-hex-input" id="hex-controls" value="#283845" maxlength="7">
-              </div>
-            </div>
-
-            <div class="color-control-row">
-              <div class="color-info-group">
-                <span class="color-info-title">Typography (Text)</span>
-                <span class="color-info-role">Deep high-contrast readability</span>
-              </div>
-              <div class="color-input-group">
-                <input type="color" class="color-picker-input" id="picker-text" value="#151E25">
-                <input type="text" class="color-hex-input" id="hex-text" value="#151E25" maxlength="7">
-              </div>
-            </div>
-
-            <div class="color-control-row">
-              <div class="color-info-group">
-                <span class="color-info-title">Accent (Highlights)</span>
-                <span class="color-info-role">10% energetic touch & badges</span>
-              </div>
-              <div class="color-input-group">
-                <input type="color" class="color-picker-input" id="picker-accent" value="#FFA649">
-                <input type="text" class="color-hex-input" id="hex-accent" value="#FFA649" maxlength="7">
-              </div>
-            </div>
-
-            <!-- Contrast indicator -->
-            <div class="contrast-card">
-              <span class="contrast-label">Readability Ratio</span>
-              <div class="contrast-badge" id="contrast-ratio-badge">
-                <span id="contrast-ratio-val">15.6:1</span>
-                <span>· WCAG AAA</span>
-              </div>
-            </div>
-
-            <div class="btn-row" style="margin-top: 10px;">
-              <button class="btn-primary" id="btn-apply-ui-palette">
-                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                  <polyline points="20 6 9 17 4 12"/>
-                </svg>
-                <span>Apply to Extension UI</span>
-              </button>
-              <button class="btn-ghost" id="btn-reset-studio">Reset to Tokyo Duo</button>
-            </div>
-          </div>
-
-          <!-- Right: Live Mini Preview -->
-          <div class="mock-preview-wrap">
-            <div class="mock-preview-title">
-              <span>Interactive Live Preview</span>
-              <span class="mock-live-pill">REAL-TIME</span>
-            </div>
-
-            <div class="mock-popup" id="studio-mock-popup">
-              <div class="mock-header">
-                <div class="mock-logo">
-                  <div class="mock-logo-box">PC</div>
-                  <span class="mock-logo-name">PromptCanvas</span>
-                </div>
-                <span class="mock-pill">PRO</span>
-              </div>
-
-              <div class="mock-banner">
-                <div class="mock-banner-text">
-                  <span class="mock-banner-sub">ENGINE STATUS</span>
-                  <span class="mock-banner-title">Connected</span>
-                </div>
-                <button class="mock-btn-sm">SIDEBAR</button>
-              </div>
-
-              <div class="mock-grid">
-                <div class="mock-card">PROMPTS</div>
-                <div class="mock-card">THEMES</div>
-                <div class="mock-card">OPTIONS</div>
-              </div>
-
-              <div class="mock-toggle-row">
-                <span>EXTENSION THEME</span>
-                <div class="mock-slider-switch"></div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Settings Panel -->
-    <div class="panel" id="panel-settings">
-      <div class="card">
-        <div class="card-title">Theme Injection Preferences</div>
-        <div class="card-desc">Configure behavioral toggles for the AI workspaces.</div>
-        <div class="settings-row">
-          <div class="settings-row-info">
-            <h3>Enable Page Theming</h3>
-            <p>Inject Tokyo Duo custom palette into ChatGPT, Claude, DeepSeek, and Gemini</p>
-          </div>
-          <label class="toggle-wrap">
-            <input type="checkbox" id="opt-theme-enabled" checked>
-            <span class="toggle-slider"></span>
-          </label>
-        </div>
-        <div class="settings-row">
-          <div class="settings-row-info">
-            <h3>Prompt Library Sidebar</h3>
-            <p>Show floating sidebar launcher button on supported AI platforms</p>
-          </div>
-          <label class="toggle-wrap">
-            <input type="checkbox" id="opt-prompts-enabled" checked>
-            <span class="toggle-slider"></span>
-          </label>
+    <!-- Content Panels -->
+    <main class="options-content">
+      <!-- Themes Panel -->
+      <div class="panel active" id="panel-themes">
+        <div class="card">
+          <div class="card-title">Tokyo Duo Presets</div>
+          <div class="card-desc">Select an active palette arrangement. Changes sync instantly across the popup and all
+            active AI workspaces.</div>
+          <div class="theme-grid-full" id="options-theme-grid"></div>
         </div>
       </div>
 
-      <div class="card">
-        <div class="card-title">Data Backup & Reset</div>
-        <div class="card-desc">Export or restore your prompt library and customized settings via JSON backup.</div>
-        <div class="btn-row">
-          <button class="btn-primary" id="btn-export">
-            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-              <polyline points="7 10 12 15 17 10"/>
-              <line x1="12" y1="15" x2="12" y2="3"/>
+      <!-- Prompts Panel -->
+      <div class="panel" id="panel-prompts">
+        <div class="card">
+          <div class="card-title">Prompt Template Library</div>
+          <div class="card-desc">Manage reusable prompt templates. Use dynamic placeholders like <code>[FIELD]</code> to
+            fill values quickly.</div>
+          <div class="prompt-table-wrap">
+            <table class="prompt-table">
+              <thead>
+                <tr>
+                  <th style="width: 22%;">Title</th>
+                  <th style="width: 18%;">Category</th>
+                  <th style="width: 50%;">Prompt Snippet</th>
+                  <th style="width: 10%; text-align: right;">Action</th>
+                </tr>
+              </thead>
+              <tbody id="options-prompt-body"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Add Prompt Panel -->
+      <div class="panel" id="panel-new-prompt">
+        <div class="card">
+          <div class="card-title">Create Prompt Template</div>
+          <div class="card-desc">Save a new template into your local library. Available immediately in ChatGPT, Claude,
+            DeepSeek, and Gemini.</div>
+          <div class="form-group">
+            <label class="form-label">Template Title</label>
+            <input type="text" class="form-input" id="new-title" placeholder="e.g. Code Reviewer, System Architect">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Category</label>
+            <input type="text" class="form-input" id="new-category" placeholder="e.g. Coding, Writing, Analysis">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Prompt Content</label>
+            <textarea class="form-input form-textarea" id="new-text"
+              placeholder="Enter your prompt instructions. Use [BRACKETS] for dynamic placeholders..."></textarea>
+          </div>
+          <div class="btn-row">
+            <button class="btn-primary" id="btn-save-prompt">
+              <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5"
+                stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="20 6 9 17 4 12" />
+              </svg>
+              <span>Save Template</span>
+            </button>
+            <button class="btn-ghost" id="btn-clear-form">Clear Form</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Active Color Studio Panel -->
+      <div class="panel" id="panel-palette">
+        <div class="card">
+          <div class="card-title">Extension UI Color Studio</div>
+          <div class="card-desc">Customize the theme of the Toolbar Popup, In-Page Sidebar, and Options Page.</div>
+
+          <div class="studio-notice">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2"
+              stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10" />
+              <line x1="12" y1="16" x2="12" y2="12" />
+              <line x1="12" y1="8" x2="12.01" y2="8" />
             </svg>
-            <span>Export JSON</span>
-          </button>
-          <button class="btn-ghost" id="btn-import">
-            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;">
-              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-              <polyline points="17 8 12 3 7 8"/>
-              <line x1="12" y1="3" x2="12" y2="15"/>
-            </svg>
-            <span>Import JSON</span>
-          </button>
-          <button class="btn-ghost" id="btn-reset-all" style="color:#C92A2A;border-color:rgba(201,42,42,0.3);margin-left:auto;">Reset Defaults</button>
+            <span><strong>Notice:</strong> This studio styles the PromptCanvas Extension UI only (Popup, Sidebar, &
+              Options). It does <strong>not</strong> alter underlying AI chat workspace content.</span>
+          </div>
+
+          <!-- Designer Preset Gallery -->
+          <div class="presets-carousel-wrap">
+            <div class="presets-title-row">
+              <span class="presets-title">Curated UI Color Palettes</span>
+              <span class="presets-sub">Click any preset to preview & load</span>
+            </div>
+            <div class="presets-grid" id="designer-presets-grid"></div>
+          </div>
+
+          <!-- Workbench: Customizer + Live Preview -->
+          <div class="studio-workbench">
+            <!-- Left: Controls -->
+            <div class="color-editor-form">
+              <div class="color-control-row">
+                <div class="color-info-group">
+                  <span class="color-info-title">Canvas (Background)</span>
+                  <span class="color-info-role">60% dominant light surface</span>
+                </div>
+                <div class="color-input-group">
+                  <input type="color" class="color-picker-input" id="picker-canvas" value="#FFFBF5">
+                  <input type="text" class="color-hex-input" id="hex-canvas" value="#FFFBF5" maxlength="7">
+                </div>
+              </div>
+
+              <div class="color-control-row">
+                <div class="color-info-group">
+                  <span class="color-info-title">Controls (Buttons & Chips)</span>
+                  <span class="color-info-role">30% structural UI elements</span>
+                </div>
+                <div class="color-input-group">
+                  <input type="color" class="color-picker-input" id="picker-controls" value="#283845">
+                  <input type="text" class="color-hex-input" id="hex-controls" value="#283845" maxlength="7">
+                </div>
+              </div>
+
+              <div class="color-control-row">
+                <div class="color-info-group">
+                  <span class="color-info-title">Typography (Text)</span>
+                  <span class="color-info-role">Deep high-contrast readability</span>
+                </div>
+                <div class="color-input-group">
+                  <input type="color" class="color-picker-input" id="picker-text" value="#151E25">
+                  <input type="text" class="color-hex-input" id="hex-text" value="#151E25" maxlength="7">
+                </div>
+              </div>
+
+              <div class="color-control-row">
+                <div class="color-info-group">
+                  <span class="color-info-title">Accent (Highlights)</span>
+                  <span class="color-info-role">10% energetic touch & badges</span>
+                </div>
+                <div class="color-input-group">
+                  <input type="color" class="color-picker-input" id="picker-accent" value="#FFA649">
+                  <input type="text" class="color-hex-input" id="hex-accent" value="#FFA649" maxlength="7">
+                </div>
+              </div>
+
+              <!-- Contrast indicator -->
+              <div class="contrast-card">
+                <span class="contrast-label">Readability Ratio</span>
+                <div class="contrast-badge" id="contrast-ratio-badge">
+                  <span id="contrast-ratio-val">15.6:1</span>
+                  <span>· WCAG AAA</span>
+                </div>
+              </div>
+
+              <div class="btn-row" style="margin-top: 10px;">
+                <button class="btn-primary" id="btn-apply-ui-palette">
+                  <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="20 6 9 17 4 12" />
+                  </svg>
+                  <span>Apply to Extension UI</span>
+                </button>
+                <button class="btn-ghost" id="btn-reset-studio">Reset to Tokyo Duo</button>
+              </div>
+            </div>
+
+            <!-- Right: Live Mini Preview -->
+            <div class="mock-preview-wrap">
+              <div class="mock-preview-title">
+                <span>Interactive Live Preview</span>
+                <span class="mock-live-pill">REAL-TIME</span>
+              </div>
+
+              <div class="mock-popup" id="studio-mock-popup">
+                <div class="mock-header">
+                  <div class="mock-logo">
+                    <div class="mock-logo-box">PC</div>
+                    <span class="mock-logo-name">PromptCanvas</span>
+                  </div>
+                </div>
+
+                <div class="mock-banner">
+                  <div class="mock-banner-text">
+                    <span class="mock-banner-sub">ENGINE STATUS</span>
+                    <span class="mock-banner-title">Connected</span>
+                  </div>
+                  <button class="mock-btn-sm">SIDEBAR</button>
+                </div>
+
+                <div class="mock-grid">
+                  <div class="mock-card">PROMPTS</div>
+                  <div class="mock-card">THEMES</div>
+                  <div class="mock-card">OPTIONS</div>
+                </div>
+
+                <div class="mock-toggle-row">
+                  <span>EXTENSION THEME</span>
+                  <div class="mock-slider-switch"></div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
-        <input type="file" id="file-import" accept=".json" style="display:none;">
       </div>
-    </div>
-  </main>
-</div>
 
-<!-- Toast -->
-<div id="options-toast">
-  <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
-    <polyline points="20 6 9 17 4 12"/>
-  </svg>
-  <span id="toast-msg">Saved</span>
-</div>
+      <!-- Settings Panel -->
+      <div class="panel" id="panel-settings">
+        <div class="card">
+          <div class="card-title">Theme Injection Preferences</div>
+          <div class="card-desc">Configure behavioral toggles for the AI workspaces.</div>
+          <div class="settings-row">
+            <div class="settings-row-info">
+              <h3>Enable Page Theming</h3>
+              <p>Inject Tokyo Duo custom palette into ChatGPT, Claude, DeepSeek, and Gemini</p>
+            </div>
+            <label class="toggle-wrap">
+              <input type="checkbox" id="opt-theme-enabled" checked>
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+          <div class="settings-row">
+            <div class="settings-row-info">
+              <h3>Prompt Library Sidebar</h3>
+              <p>Show floating sidebar launcher button on supported AI platforms</p>
+            </div>
+            <label class="toggle-wrap">
+              <input type="checkbox" id="opt-prompts-enabled" checked>
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+        </div>
 
-<script src="options.js"></script>
+        <div class="card">
+          <div class="card-title">Data Backup & Reset</div>
+          <div class="card-desc">Export or restore your prompt library and customized settings via JSON backup.</div>
+          <div class="btn-row">
+            <button class="btn-primary" id="btn-export">
+              <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5"
+                stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                <polyline points="7 10 12 15 17 10" />
+                <line x1="12" y1="15" x2="12" y2="3" />
+              </svg>
+              <span>Export JSON</span>
+            </button>
+            <button class="btn-ghost" id="btn-import">
+              <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5"
+                stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                <polyline points="17 8 12 3 7 8" />
+                <line x1="12" y1="3" x2="12" y2="15" />
+              </svg>
+              <span>Import JSON</span>
+            </button>
+            <button class="btn-ghost" id="btn-reset-all"
+              style="color:#C92A2A;border-color:rgba(201,42,42,0.3);margin-left:auto;">Reset Defaults</button>
+          </div>
+          <input type="file" id="file-import" accept=".json" style="display:none;">
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Toast -->
+  <div id="options-toast">
+    <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="3"
+      stroke-linecap="round" stroke-linejoin="round">
+      <polyline points="20 6 9 17 4 12" />
+    </svg>
+    <span id="toast-msg">Saved</span>
+  </div>
+
+  <script src="options.js"></script>
 </body>
+
 </html>

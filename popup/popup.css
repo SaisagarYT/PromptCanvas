@@ -18,8 +18,8 @@
 :root {
   --color-light: #FFFBF5;               /* Ultra-Light Luminous Warm Linen / Ivory */
   --color-dark: #283845;                /* Slate Navy */
-  --color-darker: #151E25;              /* High-contrast deep slate text */
-  --color-dark-muted: rgba(40, 56, 69, 0.68);
+  --color-darker: #0F172A;              /* High-contrast deep dark slate text */
+  --color-dark-muted: #475569;          /* Legible slate-gray secondary text */
   --color-dark-subtle: rgba(40, 56, 69, 0.04);
   --color-border: rgba(40, 56, 69, 0.10);
   --color-border-strong: rgba(40, 56, 69, 0.22);

@@ -2,29 +2,43 @@
 // Theme: Tokyo Duo & Active Color Studio
 
 const THEME_PREVIEWS = {
-  amberDuo: { bg: '#FFFBF5', bar1: '#283845', bar2: '#151E25', border: 'rgba(40, 56, 69, 0.2)' },
-  slateDuo: { bg: '#283845', bar1: '#FFA649', bar2: '#FFA649', border: 'rgba(255, 166, 73, 0.3)' },
-  contrastDuo: { bg: '#FFFBF5', bar1: '#151E25', bar2: '#283845', border: '#283845' },
+  ferrariCorse: { bg: 'rgba(20, 16, 22, 0.9)', bar1: '#EF4444', bar2: '#F59E0B', border: 'rgba(239, 68, 68, 0.4)' },
+  violetRadiance: { bg: 'rgba(14, 10, 30, 0.9)', bar1: '#A855F7', bar2: '#C084FC', border: 'rgba(168, 85, 247, 0.4)' },
+  spidermanAction: { bg: 'rgba(16, 18, 28, 0.9)', bar1: '#EF4444', bar2: '#38BDF8', border: 'rgba(239, 68, 68, 0.4)' },
+  spidermanNight: { bg: 'rgba(12, 18, 24, 0.9)', bar1: '#F43F5E', bar2: '#FBBF24', border: 'rgba(244, 63, 94, 0.4)' },
+  twilightMirage: { bg: 'rgba(24, 12, 28, 0.9)', bar1: '#F43F5E', bar2: '#FB923C', border: 'rgba(244, 63, 94, 0.4)' },
 };
 
 const FALLBACK_THEMES = {
-  amberDuo: {
-    id: 'amberDuo',
-    name: 'Tokyo Amber',
-    description: 'Ultra-light #FFFBF5 linen canvas with Slate Navy #283845 elements',
-    colors: { text: '#151E25', textMuted: 'rgba(40, 56, 69, 0.70)' }
+  ferrariCorse: {
+    id: 'ferrariCorse',
+    name: 'Scuderia Corse',
+    description: 'Italian Ferrari racing red with carbon fiber glass',
+    colors: { text: '#F8FAFC', textMuted: '#CBD5E1' }
   },
-  slateDuo: {
-    id: 'slateDuo',
-    name: 'Tokyo Slate',
-    description: 'Deep Slate Navy #283845 canvas with Golden Amber #FFA649 accents',
-    colors: { text: '#FFA649', textMuted: 'rgba(255, 166, 73, 0.70)' }
+  violetRadiance: {
+    id: 'violetRadiance',
+    name: 'Violet Radiance',
+    description: 'Luminous cybernetic purple glow with midnight glass',
+    colors: { text: '#F8FAFC', textMuted: '#D8B4FE' }
   },
-  contrastDuo: {
-    id: 'contrastDuo',
-    name: 'Tokyo Dual',
-    description: 'High-contrast Slate borders & deep accents on warm linen',
-    colors: { text: '#151E25', textMuted: 'rgba(40, 56, 69, 0.70)' }
+  spidermanAction: {
+    id: 'spidermanAction',
+    name: 'Spider-Man Skyline',
+    description: 'Dynamic crimson and web-blue battle across dusk skyline',
+    colors: { text: '#F8FAFC', textMuted: '#CBD5E1' }
+  },
+  spidermanNight: {
+    id: 'spidermanNight',
+    name: 'Spider-Man Noir City',
+    description: 'Iconic white spider emblem with amber streetlight bokeh',
+    colors: { text: '#F8FAFC', textMuted: '#94A3B8' }
+  },
+  twilightMirage: {
+    id: 'twilightMirage',
+    name: 'Twilight Mirage',
+    description: 'Radiant neon sunset reflection with coral glow',
+    colors: { text: '#F8FAFC', textMuted: '#FDA4AF' }
   }
 };
 
@@ -197,12 +211,12 @@ function renderThemeGrid() {
   if (!grid) return;
   const themes = (storageData.themes && Object.keys(storageData.themes).length) ? storageData.themes : FALLBACK_THEMES;
   const settings = storageData.settings || {};
-  const activeId = settings.activeTheme || 'amberDuo';
+  const activeId = settings.activeTheme || 'ferrariCorse';
 
   grid.innerHTML = Object.values(themes).map(theme => {
-    const prev = THEME_PREVIEWS[theme.id] || { bg: '#FFFBF5', bar1: '#283845', bar2: '#151E25', border: 'rgba(40, 56, 69, 0.2)' };
-    const textColor = theme.id === 'slateDuo' ? '#FFA649' : '#151E25';
-    const textMutedColor = theme.id === 'slateDuo' ? 'rgba(255, 166, 73, 0.70)' : 'rgba(40, 56, 69, 0.70)';
+    const prev = THEME_PREVIEWS[theme.id] || { bg: 'rgba(20, 16, 22, 0.9)', bar1: '#EF4444', bar2: '#F59E0B', border: 'rgba(239, 68, 68, 0.4)' };
+    const textColor = theme.colors?.text || '#F8FAFC';
+    const textMutedColor = theme.colors?.textMuted || 'rgba(255, 255, 255, 0.70)';
     const name = FALLBACK_THEMES[theme.id]?.name || theme.name;
     const desc = FALLBACK_THEMES[theme.id]?.description || theme.description;
     return `

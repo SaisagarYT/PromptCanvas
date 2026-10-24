@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "PromptCanvas — AI Theme & Prompt Engine",
   "version": "1.0.0",
-  "description": "A pro UI & custom theme engine for ChatGPT, Claude, DeepSeek, and Gemini. Inject stunning themes, manage prompt libraries, and supercharge your AI workflow.",
+  "description": "A modern UI & custom theme engine for ChatGPT, Claude, DeepSeek, and Gemini. Inject stunning themes, manage prompt libraries, and supercharge your AI workflow.",
   "permissions": [
     "storage",
     "activeTab",
@@ -13,7 +13,8 @@
     "https://chat.openai.com/*",
     "https://gemini.google.com/*",
     "https://claude.ai/*",
-    "https://chat.deepseek.com/*"
+    "https://chat.deepseek.com/*",
+    "https://leetcode.com/*"
   ],
   "action": {
     "default_popup": "popup/popup.html",
@@ -37,16 +38,19 @@
         "https://chat.openai.com/*",
         "https://gemini.google.com/*",
         "https://claude.ai/*",
-        "https://chat.deepseek.com/*"
+        "https://chat.deepseek.com/*",
+        "https://leetcode.com/*"
       ],
       "js": [
         "content/modules/icons.js",
         "content/modules/theme-engine.js",
         "content/modules/composer.js",
-        "content/modules/components.js",
+        "sidebar/sidebar.js",
         "content/content.js"
       ],
-      "css": ["content/content.css"],
+      "css": [
+        "sidebar/sidebar.css"
+      ],
       "run_at": "document_end"
     }
   ],
@@ -56,13 +60,20 @@
   "options_page": "options/options.html",
   "web_accessible_resources": [
     {
-      "resources": ["content/*", "icons/*", "options/*"],
+      "resources": [
+        "content/*",
+        "sidebar/*",
+        "icons/*",
+        "options/*",
+        "assets/*"
+      ],
       "matches": [
         "https://chatgpt.com/*",
         "https://chat.openai.com/*",
         "https://gemini.google.com/*",
         "https://claude.ai/*",
-        "https://chat.deepseek.com/*"
+        "https://chat.deepseek.com/*",
+        "https://leetcode.com/*"
       ]
     }
   ]

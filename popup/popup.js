@@ -10,9 +10,11 @@ const SUPPORTED_PLATFORMS = {
 };
 
 const THEME_COLORS = {
-  amberDuo: { dot: '#FFFBF5', name: 'Amber' },
-  slateDuo: { dot: '#283845', name: 'Slate' },
-  contrastDuo: { dot: '#151E25', name: 'Dual' },
+  ferrariCorse: { dot: '#EF4444', name: 'Ferrari' },
+  violetRadiance: { dot: '#A855F7', name: 'Violet' },
+  spidermanAction: { dot: '#38BDF8', name: 'Spider-Man' },
+  spidermanNight: { dot: '#F43F5E', name: 'Noir' },
+  twilightMirage: { dot: '#FB923C', name: 'Mirage' },
 };
 
 let currentTabId = null;
@@ -94,11 +96,11 @@ function updateStats() {
   const settings = storageData.settings || {};
   const prompts = storageData.prompts || [];
   const themes = storageData.themes || {};
-  const activeThemeId = settings.activeTheme || 'amberDuo';
-  const activeTheme = themes[activeThemeId] || themes['amberDuo'] || Object.values(themes)[0];
+  const activeThemeId = settings.activeTheme || 'ferrariCorse';
+  const activeTheme = themes[activeThemeId] || themes['ferrariCorse'] || Object.values(themes)[0];
   const statTheme = document.getElementById('stat-theme');
   const statPrompts = document.getElementById('stat-prompts');
-  if (statTheme) statTheme.textContent = activeTheme?.name?.replace('Tokyo ', '') || 'Amber';
+  if (statTheme) statTheme.textContent = activeTheme?.name || 'Corse';
   if (statPrompts) statPrompts.textContent = prompts.length;
 }
 
@@ -106,7 +108,7 @@ function renderThemeChips() {
   const container = document.getElementById('theme-chips');
   if (!container) return;
   const settings = storageData.settings || {};
-  const activeThemeId = settings.activeTheme || 'amberDuo';
+  const activeThemeId = settings.activeTheme || 'ferrariCorse';
 
   container.innerHTML = Object.entries(THEME_COLORS).map(([id, info]) => `
     <div class="theme-chip ${activeThemeId === id ? 'active' : ''}" data-theme="${id}">

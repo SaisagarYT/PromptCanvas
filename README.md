@@ -62,8 +62,12 @@ PromptCanvas/
 ├── background/
 │   └── background.js          # Service worker for theme defaults & storage
 ├── content/
-│   ├── content.css            # Sidebar & in-page styles
+│   ├── modules/               # Theme engine, icons & composer modules
 │   └── content.js             # Platform detection, theme injection & prompt insertion
+├── sidebar/
+│   ├── sidebar.html           # Reusable sidebar HTML markup & template
+│   ├── sidebar.css            # SaaS-grade drawer, cards, and modal styles
+│   └── sidebar.js             # Sidebar controller & component renderer
 ├── popup/
 │   ├── popup.html             # Toolbar popup markup with vector SVGs
 │   ├── popup.css              # Tokyo Duo popup styling
