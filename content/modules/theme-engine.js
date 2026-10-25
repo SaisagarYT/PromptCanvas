@@ -1283,16 +1283,13 @@
         /* ==========================================================================
            7. HOME PAGE PROMPT SUGGESTIONS & STARTER CARDS (Premium, Ultra-Visible)
            ========================================================================== */
-        /* Starter suggestion buttons ONLY (never layout containers, never inside chat turns) */
+        /* Starter suggestion buttons ONLY (strictly scoped to tagged starter chips, NEVER chat messages) */
         [data-pc-starter="true"],
         button[data-pc-starter="true"],
         a[data-pc-starter="true"],
         button[data-testid*="prompt-suggestion"],
         button[data-testid*="starter"],
-        [data-testid="use-case-prompt-chips"] button,
-        main button:has(svg):has(span):not(form *):not(header *):not(nav *):not(aside *):not(article *):not([data-message-author-role] *):not([data-turn] *),
-        main a:has(svg):has(span):not(form *):not(header *):not(nav *):not(aside *):not(article *):not([data-message-author-role] *):not([data-turn] *),
-        main div[class*="grid"] button:not(form *):not(header *):not(nav *):not(aside *):not(article *):not([data-message-author-role] *):not([data-turn] *) {
+        [data-testid="use-case-prompt-chips"] button {
           color: #F8FAFC !important;
           background: ${isWp ? 'rgba(18, 16, 26, 0.86)' : hexToRgba(baseColor, 0.90)} !important;
           background-color: ${isWp ? 'rgba(18, 16, 26, 0.86)' : hexToRgba(baseColor, 0.90)} !important;
@@ -1316,9 +1313,7 @@
         [data-pc-starter="true"] :is(span, p, div, b, strong),
         button[data-testid*="prompt-suggestion"] :is(span, p, div),
         button[data-testid*="starter"] :is(span, p, div),
-        [data-testid="use-case-prompt-chips"] button :is(span, p, div),
-        main button:has(svg):has(span):not(form *):not(article *):not([data-message-author-role] *):not([data-turn] *) :is(span, p, div),
-        main a:has(svg):has(span):not(form *):not(article *):not([data-message-author-role] *):not([data-turn] *) :is(span, p, div) {
+        [data-testid="use-case-prompt-chips"] button :is(span, p, div) {
           color: #F8FAFC !important;
           font-weight: 500 !important;
           background: transparent !important;
@@ -1329,9 +1324,7 @@
         [data-pc-starter="true"] svg,
         button[data-testid*="prompt-suggestion"] svg,
         button[data-testid*="starter"] svg,
-        [data-testid="use-case-prompt-chips"] button svg,
-        main button:has(svg):has(span):not(form *):not(article *):not([data-message-author-role] *):not([data-turn] *) svg,
-        main a:has(svg):has(span):not(form *):not(article *):not([data-message-author-role] *):not([data-turn] *) svg {
+        [data-testid="use-case-prompt-chips"] button svg {
           color: ${primary} !important;
           stroke: currentColor !important;
           filter: none !important;
@@ -1343,9 +1336,7 @@
         [data-pc-starter="true"]:hover,
         button[data-testid*="prompt-suggestion"]:hover,
         button[data-testid*="starter"]:hover,
-        [data-testid="use-case-prompt-chips"] button:hover,
-        main button:has(svg):has(span):not(form *):not(article *):not([data-message-author-role] *):not([data-turn] *):hover,
-        main a:has(svg):has(span):not(form *):not(article *):not([data-message-author-role] *):not([data-turn] *):hover {
+        [data-testid="use-case-prompt-chips"] button:hover {
           background: ${isWp ? 'rgba(28, 25, 40, 0.96)' : hexToRgba(baseColor, 0.96)} !important;
           background-color: ${isWp ? 'rgba(28, 25, 40, 0.96)' : hexToRgba(baseColor, 0.96)} !important;
           border-color: ${primary} !important;
@@ -1357,18 +1348,15 @@
         [data-pc-starter="true"]:hover svg,
         button[data-testid*="prompt-suggestion"]:hover svg,
         button[data-testid*="starter"]:hover svg,
-        [data-testid="use-case-prompt-chips"] button:hover svg,
-        main button:has(svg):has(span):not(form *):not(article *):not([data-message-author-role] *):not([data-turn] *):hover svg,
-        main a:has(svg):has(span):not(form *):not(article *):not([data-message-author-role] *):not([data-turn] *):hover svg {
+        [data-testid="use-case-prompt-chips"] button:hover svg {
           transform: scale(1.10) !important;
           filter: none !important;
         }
 
-
-        /* Active prompt suggestion card / attachment chip under composer */
-        div[class*="rounded"]:has(button[aria-label*="close" i]),
-        div[class*="rounded"]:has(button[aria-label*="Remove" i]),
-        div[class*="bg-token-main-surface-secondary"]:has(button) {
+        /* Active attachment chip under composer */
+        form div[class*="rounded"]:has(button[aria-label*="close" i]),
+        form div[class*="rounded"]:has(button[aria-label*="Remove" i]),
+        form div[class*="bg-token-main-surface-secondary"]:has(button) {
           background: ${hexToRgba(baseColor, 0.92)} !important;
           border: 1px solid ${border} !important;
           border-radius: 14px !important;
