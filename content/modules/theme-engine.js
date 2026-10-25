@@ -659,10 +659,19 @@
         [data-message-author-role="user"] .font-user-message,
         [data-message-author-role="user"] div[class*="whitespace-pre-wrap"],
         [data-message-author-role="user"] div[class*="text-message"],
-        [data-message-author-role="user"] div[class*="break-words"] {
+        [data-message-author-role="user"] div[class*="break-words"],
+        [data-message-author-role="user"] div,
+        [data-message-author-role="user"] span,
+        [data-turn="user"] div,
+        [data-turn="user"] span,
+        div.items-end div:not([class*="rounded-3xl"]):not([class*="bg-token-main-surface"]):not([data-user-message-bubble]) {
           background: transparent !important;
           background-color: transparent !important;
           border: none !important;
+          border-top: none !important;
+          border-bottom: none !important;
+          border-left: none !important;
+          border-right: none !important;
           box-shadow: none !important;
           outline: none !important;
           padding: 0 !important;
@@ -1285,10 +1294,10 @@
         /* ==========================================================================
            8. CODE BLOCKS (Single Outer Shell - Eradicates Concentric Nested Borders)
            ========================================================================== */
-        /* Single Outermost Container ONLY */
-        div.contain-inline-size,
-        div[class*="contain-inline-size"],
-        div[class*="code-block"]:not(div.contain-inline-size *) {
+        /* Single Outermost Container ONLY - strictly scoped to code blocks containing pre */
+        div.contain-inline-size:has(pre),
+        div[class*="contain-inline-size"]:has(pre),
+        div[class*="code-block"]:has(pre) {
           background-color: ${isWp ? hexToRgba(baseColor, 0.88) : c.background} !important;
           background: ${isWp ? hexToRgba(baseColor, 0.88) : c.background} !important;
           border: 1px solid rgba(255, 255, 255, 0.14) !important;
@@ -1301,12 +1310,12 @@
         }
 
         /* Strictly Eradicate ALL Concentric Nested Borders, Shadows & Margins on Inner Elements */
-        div.contain-inline-size div,
-        div.contain-inline-size pre,
-        div.contain-inline-size code,
-        div[class*="contain-inline-size"] div,
-        div[class*="contain-inline-size"] pre,
-        div[class*="contain-inline-size"] code {
+        div.contain-inline-size:has(pre) div,
+        div.contain-inline-size:has(pre) pre,
+        div.contain-inline-size:has(pre) code,
+        div[class*="contain-inline-size"]:has(pre) div,
+        div[class*="contain-inline-size"]:has(pre) pre,
+        div[class*="contain-inline-size"]:has(pre) code {
           border: none !important;
           box-shadow: none !important;
           margin: 0 !important;
@@ -1315,8 +1324,8 @@
         }
 
         /* Top Code Header Bar (Language Name & Copy Buttons) */
-        div.contain-inline-size > div > div:first-child,
-        div[class*="contain-inline-size"] > div > div:first-child {
+        div.contain-inline-size:has(pre) > div > div:first-child,
+        div[class*="contain-inline-size"]:has(pre) > div > div:first-child {
           background: rgba(255, 255, 255, 0.05) !important;
           border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
           border-top: none !important;
