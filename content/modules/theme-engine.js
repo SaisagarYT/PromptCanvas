@@ -343,10 +343,14 @@
           --hint-text: rgba(255, 255, 255, 0.65) !important;
           --text-quaternary: rgba(255, 255, 255, 0.65) !important;
 
-          /* Tooltips */
-          --color-text-tooltip: ${primary} !important;
-          --color-background-tooltip: ${hexToRgba(baseColor, 0.95)} !important;
-          --color-background-tooltip-classic: ${hexToRgba(baseColor, 0.95)} !important;
+          /* Tooltips - Consistent Solid Dark Background */
+          --color-text-tooltip: ${secondary || primary} !important;
+          --color-text-tooltip-classic: ${secondary || primary} !important;
+          --color-text-tooltip-secondary: #CBD5E1 !important;
+          --color-background-tooltip: ${baseColor} !important;
+          --color-background-tooltip-classic: ${baseColor} !important;
+          --bg-tooltip: ${baseColor} !important;
+          --token-bg-tooltip: ${baseColor} !important;
 
           /* Borders */
           --app-color-border: ${border} !important;
@@ -379,7 +383,7 @@
         div[class*="top-0"]:not(nav *):not(aside *),
         div.sticky.top-0:not(nav *):not(aside *),
         [class*="sticky"][class*="top-0"]:not(nav *):not(aside *),
-        div[id^="radix-"],
+        div[id^="radix-"]:not([role="tooltip"]):not([role="dialog"]):not([data-radix-popper-content-wrapper]):not(:has([role="tooltip"])),
         div[class*="overflow-y-auto"]:not(#app-shell-sidebar *):not(aside *),
         div[class*="react-scroll-to-bottom"],
         div[class*="composer-parent"],
@@ -1028,6 +1032,55 @@
         }
 
         /* ==========================================================================
+           6B. TOOLTIPS (Always Solid Dark Theme Background - Never Transparent)
+           ========================================================================== */
+        [role="tooltip"],
+        [data-radix-tooltip-content],
+        div[style*="--radix-tooltip-content"],
+        div[data-radix-popper-content-wrapper] [role="tooltip"],
+        div[data-radix-popper-content-wrapper] [data-radix-tooltip-content],
+        div[data-side][role="tooltip"],
+        div[data-state][role="tooltip"],
+        .bg-token-bg-tooltip,
+        [class*="bg-token-bg-tooltip"] {
+          background: ${baseColor} !important;
+          background-color: ${baseColor} !important;
+          color: ${secondary || primary || '#F59E0B'} !important;
+          border: 1px solid rgba(255, 255, 255, 0.16) !important;
+          border-radius: 9999px !important;
+          padding: 6px 12px !important;
+          box-shadow: 0 4px 20px rgba(0, 0, 0, 0.7), 0 0 12px rgba(0, 0, 0, 0.5) !important;
+          backdrop-filter: none !important;
+          -webkit-backdrop-filter: none !important;
+          opacity: 1 !important;
+          visibility: visible !important;
+          font-weight: 600 !important;
+          font-size: 12px !important;
+          line-height: 1.3 !important;
+          z-index: 99999 !important;
+        }
+
+        /* Tooltip text and inner elements */
+        [role="tooltip"] :is(span, p, div, b, strong),
+        [data-radix-tooltip-content] :is(span, p, div, b, strong),
+        div[style*="--radix-tooltip-content"] :is(span, p, div, b, strong),
+        .bg-token-bg-tooltip :is(span, p, div, b, strong) {
+          color: ${secondary || primary || '#F59E0B'} !important;
+          font-weight: 600 !important;
+          background: transparent !important;
+          background-color: transparent !important;
+        }
+
+        /* Tooltip arrow if present */
+        [role="tooltip"] svg,
+        [role="tooltip"] polygon,
+        [data-radix-tooltip-content] svg,
+        div[style*="--radix-tooltip-content"] svg {
+          fill: ${baseColor} !important;
+          color: ${baseColor} !important;
+        }
+
+        /* ==========================================================================
            7. HOME PAGE PROMPT SUGGESTIONS & STARTER CARDS (Premium, Ultra-Visible)
            ========================================================================== */
         /* Starter suggestion buttons ONLY (never layout containers) */
@@ -1268,6 +1321,18 @@
           padding: 2px 6px !important;
         }
 
+        [role="tooltip"] {
+          background: ${c.background || '#18181B'} !important;
+          background-color: ${c.background || '#18181B'} !important;
+          color: ${c.secondary || c.primary || '#F59E0B'} !important;
+          border: 1px solid rgba(255, 255, 255, 0.16) !important;
+          border-radius: 9999px !important;
+          box-shadow: 0 4px 18px rgba(0, 0, 0, 0.6) !important;
+          padding: 6px 12px !important;
+          font-weight: 600 !important;
+          z-index: 99999 !important;
+        }
+
         a:not(#promptcanvas-root *) { color: ${c.primary} !important; }
         ::-webkit-scrollbar { width: 5px; }
         ::-webkit-scrollbar-track { background: transparent; }
@@ -1345,6 +1410,18 @@
           padding: 2px 6px !important;
         }
 
+        [role="tooltip"] {
+          background: ${c.background || '#18181B'} !important;
+          background-color: ${c.background || '#18181B'} !important;
+          color: ${c.secondary || c.primary || '#F59E0B'} !important;
+          border: 1px solid rgba(255, 255, 255, 0.16) !important;
+          border-radius: 9999px !important;
+          box-shadow: 0 4px 18px rgba(0, 0, 0, 0.6) !important;
+          padding: 6px 12px !important;
+          font-weight: 600 !important;
+          z-index: 99999 !important;
+        }
+
         a:not(#promptcanvas-root *) { color: ${c.primary} !important; }
         ::-webkit-scrollbar { width: 5px; }
         ::-webkit-scrollbar-track { background: transparent; }
@@ -1415,6 +1492,18 @@
           border: 1px solid ${c.border} !important;
           border-radius: 4px !important;
           padding: 2px 6px !important;
+        }
+
+        [role="tooltip"] {
+          background: ${c.background || '#18181B'} !important;
+          background-color: ${c.background || '#18181B'} !important;
+          color: ${c.secondary || c.primary || '#F59E0B'} !important;
+          border: 1px solid rgba(255, 255, 255, 0.16) !important;
+          border-radius: 9999px !important;
+          box-shadow: 0 4px 18px rgba(0, 0, 0, 0.6) !important;
+          padding: 6px 12px !important;
+          font-weight: 600 !important;
+          z-index: 99999 !important;
         }
 
         a:not(#promptcanvas-root *) { color: ${c.primary} !important; }
@@ -1534,6 +1623,18 @@
           border: 1px solid rgba(255, 166, 73, 0.25) !important;
           border-radius: 6px !important;
         }
+        [role="tooltip"] {
+          background: ${c.background || '#18181B'} !important;
+          background-color: ${c.background || '#18181B'} !important;
+          color: ${c.primary || '#FFA649'} !important;
+          border: 1px solid rgba(255, 255, 255, 0.16) !important;
+          border-radius: 9999px !important;
+          box-shadow: 0 4px 18px rgba(0, 0, 0, 0.6) !important;
+          padding: 6px 12px !important;
+          font-weight: 600 !important;
+          z-index: 99999 !important;
+        }
+
         a:not(#promptcanvas-root *) { color: ${c.primary || '#FFA649'} !important; }
       `;
     }
