@@ -267,8 +267,8 @@
           --app-shell-panel-background: ${rootBg} !important;
 
           /* Chat Message Bubbles */
-          --color-background-user-message: ${primary} !important;
-          --color-text-user-message: ${userText} !important;
+          --color-background-user-message: ${isWp ? hexToRgba(baseColor, 0.85) : hexToRgba(baseColor, 0.92)} !important;
+          --color-text-user-message: #FFFFFF !important;
           --color-background-text-selection: ${sidebarHover} !important;
           --color-background-attribution-highlight: ${secondaryHover} !important;
 
@@ -607,32 +607,97 @@
         }
 
         /* ==========================================================================
-           4. CHAT BUBBLES (4-Color Harmony)
+           4. CHAT BUBBLES (Single Sleek Pill - Zero Double Boxes)
            ========================================================================== */
-        /* User message bubble */
-        [data-user-message-bubble],
-        [data-message-author-role="user"] div[class*="rounded"],
-        [data-message-author-role="user"] [class*="bg-token-main-surface-secondary"],
-        [data-message-author-role="user"] .font-user-message,
-        div[data-testid*="user-message"],
-        div[class*="user-turn"] div[class*="rounded"],
-        div.items-end div[class*="rounded-3xl"] {
-          background: ${isWp ? hexToRgba(baseColor, 0.90) : hexToRgba(baseColor, 0.95)} !important;
-          background-color: ${isWp ? hexToRgba(baseColor, 0.90) : hexToRgba(baseColor, 0.95)} !important;
-          border-radius: ${theme.messageBorderRadius || '18px'} !important;
-          color: #FFFFFF !important;
-          border: 1px solid rgba(255, 255, 255, 0.16) !important;
-          box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35) !important;
-          padding: 10px 18px !important;
-          min-width: 48px !important;
-          display: inline-flex !important;
-          align-items: center !important;
+        /* Neutralize all user turn containers, rows, alignment wrappers, and test-ids */
+        [data-message-author-role="user"],
+        [data-turn="user"],
+        article:has([data-message-author-role="user"]),
+        div[class*="user-turn"],
+        [data-message-author-role="user"] > div,
+        [data-message-author-role="user"] [class*="items-end"],
+        [data-message-author-role="user"] div.items-end {
+          background: transparent !important;
+          background-color: transparent !important;
+          border: none !important;
+          box-shadow: none !important;
+          outline: none !important;
         }
 
-        [data-user-message-bubble] :is(p, span, div),
-        [data-message-author-role="user"] :is(p, span, div) {
+        /* The Single User Message Bubble Capsule ONLY */
+        [data-user-message-bubble],
+        [data-message-author-role="user"] [class*="bg-token-main-surface"],
+        [data-message-author-role="user"] div[class*="rounded-3xl"],
+        [data-message-author-role="user"] div.items-end > div:first-child,
+        [data-turn="user"] div[class*="rounded-3xl"],
+        .user-message-bubble-color {
+          background: ${isWp ? hexToRgba(baseColor, 0.85) : hexToRgba(baseColor, 0.92)} !important;
+          background-color: ${isWp ? hexToRgba(baseColor, 0.85) : hexToRgba(baseColor, 0.92)} !important;
+          border-radius: 20px !important;
           color: #FFFFFF !important;
-          font-weight: 500 !important;
+          border: 1px solid ${hexToRgba(primary, 0.35)} !important;
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35) !important;
+          backdrop-filter: blur(12px) !important;
+          -webkit-backdrop-filter: blur(12px) !important;
+          padding: 6px 14px !important;
+          margin: 2px 0 !important;
+          min-width: 0 !important;
+          width: fit-content !important;
+          max-width: 75% !important;
+          display: inline-block !important;
+          line-height: 1.5 !important;
+        }
+
+        /* Absolutely Eradicate ANY inner double box, background, border, shadow, or padding on children */
+        [data-user-message-bubble] *:not(button):not(svg):not(path):not(textarea):not(input),
+        [data-message-author-role="user"] [class*="bg-token-main-surface"] *:not(button):not(svg):not(path):not(textarea):not(input),
+        [data-message-author-role="user"] div[class*="rounded-3xl"] *:not(button):not(svg):not(path):not(textarea):not(input),
+        [data-message-author-role="user"] div.items-end > div:first-child *:not(button):not(svg):not(path):not(textarea):not(input),
+        [data-turn="user"] div[class*="rounded-3xl"] *:not(button):not(svg):not(path):not(textarea):not(input),
+        .user-message-bubble-color *:not(button):not(svg):not(path):not(textarea):not(input),
+        [data-message-author-role="user"] .whitespace-pre-wrap,
+        [data-message-author-role="user"] .font-user-message,
+        [data-message-author-role="user"] div[class*="whitespace-pre-wrap"],
+        [data-message-author-role="user"] div[class*="text-message"],
+        [data-message-author-role="user"] div[class*="break-words"] {
+          background: transparent !important;
+          background-color: transparent !important;
+          border: none !important;
+          box-shadow: none !important;
+          outline: none !important;
+          padding: 0 !important;
+          margin: 0 !important;
+          color: #FFFFFF !important;
+          border-radius: 0 !important;
+          display: inline !important;
+        }
+
+        /* Edit mode textarea within user bubble */
+        [data-message-author-role="user"] textarea {
+          display: block !important;
+          background: rgba(0, 0, 0, 0.4) !important;
+          color: #FFFFFF !important;
+          border: 1px solid ${hexToRgba(primary, 0.5)} !important;
+          border-radius: 8px !important;
+          padding: 8px 12px !important;
+        }
+
+        /* User Action Buttons (Edit, Copy, Share below bubble) */
+        [data-message-author-role="user"] button,
+        [data-message-author-role="user"] ~ div button {
+          background: transparent !important;
+          background-color: transparent !important;
+          border: none !important;
+          box-shadow: none !important;
+          color: #94A3B8 !important;
+          border-radius: 6px !important;
+          padding: 4px 6px !important;
+          transition: all 0.15s ease !important;
+        }
+
+        [data-message-author-role="user"] button:hover {
+          background: rgba(255, 255, 255, 0.12) !important;
+          color: #FFFFFF !important;
         }
 
         /* Assistant message turn - Clean, compact, native alignment */
