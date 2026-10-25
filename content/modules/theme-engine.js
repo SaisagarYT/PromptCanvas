@@ -530,51 +530,155 @@
 
         #app-shell-sidebar nav a:hover,
         #app-shell-sidebar nav button:hover,
-        nav ol li a:hover,
-        nav ul li a:hover,
-        nav a[href*="/c/"]:hover {
+        #browser-sidebar-popover nav a:hover,
+        #browser-sidebar-popover nav button:hover,
+        aside nav a:hover,
+        aside nav button:hover {
           background: ${sidebarHover} !important;
           color: #FFFFFF !important;
         }
 
-        /* All parent li elements and wrappers are strictly transparent (NO outer pill) */
+        /* Inactive chat items and all li containers default to transparent */
         #app-shell-sidebar nav ol li,
         #app-shell-sidebar nav ol li > div,
+        #app-shell-sidebar nav ul li,
+        #app-shell-sidebar nav ul li > div,
         nav ol li,
-        nav ol li > div {
+        nav ol li > div,
+        nav ul li,
+        nav ul li > div {
           background: transparent !important;
           background-color: transparent !important;
           box-shadow: none !important;
           border: none !important;
         }
 
-        /* Active Chat Item - A Single Sleek, Premium, Elegant Surface (NO Nested Layers) */
+        /* Hover on inactive chat items highlights the full parent row container */
+        #app-shell-sidebar nav ol li:not(:has(a[aria-current="page"])):not(:has(a[class*="active"])) > div:hover,
+        #app-shell-sidebar nav ul li:not(:has(a[aria-current="page"])):not(:has(a[class*="active"])) > div:hover,
+        nav[aria-label="Chat history"] li:not(:has(a[aria-current="page"])):not(:has(a[class*="active"])) > div:hover,
+        nav ol li:not(:has(a[aria-current="page"])):not(:has(a[class*="active"])) > div:hover,
+        nav ul li:not(:has(a[aria-current="page"])):not(:has(a[class*="active"])) > div:hover,
+        nav div:has(> a[href*="/c/"]:not([aria-current="page"]):not([class*="active"])):hover,
+        nav ol li:not(:has(a[aria-current="page"])):not(:has(a[class*="active"])):has(> a):hover,
+        nav ul li:not(:has(a[aria-current="page"])):not(:has(a[class*="active"])):has(> a):hover {
+          background: ${sidebarHover} !important;
+          border-radius: 9px !important;
+        }
+
+        /* Active Chat Item - Full Parent Row Container Highlighted (No Thin Inner Box) */
+        #app-shell-sidebar nav ol li:has(a[aria-current="page"]) > div,
+        #app-shell-sidebar nav ol li:has(a[class*="active"]) > div,
+        #app-shell-sidebar nav ul li:has(a[aria-current="page"]) > div,
+        #app-shell-sidebar nav ul li:has(a[class*="active"]) > div,
+        nav[aria-label="Chat history"] li:has(a[aria-current="page"]) > div,
+        nav[aria-label="Chat history"] li:has(a[class*="active"]) > div,
+        nav ol li:has(a[href*="/c/"][aria-current="page"]) > div,
+        nav ol li:has(a[href*="/c/"][class*="active"]) > div,
+        nav ul li:has(a[href*="/c/"][aria-current="page"]) > div,
+        nav ul li:has(a[href*="/c/"][class*="active"]) > div,
+        nav li:has(a[aria-current="page"]) > div,
+        nav li:has(a[class*="active"]) > div,
+        nav li:has(a[href*="/c/"][aria-current="page"]) > div,
+        nav div:has(> a[href*="/c/"][aria-current="page"]),
+        nav div:has(> a[href*="/c/"][class*="active"]),
+        nav div:has(> a[aria-current="page"]),
+        nav div:has(> a[class*="active"]),
+        /* Direct li fallback when no intermediate div exists */
+        nav ol li:has(> a[aria-current="page"]),
+        nav ol li:has(> a[class*="active"]),
+        nav ul li:has(> a[aria-current="page"]),
+        nav ul li:has(> a[class*="active"]),
+        nav[aria-label="Chat history"] li:has(> a[aria-current="page"]),
+        nav[aria-label="Chat history"] li:has(> a[class*="active"]),
+        nav li:has(> a[aria-current="page"]),
+        nav li:has(> a[class*="active"]) {
+          background: ${hexToRgba(primary, 0.18)} !important;
+          background-color: ${hexToRgba(primary, 0.18)} !important;
+          border: 1px solid ${hexToRgba(primary, 0.35)} !important;
+          border-radius: 9px !important;
+          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25) !important;
+        }
+
+        /* Hover on active item keeps/enhances full container highlight */
+        #app-shell-sidebar nav ol li:has(a[aria-current="page"]) > div:hover,
+        #app-shell-sidebar nav ul li:has(a[aria-current="page"]) > div:hover,
+        nav[aria-label="Chat history"] li:has(a[aria-current="page"]) > div:hover,
+        nav li:has(a[aria-current="page"]) > div:hover,
+        nav div:has(> a[href*="/c/"][aria-current="page"]):hover,
+        nav div:has(> a[aria-current="page"]):hover,
+        nav ol li:has(> a[aria-current="page"]):hover,
+        nav li:has(> a[aria-current="page"]):hover {
+          background: ${hexToRgba(primary, 0.24)} !important;
+          background-color: ${hexToRgba(primary, 0.24)} !important;
+          border-color: ${hexToRgba(primary, 0.50)} !important;
+        }
+
+        /* Inner anchor tags inside active row are strictly transparent */
         #app-shell-sidebar nav ol li a[aria-current="page"],
         #app-shell-sidebar nav ol li a[class*="active"],
         #app-shell-sidebar nav ol li:has(a[aria-current="page"]) a,
         nav[aria-label="Chat history"] a[aria-current="page"],
         nav[aria-label="Chat history"] a[class*="active"],
+        nav[aria-label="Chat history"] li:has(a[aria-current="page"]) a,
         nav a[href*="/c/"][aria-current="page"],
-        nav a[href*="/c/"][class*="active"] {
-          background: ${hexToRgba(primary, 0.18)} !important;
-          background-color: ${hexToRgba(primary, 0.18)} !important;
-          border: 1px solid ${hexToRgba(primary, 0.35)} !important;
-          border-radius: 8px !important;
-          color: #FFFFFF !important;
-          font-weight: 600 !important;
-          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25) !important;
-        }
-
-        /* Wipe ALL child containers, spans, and icons inside the active link to transparent */
-        #app-shell-sidebar nav ol li a[aria-current="page"] *,
-        #app-shell-sidebar nav ol li a[class*="active"] *,
-        nav[aria-label="Chat history"] a[aria-current="page"] *,
-        nav a[href*="/c/"][aria-current="page"] *,
-        nav a[href*="/c/"][class*="active"] * {
+        nav a[href*="/c/"][class*="active"],
+        nav li:has(a[aria-current="page"]) a,
+        nav div:has(> a[aria-current="page"]) a {
           background: transparent !important;
           background-color: transparent !important;
           border: none !important;
           box-shadow: none !important;
+          color: #FFFFFF !important;
+          font-weight: 600 !important;
+        }
+
+        #app-shell-sidebar nav ol li:has(a[aria-current="page"]) a:hover,
+        #app-shell-sidebar nav ol li:has(a[class*="active"]) a:hover,
+        nav[aria-label="Chat history"] li:has(a[aria-current="page"]) a:hover,
+        nav a[href*="/c/"][aria-current="page"]:hover,
+        nav a[href*="/c/"][class*="active"]:hover,
+        nav li:has(a[aria-current="page"]) a:hover,
+        nav div:has(> a[aria-current="page"]) a:hover {
+          background: transparent !important;
+          background-color: transparent !important;
+          border: none !important;
+          box-shadow: none !important;
+          color: #FFFFFF !important;
+        }
+
+        /* Wipe ALL child spans, texts, and icons inside the active chat link to transparent */
+        #app-shell-sidebar nav ol li a[aria-current="page"] *,
+        #app-shell-sidebar nav ol li a[class*="active"] *,
+        #app-shell-sidebar nav ol li:has(a[aria-current="page"]) a *,
+        nav[aria-label="Chat history"] a[aria-current="page"] *,
+        nav[aria-label="Chat history"] li:has(a[aria-current="page"]) a *,
+        nav a[href*="/c/"][aria-current="page"] *,
+        nav a[href*="/c/"][class*="active"] *,
+        nav li:has(a[aria-current="page"]) a *,
+        nav div:has(> a[aria-current="page"]) a * {
+          background: transparent !important;
+          background-color: transparent !important;
+          border: none !important;
+          box-shadow: none !important;
+        }
+
+        /* Three-dots options button on chat items: sleek ghost design */
+        nav ol li button,
+        nav ul li button,
+        nav div:has(> a[href*="/c/"]) button {
+          background: transparent !important;
+          border: none !important;
+          box-shadow: none !important;
+          color: #CBD5E1 !important;
+        }
+
+        nav ol li button:hover,
+        nav ul li button:hover,
+        nav div:has(> a[href*="/c/"]) button:hover {
+          background: rgba(255, 255, 255, 0.12) !important;
+          border-radius: 6px !important;
+          color: #FFFFFF !important;
         }
 
         /* "New chat" Quick Action Pill */
