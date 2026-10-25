@@ -9,6 +9,16 @@
   let wallpaperHostEl = null;
   let wallpaperOverlayEl = null;
 
+  function hexToRgba(hex, alpha) {
+    if (!hex) return `rgba(0, 0, 0, ${alpha})`;
+    if (hex.startsWith('rgba') || hex.startsWith('rgb')) return hex;
+    const clean = hex.replace('#', '');
+    const r = parseInt(clean.substring(0, 2), 16) || 0;
+    const g = parseInt(clean.substring(2, 4), 16) || 0;
+    const b = parseInt(clean.substring(4, 6), 16) || 0;
+    return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+  }
+
   const PRESET_WALLPAPERS = {
     'ferrari-racing': {
       id: 'ferrari-racing',
@@ -151,7 +161,7 @@
       docRoot.style.setProperty('--pc-panel-blur', `${panelBlur}px`);
     },
 
-    applyPageTheme(theme, platform, themeEnabled, globalWallpaper) {
+    applyPageTheme(theme, platform, themeEnabled, globalWallpaper, sidebarStyle, inputBarStyle) {
       const wp = globalWallpaper || theme?.wallpaper;
       this.applyWallpaper(wp, themeEnabled);
 
@@ -172,7 +182,7 @@
       const glassBlur = isWp ? (wp?.panelBlur || 14) : 0;
 
       let css = '';
-      if (platform === 'chatgpt') css = this.buildChatGPTTheme(c, theme, isWp, glassBlur);
+      if (platform === 'chatgpt') css = this.buildChatGPTTheme(c, theme, isWp, glassBlur, sidebarStyle, inputBarStyle);
       else if (platform === 'gemini') css = this.buildGeminiTheme(c, theme, isWp, glassBlur);
       else if (platform === 'claude') css = this.buildClaudeTheme(c, theme, isWp, glassBlur);
       else if (platform === 'deepseek') css = this.buildDeepSeekTheme(c, theme, isWp, glassBlur);
@@ -182,68 +192,196 @@
       themeStyleEl.textContent = css;
     },
 
-    buildChatGPTTheme(c, theme, isWp, glassBlur) {
+        buildChatGPTTheme(c, theme, isWp, glassBlur, sidebarStyle = {}, inputBarStyle = {}) {
+      const swatches = theme.colors?.swatches || [
+        c.background || '#18181B',
+        c.primary || '#EF4444',
+        c.secondary || '#F59E0B',
+        c.textMuted || '#CBD5E1'
+      ];
+      const [c1, c2, c3, c4] = swatches;
+
+      const baseColor = c1 || '#18181B';
+      const primary = c2 || '#EF4444';
+      const secondary = c3 || '#F59E0B';
+      const tertiary = c4 || '#CBD5E1';
+
       const userText = c.userBubbleText || '#FFFFFF';
-      const rootBg = isWp ? 'transparent' : c.background;
-      const glassFilter = isWp ? `backdrop-filter: blur(${glassBlur}px) saturate(140%) !important; -webkit-backdrop-filter: blur(${glassBlur}px) saturate(140%) !important;` : '';
-      const primary = c.primary || '#EF4444';
-      const secondary = c.secondary || '#F59E0B';
-      const border = c.border || 'rgba(239, 68, 68, 0.32)';
-      const sidebarHover = c.sidebarHover || 'rgba(239, 68, 68, 0.14)';
+      const rootBg = isWp ? 'transparent' : baseColor;
+      const border = hexToRgba(primary, 0.28);
+      const secondaryBorder = hexToRgba(secondary, 0.28);
+      const sidebarHover = hexToRgba(primary, 0.16);
+      const secondaryHover = hexToRgba(secondary, 0.16);
+
+      // --- Sidebar Style Configurations ---
+      const sbMode = sidebarStyle?.backgroundMode || 'transparent';
+      const sbBlur = typeof sidebarStyle?.glassBlur !== 'undefined' ? sidebarStyle.glassBlur : (glassBlur || 24);
+      const sbBorderEnabled = sidebarStyle?.borderEnabled !== false;
+
+      const sidebarBgCss = sbMode === 'solid'
+        ? `background: ${baseColor} !important; background-color: ${baseColor} !important; backdrop-filter: none !important; -webkit-backdrop-filter: none !important;`
+        : `background: ${hexToRgba(baseColor, 0.42)} !important; background-color: ${hexToRgba(baseColor, 0.42)} !important; backdrop-filter: blur(${sbBlur}px) saturate(140%) !important; -webkit-backdrop-filter: blur(${sbBlur}px) saturate(140%) !important;`;
+
+      const sidebarBorderCss = sbBorderEnabled
+        ? `border-right: 1px solid ${hexToRgba(primary, 0.25)} !important;`
+        : `border-right: none !important;`;
+
+      // --- Input Bar Style Configurations ---
+      const ibMode = inputBarStyle?.backgroundMode || 'transparent';
+      const ibBlur = typeof inputBarStyle?.glassBlur !== 'undefined' ? inputBarStyle.glassBlur : 14;
+      const ibBorderAccent = inputBarStyle?.borderAccent !== false;
+      const ibActionAccent = inputBarStyle?.actionButtonsMode !== 'default';
+      const ibToolAccent = inputBarStyle?.toolPillsMode !== 'default';
+
+      const composerBgCss = ibMode === 'solid'
+        ? `background: ${baseColor} !important; background-color: ${baseColor} !important; backdrop-filter: none !important; -webkit-backdrop-filter: none !important;`
+        : `background: ${isWp ? hexToRgba(baseColor, 0.40) : hexToRgba(baseColor, 0.55)} !important; background-color: ${isWp ? hexToRgba(baseColor, 0.40) : hexToRgba(baseColor, 0.55)} !important; ${ibBlur > 0 ? `backdrop-filter: blur(${ibBlur}px) !important; -webkit-backdrop-filter: blur(${ibBlur}px) !important;` : 'backdrop-filter: none !important; -webkit-backdrop-filter: none !important;'}`;
 
       return `
-        /* Force surface tokens on :root, html, body, and ChatGPT's .light / .dark classes */
+        /* ==========================================================================
+           1. HIJACK CHATGPT NATIVE DESIGN TOKENS
+           ========================================================================== */
         :root,
         html,
         body,
+        [data-theme],
         html.light,
         html.dark,
         .light,
         .dark {
+          /* Canvas & Surfaces */
+          --color-surface: ${rootBg} !important;
+          --color-surface-secondary: ${baseColor} !important;
+          --color-surface-canvas: ${rootBg} !important;
+          --color-surface-card: ${isWp ? 'rgba(255, 255, 255, 0.05)' : baseColor} !important;
+          --color-surface-elevated-secondary: ${baseColor} !important;
+          --color-background-panel: ${isWp ? hexToRgba(baseColor, 0.9) : baseColor} !important;
+          --bg-primary: ${rootBg} !important;
+          --bg-primary-inverted: ${primary} !important;
+          --bg-secondary: ${baseColor} !important;
+          --bg-tertiary: ${baseColor} !important;
+          --bg-elevated-primary: ${baseColor} !important;
+          --bg-elevated-secondary: ${baseColor} !important;
           --main-surface-primary: ${rootBg} !important;
-          --main-surface-secondary: ${rootBg} !important;
-          --main-surface-tertiary: ${rootBg} !important;
+          --main-surface-secondary: ${baseColor} !important;
+          --main-surface-tertiary: ${baseColor} !important;
           --token-main-surface-primary: ${rootBg} !important;
           --token-main-surface-secondary: ${rootBg} !important;
           --token-main-surface-tertiary: ${rootBg} !important;
           --token-surface-primary: ${rootBg} !important;
           --token-surface-secondary: ${rootBg} !important;
           --token-surface-tertiary: ${rootBg} !important;
-          --composer-surface: ${rootBg} !important;
-          --composer-background: ${rootBg} !important;
-          --sidebar-surface-primary: ${isWp ? 'transparent' : c.sidebar} !important;
-          --sidebar-surface-secondary: ${isWp ? 'rgba(255, 255, 255, 0.06)' : c.sidebarHover} !important;
-          --sidebar-surface-tertiary: ${isWp ? 'rgba(255, 255, 255, 0.1)' : c.sidebarHover} !important;
-          --token-sidebar-surface-primary: ${isWp ? 'transparent' : c.sidebar} !important;
-          --token-sidebar-surface-secondary: ${isWp ? 'rgba(255, 255, 255, 0.06)' : c.sidebarHover} !important;
-          --token-sidebar-surface-tertiary: ${isWp ? 'rgba(255, 255, 255, 0.1)' : c.sidebarHover} !important;
+          --app-shell-panel-background: ${rootBg} !important;
+
+          /* Chat Message Bubbles */
+          --color-background-user-message: ${primary} !important;
+          --color-text-user-message: ${userText} !important;
+          --color-background-text-selection: ${sidebarHover} !important;
+          --color-background-attribution-highlight: ${secondaryHover} !important;
+
+          /* Composer & Input Controls */
+          --color-background-composer-primary: ${primary} !important;
+          --color-text-composer-primary: #FFFFFF !important;
+          --composer-surface: ${ibMode === 'solid' ? baseColor : 'transparent'} !important;
+          --composer-background: ${ibMode === 'solid' ? baseColor : 'transparent'} !important;
+          --color-background-composer-action-bar: ${baseColor} !important;
+          --app-color-background-elevated-primary: ${hexToRgba(baseColor, 0.88)} !important;
+          --app-color-background-elevated-primary-opaque: ${hexToRgba(baseColor, 0.95)} !important;
+          --app-color-background-elevated-secondary: ${baseColor} !important;
+          --app-color-background-surface: ${baseColor} !important;
+          --app-color-background-surface-under: ${baseColor} !important;
+          --app-color-background-control: rgba(255, 255, 255, 0.08) !important;
+          --color-background-control-opaque: ${baseColor} !important;
+          --app-color-background-editor-opaque: ${baseColor} !important;
+
+          /* Buttons & Interactive Elements */
+          --app-color-accent-blue: ${primary} !important;
+          --app-color-accent-purple: ${secondary} !important;
+          --app-color-background-accent: ${primary} !important;
+          --app-color-background-accent-active: ${sidebarHover} !important;
+          --app-color-background-accent-hover: ${sidebarHover} !important;
+          --app-color-background-button-primary: ${primary} !important;
+          --app-color-background-button-primary-active: ${secondary} !important;
+          --app-color-background-button-primary-hover: ${secondary} !important;
+          --app-color-background-button-secondary: rgba(255, 255, 255, 0.08) !important;
+          --app-color-background-button-secondary-active: ${sidebarHover} !important;
+          --app-color-background-button-secondary-hover: ${sidebarHover} !important;
+          --app-color-background-button-tertiary-active: ${secondaryHover} !important;
+          --app-color-background-button-tertiary-hover: ${secondaryHover} !important;
+          --color-background-button-outline-hover: ${sidebarHover} !important;
+
+          /* Icons & Focus */
+          --app-color-icon-accent: ${primary} !important;
+          --app-color-icon-primary: #F8FAFC !important;
+          --app-color-icon-secondary: ${secondary} !important;
+          --app-color-icon-tertiary: #CBD5E1 !important;
+          --icon-accent: ${primary} !important;
+
+          /* Text & Typography: Always High-Contrast for legibility */
+          --app-color-text-accent: ${primary} !important;
+          --app-color-text-on-accent: #FFFFFF !important;
+          --app-color-text-button-primary: #FFFFFF !important;
+          --app-color-text-foreground: #F8FAFC !important;
+          --app-color-text-foreground-secondary: #CBD5E1 !important;
+          --app-color-text-foreground-tertiary: #94A3B8 !important;
+          --app-color-foreground-application-menu: #F8FAFC !important;
+          --text-primary: #F8FAFC !important;
+          --text-secondary: #CBD5E1 !important;
+          --text-tertiary: #94A3B8 !important;
+          --color-text: #F8FAFC !important;
+          --color-text-secondary: #CBD5E1 !important;
+          --color-text-tertiary: #94A3B8 !important;
+          --color-text-tip: ${secondary} !important;
+          --color-text-connected: ${primary} !important;
+
+          /* Placeholder & Hint Text */
+          --color-text-placeholder: rgba(255, 255, 255, 0.65) !important;
+          --text-placeholder: rgba(255, 255, 255, 0.65) !important;
+          --text-token-text-placeholder: rgba(255, 255, 255, 0.65) !important;
+          --placeholder-text: rgba(255, 255, 255, 0.65) !important;
+          --color-text-hint: rgba(255, 255, 255, 0.65) !important;
+          --hint-text: rgba(255, 255, 255, 0.65) !important;
+          --text-quaternary: rgba(255, 255, 255, 0.65) !important;
+
+          /* Tooltips */
+          --color-text-tooltip: ${primary} !important;
+          --color-background-tooltip: ${hexToRgba(baseColor, 0.95)} !important;
+          --color-background-tooltip-classic: ${hexToRgba(baseColor, 0.95)} !important;
+
+          /* Borders */
+          --app-color-border: ${border} !important;
+          --app-color-border-light: ${border} !important;
+          --app-color-border-focus: ${primary} !important;
+          --color-border: ${border} !important;
+          --color-border-mode-toggle-selected: ${border} !important;
+
+          /* Sidebar Tokens */
+          --sidebar-surface-primary: ${sbMode === 'solid' ? baseColor : 'transparent'} !important;
+          --sidebar-surface-secondary: transparent !important;
+          --sidebar-surface-tertiary: transparent !important;
+          --token-sidebar-surface-primary: ${sbMode === 'solid' ? baseColor : 'transparent'} !important;
+          --token-sidebar-surface-secondary: transparent !important;
+          --token-sidebar-surface-tertiary: transparent !important;
         }
 
+        /* ==========================================================================
+           2. ZERO-SHIFT WRAPPER TRANSPARENCY (Guarantees Wallpaper Display)
+           ========================================================================== */
         html, body, #__next, #root,
         main, main > div,
         header,
+        [data-thread-user-message-navigation-content],
+        [data-thread-find-target="conversation"],
+        [data-chatgpt-search-message-ids],
         div.draggable,
         div[class*="draggable"],
         div[class*="min-h-[--header-height]"],
         div[class*="top-0"]:not(nav *):not(aside *),
         div.sticky.top-0:not(nav *):not(aside *),
         [class*="sticky"][class*="top-0"]:not(nav *):not(aside *),
-        div:has(> button[data-testid*="model-switcher"]),
-        div:has(> button[aria-label*="model" i]),
         div[id^="radix-"],
-        div[class*="overflow-y-auto"],
+        div[class*="overflow-y-auto"]:not(#app-shell-sidebar *):not(aside *),
         div[class*="react-scroll-to-bottom"],
-        div[class*="bg-token-main-surface-primary"],
-        div[class*="bg-token-main-surface-secondary"],
-        div[class*="bg-token-main-surface-tertiary"],
-        div[class*="bg-[#212121]"],
-        div[class*="bg-[#171717]"],
-        div[class*="bg-[#2f2f2f]"],
-        div[class*="bg-[#f4f4f4]"],
-        div[class*="bg-black"],
-        div[class*="bg-white"],
-        div[class*="bg-gray-800"],
-        div[class*="bg-gray-900"],
         div[class*="composer-parent"],
         div[class*="stretch"],
         div[class*="bottom-0"],
@@ -252,8 +390,6 @@
         div[class*="via-white"],
         div[class*="to-transparent"],
         div[class*="bg-gradient-to-t"],
-        form[class*="w-full"],
-        form,
         footer {
           background-color: transparent !important;
           background: transparent !important;
@@ -261,40 +397,54 @@
 
         html, body {
           font-family: '${theme.font || 'Inter'}', sans-serif !important;
-          color: ${c.text} !important;
+          color: #F8FAFC !important;
         }
 
-        /* Left Navigation Sidebar Glassmorphism Container - Atmospheric Obsidian Frosted Glass */
-        aside:not(#promptcanvas-root *),
-        div.flex-shrink-0:has(nav),
-        div.flex-shrink-0:has(aside),
-        div[class*="sidebar"]:has(nav),
-        nav:not(#promptcanvas-root *):not(aside nav):not(div.flex-shrink-0 nav) {
-          background: ${isWp ? 'rgba(16, 13, 26, 0.58)' : c.sidebar} !important;
-          background-color: ${isWp ? 'rgba(16, 13, 26, 0.58)' : c.sidebar} !important;
-          backdrop-filter: blur(28px) saturate(160%) !important;
-          -webkit-backdrop-filter: blur(28px) saturate(160%) !important;
-          border-right: 1px solid ${border} !important;
-          box-shadow: 4px 0 32px rgba(0, 0, 0, 0.45) !important;
-        }
+        /* ==========================================================================
+           3. SIDEBAR (Solid vs Frosted Glass + 100% Readable Text)
+           ========================================================================== */
 
-        /* Prevent double opacity or double borders if nav is nested inside aside or flex-shrink-0 */
-        aside nav,
-        div.flex-shrink-0 nav,
-        [data-testid*="sidebar"] nav,
-        div[class*="sidebar"] nav {
-          background: transparent !important;
-          background-color: transparent !important;
-          backdrop-filter: none !important;
-          -webkit-backdrop-filter: none !important;
-          border-right: none !important;
+        /* Open sidebar shell gets the selected style ONLY when genuinely open */
+        html:not([data-pc-sidebar="closed"]) #app-shell-sidebar:has(ol),
+        html:not([data-pc-sidebar="closed"]) #app-shell-sidebar:has(a[href*="/c/"]),
+        html:not([data-pc-sidebar="closed"]) #browser-sidebar-popover:has(ol) {
+          ${sidebarBgCss}
+          ${sidebarBorderCss}
           box-shadow: none !important;
         }
 
-        /* Outer wrappers and all inner nested wrappers inside the sidebar must be transparent to prevent double opacity */
-        div[class*="bg-token-sidebar-surface-primary"],
-        div[class*="bg-token-sidebar-surface-secondary"],
-        div[class*="bg-token-sidebar-surface-tertiary"],
+        /* When sidebar is collapsed/closed/mini-rail: strictly 100% transparent, ZERO ghost borders, blur, or background */
+        html[data-pc-sidebar="closed"] #app-shell-sidebar,
+        html[data-pc-sidebar="closed"] aside,
+        html[data-pc-sidebar="closed"] #browser-sidebar-popover,
+        html[data-pc-sidebar="closed"] nav,
+        html[data-pc-sidebar="closed"] div.flex-shrink-0,
+        #app-shell-sidebar:not(:has(ol)):not(:has(a[href*="/c/"])),
+        #app-shell-sidebar:empty,
+        #app-shell-sidebar[data-state="closed"],
+        #app-shell-sidebar[aria-hidden="true"],
+        #app-shell-sidebar[class*="w-0"],
+        #app-shell-sidebar[class*="w-[0"],
+        #app-shell-sidebar[style*="width: 0"],
+        #app-shell-sidebar[style*="width:0"],
+        div.flex-shrink-0:not(:has(ol)) {
+          background: transparent !important;
+          background-color: transparent !important;
+          border: none !important;
+          border-right: none !important;
+          box-shadow: none !important;
+          backdrop-filter: none !important;
+          -webkit-backdrop-filter: none !important;
+        }
+
+        /* All aside containers and inner wrappers are ALWAYS 100% transparent (prevents phantom width and double opacity) */
+        aside,
+        aside *,
+        #app-shell-sidebar aside,
+        #app-shell-sidebar nav,
+        #browser-sidebar-popover aside,
+        #browser-sidebar-popover nav,
+        nav[aria-label="Chat history"],
         nav:not(#promptcanvas-root *) > div,
         aside:not(#promptcanvas-root *) > div,
         nav:not(#promptcanvas-root *) div[class*="overflow-y-auto"],
@@ -303,648 +453,138 @@
         nav:not(#promptcanvas-root *) div[class*="h-full"],
         nav:not(#promptcanvas-root *) ol,
         nav:not(#promptcanvas-root *) ul,
-        nav:not(#promptcanvas-root *) div[class*="bg-[#171717]"],
-        nav:not(#promptcanvas-root *) div[class*="bg-[#212121]"],
-        nav:not(#promptcanvas-root *) div[class*="bg-[#2f2f2f]"],
-        nav:not(#promptcanvas-root *) div[class*="bg-black"],
-        nav:not(#promptcanvas-root *) div[class*="bg-white"],
-        nav:not(#promptcanvas-root *) div[class*="bg-gray-"],
         nav:not(#promptcanvas-root *) div[class*="sticky"] {
           background: transparent !important;
           background-color: transparent !important;
-        }
-
-        /* ==========================================================================
-           Input Composer Capsule - Enhanced Atmospheric Frosted Glass Container
-           ========================================================================== */
-        [data-pc-composer="true"],
-        .pc-composer-capsule,
-        #composer-background,
-        div[id="composer-background"],
-        [data-composer-surface],
-        [data-testid*="composer-background"],
-        [data-testid*="composer"]:not(button):not(svg),
-        form:has(#prompt-textarea) [class*="rounded-3xl"],
-        form:has(#prompt-textarea) [class*="rounded-[2"],
-        form:has(#prompt-textarea) [class*="rounded-full"],
-        form div:has(#prompt-textarea):has(button),
-        /* Any container with rounded borders containing prompt textarea or ProseMirror */
-        div[class*="rounded-3xl"]:has(#prompt-textarea),
-        div[class*="rounded-full"]:has(#prompt-textarea),
-        div[class*="rounded-[2"]:has(#prompt-textarea),
-        div[class*="rounded"]:has(#prompt-textarea),
-        div[class*="rounded"]:has(.ProseMirror),
-        div[class*="rounded"]:has(textarea:not(#pc-page-theme *)),
-        div[class*="rounded"]:has(div[contenteditable="true"]:not(#promptcanvas-root *)),
-        /* Modern ChatGPT pill classes */
-        div[class*="composer-parent"] div[class*="rounded"],
-        div:has(> #composer-background),
-        form div[class*="rounded"]:has(#prompt-textarea),
-        form:has(#prompt-textarea) > div,
-        form:has(#composer-background) > div {
-          background: ${isWp ? 'rgba(16, 14, 24, 0.88)' : c.inputBg} !important;
-          background-color: ${isWp ? 'rgba(16, 14, 24, 0.88)' : c.inputBg} !important;
-          border: 1px solid ${border} !important;
-          box-shadow: 0 10px 40px rgba(0, 0, 0, 0.65), 0 0 20px ${sidebarHover}, inset 0 1px 0 rgba(255, 255, 255, 0.12) !important;
-          backdrop-filter: blur(28px) saturate(150%) !important;
-          -webkit-backdrop-filter: blur(28px) saturate(150%) !important;
-          border-radius: 9999px !important;
-          transition: border-color 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s cubic-bezier(0.16, 1, 0.3, 1), transform 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
-        }
-
-        /* Hover & Focus-within state for the capsule with radiant glow */
-        [data-pc-composer="true"]:hover,
-        .pc-composer-capsule:hover,
-        #composer-background:hover,
-        div[class*="rounded"]:has(#prompt-textarea):hover,
-        form:has(#prompt-textarea) > div:hover,
-        form div:has(#prompt-textarea):has(button):hover {
-          border-color: ${primary} !important;
-          box-shadow: 0 12px 44px rgba(0, 0, 0, 0.7), 0 0 26px ${sidebarHover}, inset 0 1px 0 rgba(255, 255, 255, 0.18) !important;
-        }
-
-        [data-pc-composer="true"]:focus-within,
-        .pc-composer-capsule:focus-within,
-        #composer-background:focus-within,
-        div[class*="rounded"]:has(#prompt-textarea):focus-within,
-        form:has(#prompt-textarea) > div:focus-within,
-        form div:has(#prompt-textarea):has(button):focus-within {
-          border-color: ${primary} !important;
-          box-shadow: 0 14px 50px rgba(0, 0, 0, 0.75), 0 0 32px ${sidebarHover}, 0 0 0 1px ${primary}, inset 0 1px 0 rgba(255, 255, 255, 0.22) !important;
-          transform: translateY(-1px) !important;
-        }
-
-        /* Eliminate any white boxes, token backgrounds, or double borders inside the pill */
-        [data-pc-composer="true"] > div,
-        .pc-composer-capsule > div,
-        #composer-background > div,
-        div[class*="rounded"]:has(#prompt-textarea) > div,
-        [data-pc-composer="true"] div[class*="bg-white"],
-        .pc-composer-capsule div[class*="bg-white"],
-        #composer-background div[class*="bg-white"],
-        div[class*="rounded"]:has(#prompt-textarea) div[class*="bg-white"],
-        [data-pc-composer="true"] [class*="bg-token-"],
-        .pc-composer-capsule [class*="bg-token-"],
-        #composer-background div[class*="bg-token-"],
-        div[class*="rounded"]:has(#prompt-textarea) div[class*="bg-token-"],
-        [data-pc-composer="true"] [class*="bg-[#"],
-        .pc-composer-capsule [class*="bg-[#"],
-        #composer-background div[class*="bg-[#"],
-        div[class*="rounded"]:has(#prompt-textarea) div[class*="bg-[#"],
-        [data-pc-composer="true"] [class*="bg-token-main-surface-primary"],
-        .pc-composer-capsule [class*="bg-token-main-surface-primary"],
-        #composer-background [class*="bg-token-main-surface-primary"],
-        div[class*="rounded"]:has(#prompt-textarea) [class*="bg-token-main-surface-primary"],
-        [data-pc-composer="true"] [class*="bg-token-main-surface-secondary"],
-        .pc-composer-capsule [class*="bg-token-main-surface-secondary"],
-        #composer-background [class*="bg-token-main-surface-secondary"],
-        div[class*="rounded"]:has(#prompt-textarea) [class*="bg-token-main-surface-secondary"],
-        [data-pc-composer="true"] [class*="bg-token-main-surface-tertiary"],
-        .pc-composer-capsule [class*="bg-token-main-surface-tertiary"],
-        #composer-background [class*="bg-token-main-surface-tertiary"],
-        div[class*="rounded"]:has(#prompt-textarea) [class*="bg-token-main-surface-tertiary"],
-        [data-pc-composer="true"] div[class*="border"],
-        .pc-composer-capsule div[class*="border"],
-        #composer-background div[class*="border"],
-        div[class*="rounded"]:has(#prompt-textarea) div[class*="border"],
-        div[class*="rounded"]:has(#prompt-textarea) #composer-background {
-          background: transparent !important;
-          background-color: transparent !important;
-          border-color: transparent !important;
-          box-shadow: none !important;
-        }
-
-        /* Force local CSS variable tokens inside the composer to transparent */
-        [data-pc-composer="true"],
-        [data-pc-composer="true"] *,
-        .pc-composer-capsule,
-        .pc-composer-capsule *,
-        #composer-background,
-        #composer-background *,
-        form:has(#prompt-textarea),
-        form:has(#prompt-textarea) *,
-        div:has(#prompt-textarea),
-        div:has(#prompt-textarea) * {
-          --main-surface-primary: transparent !important;
-          --main-surface-secondary: transparent !important;
-          --main-surface-tertiary: transparent !important;
-          --token-main-surface-primary: transparent !important;
-          --token-main-surface-secondary: transparent !important;
-          --token-main-surface-tertiary: transparent !important;
-          --token-surface-primary: transparent !important;
-          --token-surface-secondary: transparent !important;
-          --token-surface-tertiary: transparent !important;
-          --composer-surface: transparent !important;
-          --composer-background: transparent !important;
-        }
-
-        /* Input Textarea & Contenteditable - High Contrast & Themed Cursor */
-        #prompt-textarea,
-        textarea:not(#promptcanvas-root *):not(#pc-page-theme *),
-        .ProseMirror,
-        div[contenteditable="true"]:not(#promptcanvas-root *),
-        div[id*="prompt-textarea"] {
-          background: transparent !important;
-          background-color: transparent !important;
-          color: #FFFFFF !important;
-          font-family: '${theme.font || 'Inter'}', sans-serif !important;
-          font-size: ${theme.fontSize || '15px'} !important;
-          line-height: 1.55 !important;
-          caret-color: ${primary} !important;
-          border: none !important;
-          box-shadow: none !important;
-          outline: none !important;
-        }
-
-        #prompt-textarea::placeholder,
-        textarea::placeholder,
-        .ProseMirror p.is-editor-empty::before,
-        p[data-placeholder]::before,
-        div[data-placeholder]::before,
-        div[class*="placeholder"] {
-          color: rgba(248, 250, 252, 0.50) !important;
-        }
-
-        /* General buttons inside the composer */
-        [data-pc-composer="true"] button,
-        .pc-composer-capsule button,
-        #composer-background button,
-        div[class*="rounded"]:has(#prompt-textarea) button,
-        div:has(> #prompt-textarea) button,
-        div[class*="composer-parent"] button,
-        button[data-testid*="send" i],
-        button[aria-label*="Think" i],
-        button[aria-label*="Attach" i],
-        button[aria-label*="Upload" i],
-        button[aria-label*="Voice" i],
-        button[aria-label*="Dictate" i] {
-          color: #F8FAFC !important;
-          transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
-        }
-
-        [data-pc-composer="true"] button svg,
-        .pc-composer-capsule button svg,
-        #composer-background button svg,
-        div[class*="rounded"]:has(#prompt-textarea) button svg,
-        div:has(> #prompt-textarea) button svg,
-        div[class*="composer-parent"] button svg,
-        button[data-testid*="send" i] svg,
-        button[aria-label*="Think" i] svg,
-        button[aria-label*="Attach" i] svg,
-        button[aria-label*="Upload" i] svg,
-        button[aria-label*="Voice" i] svg,
-        button[aria-label*="Dictate" i] svg {
-          color: #F8FAFC !important;
-          fill: currentColor !important;
-          stroke: currentColor !important;
-        }
-
-        /* 1. "Think" / Reasoning Pill Button */
-        /* General fallback: ALL buttons inside the composer capsule must have dark glass */
-        [data-pc-composer="true"] button,
-        [data-pc-composer="true"] [role="button"],
-        .pc-composer-capsule button,
-        .pc-composer-capsule [role="button"],
-        form:has(#prompt-textarea) button,
-        form:has(#prompt-textarea) [role="button"],
-        form:has(#prompt-textarea) button[class*="bg-white"],
-        form:has(#prompt-textarea) button[class*="bg-token-"],
-        [data-pc-composer="true"] button[class*="bg-white"],
-        [data-pc-composer="true"] button[class*="bg-token-"],
-        .pc-composer-capsule button[class*="bg-white"],
-        .pc-composer-capsule button[class*="bg-token-"] {
-          background: rgba(255, 255, 255, 0.07) !important;
-          background-color: rgba(255, 255, 255, 0.07) !important;
-          border: 1px solid rgba(255, 255, 255, 0.14) !important;
-          color: #F8FAFC !important;
-          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25) !important;
-          transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
-        }
-
-        /* 1. "Think" / Reasoning Pill Button */
-        [data-pc-btn="think"],
-        button[aria-label*="Think" i],
-        button[aria-label*="reason" i],
-        button[data-testid*="think" i],
-        button[data-testid*="reason" i],
-        #composer-background button:has(span),
-        div[class*="rounded"]:has(#prompt-textarea) button:has(span),
-        .pc-composer-capsule button:has(span),
-        [data-pc-composer="true"] button:has(span),
-        form:has(#prompt-textarea) button:has(span),
-        [data-pc-composer="true"] button:has(svg + span),
-        form:has(#prompt-textarea) button:has(svg + span) {
-          width: auto !important;
-          min-width: fit-content !important;
-          max-width: none !important;
-          height: 36px !important;
-          background: rgba(255, 255, 255, 0.09) !important;
-          background-color: rgba(255, 255, 255, 0.09) !important;
-          border: 1px solid ${border} !important;
-          border-radius: 9999px !important;
-          padding: 0 14px 0 10px !important;
-          color: #F8FAFC !important;
-          font-weight: 500 !important;
-          font-size: 13px !important;
-          letter-spacing: 0.02em !important;
-          display: inline-flex !important;
-          align-items: center !important;
-          justify-content: center !important;
-          gap: 7px !important;
-          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25) !important;
-          transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
-        }
-
-        [data-pc-btn="think"]:hover,
-        button[aria-label*="Think" i]:hover,
-        button[aria-label*="reason" i]:hover,
-        button[data-testid*="think" i]:hover,
-        button[data-testid*="reason" i]:hover,
-        #composer-background button:has(span):hover,
-        div[class*="rounded"]:has(#prompt-textarea) button:has(span):hover,
-        .pc-composer-capsule button:has(span):hover,
-        [data-pc-composer="true"] button:has(span):hover,
-        form:has(#prompt-textarea) button:has(span):hover {
-          background: ${sidebarHover} !important;
-          background-color: ${sidebarHover} !important;
-          border-color: ${primary} !important;
-          color: ${primary} !important;
-          box-shadow: 0 0 16px ${sidebarHover} !important;
-          transform: translateY(-1px) !important;
-        }
-
-        [data-pc-btn="think"] span,
-        button[aria-label*="Think" i] span,
-        #composer-background button:has(span) span,
-        div[class*="rounded"]:has(#prompt-textarea) button:has(span) span,
-        [data-pc-composer="true"] button:has(span) span,
-        form:has(#prompt-textarea) button:has(span) span {
-          color: inherit !important;
-          font-weight: 500 !important;
-          font-size: 13px !important;
-          white-space: nowrap !important;
-          line-height: 1 !important;
-        }
-
-        [data-pc-btn="think"] svg,
-        button[aria-label*="Think" i] svg,
-        #composer-background button:has(span) svg,
-        div[class*="rounded"]:has(#prompt-textarea) button:has(span) svg,
-        [data-pc-composer="true"] button:has(span) svg,
-        form:has(#prompt-textarea) button:has(span) svg {
-          width: 17px !important;
-          height: 17px !important;
-          min-width: 17px !important;
-          min-height: 17px !important;
-          color: inherit !important;
-          fill: currentColor !important;
-          display: inline-block !important;
-          flex-shrink: 0 !important;
-          transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1) !important;
-        }
-
-        [data-pc-btn="think"]:hover svg,
-        button[aria-label*="Think" i]:hover svg,
-        form:has(#prompt-textarea) button:has(span):hover svg {
-          transform: rotate(18deg) scale(1.2) !important;
-        }
-
-        /* 2. Plus (+) / Attach Button */
-        [data-pc-btn="attach"],
-        button[aria-label*="Attach" i],
-        button[aria-label*="Upload" i],
-        button[aria-label*="Add" i],
-        button[aria-label*="file" i],
-        button[aria-label*="tool" i],
-        button[aria-label*="more" i],
-        button[data-testid*="attach" i],
-        #composer-background button:first-of-type,
-        div[class*="rounded"]:has(#prompt-textarea) button:first-of-type,
-        .pc-composer-capsule button:first-of-type,
-        [data-pc-composer="true"] button:first-of-type,
-        form:has(#prompt-textarea) button:first-of-type {
-          background: rgba(255, 255, 255, 0.08) !important;
-          background-color: rgba(255, 255, 255, 0.08) !important;
-          border: 1px solid rgba(255, 255, 255, 0.15) !important;
-          border-radius: 50% !important;
-          color: #F8FAFC !important;
-          width: 36px !important;
-          height: 36px !important;
-          min-width: 36px !important;
-          max-width: 36px !important;
-          display: inline-flex !important;
-          align-items: center !important;
-          justify-content: center !important;
-          padding: 0 !important;
-          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25) !important;
-          transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
-        }
-
-        [data-pc-btn="attach"]:hover,
-        button[aria-label*="Attach" i]:hover,
-        button[aria-label*="Upload" i]:hover,
-        button[aria-label*="Add" i]:hover,
-        button[aria-label*="file" i]:hover,
-        button[aria-label*="tool" i]:hover,
-        button[aria-label*="more" i]:hover,
-        button[data-testid*="attach" i]:hover,
-        #composer-background button:first-of-type:hover,
-        div[class*="rounded"]:has(#prompt-textarea) button:first-of-type:hover,
-        .pc-composer-capsule button:first-of-type:hover,
-        [data-pc-composer="true"] button:first-of-type:hover,
-        form:has(#prompt-textarea) button:first-of-type:hover {
-          background: ${sidebarHover} !important;
-          background-color: ${sidebarHover} !important;
-          border-color: ${primary} !important;
-          color: ${primary} !important;
-          box-shadow: 0 0 14px ${sidebarHover} !important;
-          transform: scale(1.08) !important;
-        }
-
-        /* Attach (+) Icon smooth 90-degree rotation on hover */
-        [data-pc-btn="attach"]:hover svg,
-        button[aria-label*="Attach" i]:hover svg,
-        button[aria-label*="Upload" i]:hover svg,
-        button[aria-label*="Add" i]:hover svg,
-        button[data-testid*="attach" i]:hover svg,
-        #composer-background button:first-of-type:hover svg,
-        .pc-composer-capsule button:first-of-type:hover svg,
-        [data-pc-composer="true"] button:first-of-type:hover svg,
-        form:has(#prompt-textarea) button:first-of-type:hover svg {
-          transform: rotate(90deg) scale(1.2) !important;
-        }
-
-        /* 3. Dictate / Microphone, Voice, and trailing circular action buttons */
-        [data-pc-btn="voice"],
-        button[aria-label*="voice" i],
-        button[aria-label*="dictat" i],
-        button[aria-label*="record" i],
-        button[aria-label*="microphone" i],
-        button[data-testid*="voice" i],
-        button[data-testid*="dictate" i],
-        [data-pc-composer="true"] button:not(:first-of-type):not([data-pc-btn="think"]):not([data-pc-btn="send"]):not(:has(span)),
-        .pc-composer-capsule button:not(:first-of-type):not([data-pc-btn="think"]):not([data-pc-btn="send"]):not(:has(span)),
-        form:has(#prompt-textarea) button:not(:first-of-type):not([data-pc-btn="think"]):not([data-pc-btn="send"]):not(:has(span)) {
-          background: rgba(255, 255, 255, 0.07) !important;
-          background-color: rgba(255, 255, 255, 0.07) !important;
-          border: 1px solid rgba(255, 255, 255, 0.14) !important;
-          border-radius: 50% !important;
-          color: #CBD5E1 !important;
-          width: 36px !important;
-          height: 36px !important;
-          min-width: 36px !important;
-          max-width: 36px !important;
-          display: inline-flex !important;
-          align-items: center !important;
-          justify-content: center !important;
-          padding: 0 !important;
-          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2) !important;
-          transition: all 0.2s ease !important;
-        }
-
-        [data-pc-btn="voice"]:hover,
-        button[aria-label*="voice" i]:hover,
-        button[aria-label*="dictat" i]:hover,
-        button[aria-label*="record" i]:hover,
-        button[aria-label*="microphone" i]:hover,
-        button[data-testid*="voice" i]:hover,
-        button[data-testid*="dictate" i]:hover,
-        [data-pc-composer="true"] button:not(:first-of-type):not([data-pc-btn="think"]):not([data-pc-btn="send"]):hover,
-        .pc-composer-capsule button:not(:first-of-type):not([data-pc-btn="think"]):not([data-pc-btn="send"]):hover,
-        form:has(#prompt-textarea) button:not(:first-of-type):not([data-pc-btn="think"]):not([data-pc-btn="send"]):hover {
-          background: ${sidebarHover} !important;
-          background-color: ${sidebarHover} !important;
-          border-color: ${border} !important;
-          color: ${primary} !important;
-          transform: scale(1.08) !important;
-          box-shadow: 0 0 12px ${sidebarHover} !important;
-        }
-
-        [data-pc-btn="voice"]:hover svg,
-        button[aria-label*="microphone" i]:hover svg,
-        button[data-testid*="voice" i]:hover svg {
-          transform: scale(1.22) !important;
-        }
-
-        /* Ensure clean spacing between all buttons on the right */
-        [data-pc-composer="true"] div:has(> button),
-        .pc-composer-capsule div:has(> button),
-        form:has(#prompt-textarea) div:has(> button),
-        form:has(#prompt-textarea) div[class*="flex"]:has(button) {
-          gap: 7px !important;
-        }
-
-        /* 4. Glowing Voice Mode Pill/Circle */
-        button[aria-label*="Voice mode" i],
-        button[data-testid*="voice-mode"],
-        button[data-testid*="voice"]:has(svg) {
-          box-shadow: 0 0 16px ${primary} !important;
-        }
-
-        /* 5. Send / Submit Button */
-        [data-pc-btn="send"],
-        button[data-testid*="send" i],
-        button[aria-label*="Send" i],
-        #composer-background button[data-testid*="send" i],
-        div[class*="rounded"]:has(#prompt-textarea) button[data-testid*="send" i],
-        .pc-composer-capsule button[data-testid*="send" i],
-        [data-pc-composer="true"] button[data-testid*="send" i],
-        form:has(#prompt-textarea) button[data-testid*="send" i] {
-          background: linear-gradient(135deg, ${primary}, ${secondary || primary}) !important;
-          background-color: ${primary} !important;
-          color: #FFFFFF !important;
-          border: none !important;
-          border-radius: 50% !important;
-          width: 36px !important;
-          height: 36px !important;
-          min-width: 36px !important;
-          display: inline-flex !important;
-          align-items: center !important;
-          justify-content: center !important;
-          box-shadow: 0 0 18px ${sidebarHover}, 0 4px 14px rgba(0, 0, 0, 0.4) !important;
-          transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
-        }
-
-        /* Ensure all SVGs and text inside composer buttons inherit crisp colors */
-        [data-pc-composer="true"] button *,
-        .pc-composer-capsule button *,
-        form:has(#prompt-textarea) button * {
-          background: transparent !important;
-          background-color: transparent !important;
-        }
-
-        [data-pc-composer="true"] button svg,
-        .pc-composer-capsule button svg,
-        form:has(#prompt-textarea) button svg,
-        [data-pc-btn] svg {
-          color: inherit !important;
-          fill: currentColor !important;
-          transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1), filter 0.2s ease !important;
-          transform-origin: center center !important;
-        }
-
-        [data-pc-btn="send"]:hover,
-        button[data-testid*="send" i]:hover,
-        button[aria-label*="Send" i]:hover {
-          filter: brightness(1.15) !important;
-          box-shadow: 0 0 28px ${primary} !important;
-          transform: scale(1.1) !important;
-        }
-
-        button[data-testid*="send" i]:disabled,
-        button[aria-label*="Send" i]:disabled {
-          background: rgba(255, 255, 255, 0.12) !important;
-          background-color: rgba(255, 255, 255, 0.12) !important;
-          color: rgba(255, 255, 255, 0.35) !important;
-          box-shadow: none !important;
-          opacity: 0.5 !important;
-          transform: none !important;
-        }
-
-        /* User Message Bubble - High Quality Glass Capsule */
-        [data-message-author-role="user"] div[class*="rounded"],
-        [data-message-author-role="user"] div[class*="bg-"],
-        div[class*="user-turn"] div[class*="rounded"],
-        div[class*="user-turn"] div[class*="bg-"] {
-          background: ${isWp ? 'rgba(26, 22, 38, 0.88)' : c.userBubble} !important;
-          border-radius: 20px !important;
-          color: #FFFFFF !important;
-          border: 1px solid ${border} !important;
-          backdrop-filter: blur(20px) saturate(140%) !important;
-          -webkit-backdrop-filter: blur(20px) saturate(140%) !important;
-          box-shadow: 0 6px 24px rgba(0, 0, 0, 0.45), 0 0 12px ${sidebarHover} !important;
-          padding: 10px 18px !important;
-          min-width: 48px !important;
-          display: inline-flex !important;
-          align-items: center !important;
-        }
-
-        [data-message-author-role="user"] :is(p, span, div) {
-          color: #FFFFFF !important;
-          font-weight: 500 !important;
-        }
-
-        /* Assistant Message Frosted Glass Card */
-        [data-message-author-role="assistant"],
-        div[class*="agent-turn"] {
-          display: block !important;
-          width: 100% !important;
-          background: ${isWp ? 'rgba(18, 15, 28, 0.82)' : 'transparent'} !important;
-          border-radius: 18px !important;
-          border: ${isWp ? `1px solid ${border}` : 'none'} !important;
-          backdrop-filter: blur(20px) saturate(140%) !important;
-          -webkit-backdrop-filter: blur(20px) saturate(140%) !important;
-          padding: 18px 24px !important;
-          margin: 12px 0 !important;
-          color: #F8FAFC !important;
-          box-shadow: ${isWp ? `0 8px 32px rgba(0, 0, 0, 0.45), 0 0 14px ${sidebarHover}` : 'none'} !important;
-        }
-
-        [data-message-author-role="assistant"] > div,
-        [data-message-author-role="assistant"] div.markdown {
-          background: transparent !important;
-          border: none !important;
-          box-shadow: none !important;
           backdrop-filter: none !important;
+          -webkit-backdrop-filter: none !important;
+          border-right: none !important;
+          box-shadow: none !important;
         }
 
-        /* Action buttons inside / below assistant turn (copy, speaker, regenerate) */
-        div[class*="agent-turn"] button,
-        [data-message-author-role="assistant"] button,
-        [data-message-author-role="assistant"] ~ div button,
-        button[aria-label*="Copy"],
-        button[aria-label*="Read aloud"],
-        button[aria-label*="Good response"],
-        button[aria-label*="Bad response"],
-        button[aria-label*="Retry"],
-        button[aria-label*="More actions"] {
-          background: rgba(255, 255, 255, 0.08) !important;
-          border: 1px solid ${border} !important;
-          border-radius: 8px !important;
-          color: #CBD5E1 !important;
-          padding: 4px 8px !important;
-          transition: all 0.15s ease !important;
-        }
-
-        div[class*="agent-turn"] button:hover,
-        [data-message-author-role="assistant"] button:hover,
-        button[aria-label*="Copy"]:hover,
-        button[aria-label*="Read aloud"]:hover,
-        button[aria-label*="Retry"]:hover {
-          background: ${sidebarHover} !important;
-          color: ${primary} !important;
-          border-color: ${primary} !important;
-        }
-
-        /* Top Sidebar Header & Toggle */
-        div[class*="from-token-sidebar-surface-primary"],
-        div[class*="from-token-sidebar"],
-        div[class*="to-token-sidebar"],
-        div[class*="via-token-sidebar"],
-        nav div[class*="from-"],
-        nav div[class*="to-"],
-        nav div[class*="via-"],
-        nav div[class*="bg-gradient"],
-        nav [class*="gradient"],
-        aside div[class*="from-"],
-        aside div[class*="to-"],
-        aside div[class*="via-"],
-        aside div[class*="bg-gradient"],
-        aside [class*="gradient"],
-        nav [class*="sticky top-0"],
-        aside [class*="sticky top-0"],
-        nav header, aside header,
-        nav div[class*="bg-white"],
-        aside div[class*="bg-white"],
-        nav button[class*="bg-white"],
-        aside button[class*="bg-white"],
-        div[class*="bg-token-sidebar-surface-primary"] [class*="sticky top-0"] {
+        /* Prevent double opacity inside sidebar: ALL inner children are strictly transparent */
+        #app-shell-sidebar aside,
+        #app-shell-sidebar nav,
+        #browser-sidebar-popover aside,
+        #browser-sidebar-popover nav,
+        aside:has(nav) nav,
+        nav[aria-label="Chat history"],
+        nav:not(#promptcanvas-root *) > div,
+        aside:not(#promptcanvas-root *) > div,
+        nav:not(#promptcanvas-root *) div[class*="overflow-y-auto"],
+        nav:not(#promptcanvas-root *) div[class*="overflow-x-hidden"],
+        nav:not(#promptcanvas-root *) div[class*="flex-1"],
+        nav:not(#promptcanvas-root *) div[class*="h-full"],
+        nav:not(#promptcanvas-root *) ol,
+        nav:not(#promptcanvas-root *) ul,
+        nav:not(#promptcanvas-root *) div[class*="sticky"] {
           background: transparent !important;
           background-color: transparent !important;
-          background-image: none !important;
+          backdrop-filter: none !important;
+          -webkit-backdrop-filter: none !important;
+          border-right: none !important;
+          box-shadow: none !important;
+        }
+
+        /* Sidebar Section Headings (Pinned, Projects, Recents) */
+        button[data-app-action-sidebar-section-toggle],
+        nav button[data-app-action-sidebar-section-toggle],
+        nav button[data-app-action-sidebar-section-toggle].group\/section-toggle {
+          color: ${primary} !important;
+          font-weight: 700 !important;
+          text-transform: uppercase !important;
+          letter-spacing: 0.5px !important;
+        }
+
+        nav button[data-app-action-sidebar-section-toggle] span.min-w-0 {
+          padding: 0.25rem 0.6rem !important;
+          background: ${hexToRgba(primary, 0.16)} !important;
+          box-shadow: 0 0 0 1px ${hexToRgba(primary, 0.32)} !important;
+          border-radius: 50vw !important;
+          color: ${primary} !important;
+        }
+
+        /* Sidebar All Links & Buttons: Crystal Clear High-Contrast Visibility */
+        #app-shell-sidebar nav a,
+        #app-shell-sidebar nav button,
+        #browser-sidebar-popover nav a,
+        #browser-sidebar-popover nav button,
+        aside nav a,
+        aside nav button,
+        nav[aria-label="Chat history"] a,
+        nav ol li a,
+        nav ul li a,
+        nav a[href*="/c/"] {
+          color: #E2E8F0 !important;
+          transition: all 0.15s ease !important;
+          border-radius: 6px !important;
+        }
+
+        #app-shell-sidebar nav a:hover,
+        #app-shell-sidebar nav button:hover,
+        nav ol li a:hover,
+        nav ul li a:hover,
+        nav a[href*="/c/"]:hover {
+          background: ${sidebarHover} !important;
+          color: #FFFFFF !important;
+        }
+
+        /* All parent li elements and wrappers are strictly transparent (NO outer pill) */
+        #app-shell-sidebar nav ol li,
+        #app-shell-sidebar nav ol li > div,
+        nav ol li,
+        nav ol li > div {
+          background: transparent !important;
+          background-color: transparent !important;
           box-shadow: none !important;
           border: none !important;
         }
 
-        nav button[aria-label*="sidebar" i],
-        nav button[aria-label*="Close sidebar" i],
-        nav button[aria-label*="Open sidebar" i],
-        nav button[aria-label*="Search" i],
-        nav a[aria-label*="Search" i] {
-          background: rgba(255, 255, 255, 0.05) !important;
-          border: 1px solid rgba(255, 255, 255, 0.08) !important;
-          border-radius: 7px !important;
-          color: #CBD5E1 !important;
-          transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1) !important;
+        /* Active Chat Item - A Single Sleek, Premium, Elegant Surface (NO Nested Layers) */
+        #app-shell-sidebar nav ol li a[aria-current="page"],
+        #app-shell-sidebar nav ol li a[class*="active"],
+        #app-shell-sidebar nav ol li:has(a[aria-current="page"]) a,
+        nav[aria-label="Chat history"] a[aria-current="page"],
+        nav[aria-label="Chat history"] a[class*="active"],
+        nav a[href*="/c/"][aria-current="page"],
+        nav a[href*="/c/"][class*="active"] {
+          background: ${hexToRgba(primary, 0.18)} !important;
+          background-color: ${hexToRgba(primary, 0.18)} !important;
+          border: 1px solid ${hexToRgba(primary, 0.35)} !important;
+          border-radius: 8px !important;
+          color: #FFFFFF !important;
+          font-weight: 600 !important;
+          box-shadow: 0 2px 10px rgba(0, 0, 0, 0.25), 0 0 12px ${hexToRgba(primary, 0.12)} !important;
         }
-        nav button[aria-label*="sidebar" i]:hover,
-        nav button[aria-label*="Close sidebar" i]:hover,
-        nav button[aria-label*="Search" i]:hover,
-        nav a[aria-label*="Search" i]:hover {
-          background: rgba(255, 255, 255, 0.1) !important;
-          color: ${primary} !important;
-          border-color: ${border} !important;
-          transform: scale(1.05) !important;
+
+        /* Wipe ALL child containers, spans, and icons inside the active link to transparent */
+        #app-shell-sidebar nav ol li a[aria-current="page"] *,
+        #app-shell-sidebar nav ol li a[class*="active"] *,
+        nav[aria-label="Chat history"] a[aria-current="page"] *,
+        nav a[href*="/c/"][aria-current="page"] *,
+        nav a[href*="/c/"][class*="active"] * {
+          background: transparent !important;
+          background-color: transparent !important;
+          border: none !important;
+          box-shadow: none !important;
         }
 
         /* "New chat" Quick Action Pill */
         nav a[href="/"],
         nav button[data-testid*="new-chat"],
         nav a:first-of-type:not([href*="/c/"]) {
-          background: rgba(255, 255, 255, 0.07) !important;
-          border: 1px solid rgba(255, 255, 255, 0.12) !important;
+          background: rgba(255, 255, 255, 0.08) !important;
+          border: 1px solid ${secondaryBorder} !important;
           border-radius: 9px !important;
           color: #F8FAFC !important;
-          font-weight: 550 !important;
+          font-weight: 600 !important;
           font-size: 13.5px !important;
           padding: 8px 12px !important;
           margin: 6px 2px 10px 2px !important;
           display: flex !important;
           align-items: center !important;
           gap: 10px !important;
-          box-shadow: 0 2px 10px rgba(0, 0, 0, 0.25) !important;
-          backdrop-filter: blur(12px) !important;
-          -webkit-backdrop-filter: blur(12px) !important;
+          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25) !important;
           transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
         }
 
@@ -954,464 +594,537 @@
           background: ${sidebarHover} !important;
           border-color: ${primary} !important;
           color: #FFFFFF !important;
-          box-shadow: 0 0 16px ${sidebarHover}, 0 4px 14px rgba(0, 0, 0, 0.35) !important;
+          box-shadow: 0 0 16px ${sidebarHover} !important;
           transform: translateY(-1px) !important;
-        }
-        nav a[href="/"] svg,
-        nav button[data-testid*="new-chat"] svg,
-        nav a:first-of-type:not([href*="/c/"]) svg {
-          color: ${primary} !important;
-          transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
-        }
-        nav a[href="/"]:hover svg,
-        nav button[data-testid*="new-chat"]:hover svg,
-        nav a:first-of-type:not([href*="/c/"]):hover svg {
-          transform: rotate(15deg) scale(1.15) !important;
-        }
-
-        /* Sidebar Top Navigation Items (Scheduled, Library, Plugins, Codex, Explore) */
-        nav a:not([href="/"]):not([href*="/c/"]),
-        nav button:not([href="/"]):not([data-testid*="profile"]) {
-          color: #94A3B8 !important;
-          border-radius: 7px !important;
-          padding: 6px 10px !important;
-          font-size: 13px !important;
-          font-weight: 450 !important;
-          transition: all 0.15s ease !important;
-        }
-
-        nav a:not([href="/"]):not([href*="/c/"]):hover,
-        nav button:not([href="/"]):not([data-testid*="profile"]):hover {
-          background: rgba(255, 255, 255, 0.05) !important;
-          color: #F8FAFC !important;
-        }
-
-        nav a:not([href="/"]):not([href*="/c/"]) svg {
-          color: #94A3B8 !important;
-        }
-        nav a:not([href="/"]):not([href*="/c/"]):hover svg {
-          color: ${primary} !important;
-        }
-
-        /* Section Headers ("Pinned", "Today", "Previous 7 Days") */
-        nav h2, nav h3,
-        nav [class*="text-token-text-tertiary"],
-        nav div[class*="text-xs"][class*="font-semibold"]:not(button *) {
-          font-size: 11px !important;
-          font-weight: 600 !important;
-          text-transform: uppercase !important;
-          letter-spacing: 0.07em !important;
-          color: #64748B !important;
-          padding: 14px 10px 4px 10px !important;
-          background: transparent !important;
         }
 
         /* ==========================================================================
-           Sidebar Projects Section - Frosted Folder Structure & Action Chips
+           4. CHAT BUBBLES (4-Color Harmony)
+           ========================================================================== */
+        /* User message bubble */
+        [data-user-message-bubble],
+        [data-message-author-role="user"] div[class*="rounded"],
+        div[class*="user-turn"] div[class*="rounded"] {
+          background: linear-gradient(135deg, ${hexToRgba(primary, 0.88)}, ${hexToRgba(secondary, 0.88)}) !important;
+          background-color: ${primary} !important;
+          border-radius: ${theme.messageBorderRadius || '18px'} !important;
+          color: ${userText} !important;
+          border: 1px solid ${border} !important;
+          ${isWp ? `backdrop-filter: blur(${glassBlur}px) saturate(140%) !important; -webkit-backdrop-filter: blur(${glassBlur}px) saturate(140%) !important;` : ''}
+          box-shadow: 0 6px 24px rgba(0, 0, 0, 0.45), 0 0 16px ${hexToRgba(primary, 0.25)} !important;
+          padding: 10px 18px !important;
+          min-width: 48px !important;
+          display: inline-flex !important;
+          align-items: center !important;
+        }
+
+        [data-user-message-bubble] :is(p, span, div),
+        [data-message-author-role="user"] :is(p, span, div) {
+          color: ${userText} !important;
+          font-weight: 500 !important;
+        }
+
+        /* Assistant message card */
+        [data-markdown-text-style="assistant-message"],
+        [data-markdown-text-style="assistant-message"][class^="MarkdownRoot-"],
+        [data-message-author-role="assistant"],
+        div[class*="agent-turn"] {
+          display: block !important;
+          width: 100% !important;
+          background: ${isWp ? hexToRgba(baseColor, 0.80) : 'transparent'} !important;
+          background-color: ${isWp ? hexToRgba(baseColor, 0.80) : 'transparent'} !important;
+          border-radius: ${theme.messageBorderRadius || '18px'} !important;
+          border: ${isWp ? `1px solid ${border}` : 'none'} !important;
+          ${isWp ? `backdrop-filter: blur(${glassBlur}px) saturate(140%) !important; -webkit-backdrop-filter: blur(${glassBlur}px) saturate(140%) !important;` : ''}
+          padding: 18px 24px !important;
+          margin: 12px 0 !important;
+          color: #F8FAFC !important;
+          box-shadow: ${isWp ? `0 8px 32px rgba(0, 0, 0, 0.45), 0 0 14px ${sidebarHover}` : 'none'} !important;
+        }
+
+        [data-message-author-role="assistant"] > div,
+        [data-message-author-role="assistant"] div.markdown,
+        [data-markdown-text-style="assistant-message"] > div {
+          background: transparent !important;
+          border: none !important;
+          box-shadow: none !important;
+          backdrop-filter: none !important;
+        }
+
+        /* Assistant Code Blocks */
+        div[class*="code-block"],
+        pre {
+          border: 1px solid ${secondaryBorder} !important;
+          border-radius: 8px !important;
+        }
+
+        div[class*="code-block"] > div:first-child,
+        pre > div:first-child {
+          background: ${hexToRgba(baseColor, 0.92)} !important;
+          color: ${secondary} !important;
+          border-bottom: 1px solid ${secondaryBorder} !important;
+          font-weight: 600 !important;
+        }
+
+        blockquote {
+          border-left: 3px solid ${secondary} !important;
+          color: #CBD5E1 !important;
+        }
+
+        /* Action buttons below assistant turn */
+        div[class*="agent-turn"] button,
+        [data-message-author-role="assistant"] button,
+        [data-message-author-role="assistant"] ~ div button,
+        div:has(> button[aria-label*="Copy"]) button,
+        button[aria-label*="Copy" i],
+        button[aria-label*="Read aloud" i],
+        button[aria-label*="Good response" i],
+        button[aria-label*="Bad response" i],
+        button[aria-label*="Retry" i],
+        button[aria-label*="Try again" i],
+        button[aria-label*="Regenerate" i],
+        button[aria-label*="Share" i],
+        button[aria-label*="More actions" i],
+        button[aria-label*="More options" i] {
+          background: rgba(255, 255, 255, 0.08) !important;
+          border: 1px solid ${border} !important;
+          border-radius: 8px !important;
+          color: #CBD5E1 !important;
+          padding: 4px 8px !important;
+          margin: 0 2px !important;
+          transition: all 0.15s ease !important;
+        }
+
+        div[class*="agent-turn"] button:hover,
+        [data-message-author-role="assistant"] button:hover,
+        [data-message-author-role="assistant"] ~ div button:hover,
+        div:has(> button[aria-label*="Copy"]) button:hover,
+        button[aria-label*="Copy" i]:hover,
+        button[aria-label*="Read aloud" i]:hover,
+        button[aria-label*="Good response" i]:hover,
+        button[aria-label*="Bad response" i]:hover,
+        button[aria-label*="Retry" i]:hover,
+        button[aria-label*="Try again" i]:hover,
+        button[aria-label*="Regenerate" i]:hover,
+        button[aria-label*="Share" i]:hover,
+        button[aria-label*="More actions" i]:hover,
+        button[aria-label*="More options" i]:hover {
+          background: ${sidebarHover} !important;
+          color: ${primary} !important;
+          border-color: ${primary} !important;
+        }
+
+        /* ==========================================================================
+           5. INPUT COMPOSER CAPSULE (Crisp, Single-Pill, Zero Halo Blur)
            ========================================================================== */
 
-        /* Projects Section Header & Title */
-        nav div:has(> button[aria-label*="project" i]),
-        nav div:has(> button[aria-label*="Project" i]),
-        nav div:has(> [class*="font-semibold"]:not(button *)) {
+        /* All outer containers outside the composer pill MUST be transparent with NO blur and NO shadow */
+        [data-pip-obstacle="thread-footer"],
+        [data-pip-obstacle="thread-footer"] > div,
+        form[data-chatgpt-composer],
+        form:has(#prompt-textarea),
+        form[data-chatgpt-composer] > div,
+        form[data-chatgpt-composer] .min-w-0 {
           background: transparent !important;
+          background-color: transparent !important;
+          box-shadow: none !important;
+          backdrop-filter: none !important;
+          -webkit-backdrop-filter: none !important;
+          border: none !important;
         }
 
-        /* Projects Action Buttons: [...] options and [+] add project */
-        nav div:has(> [class*="font-semibold"]) button,
-        nav div:has(> h2) button,
-        nav div:has(> h3) button,
-        nav button[aria-label*="project" i],
-        nav button[aria-label*="Project" i],
-        nav button[aria-label*="Add project" i],
-        nav button[aria-label*="New project" i] {
-          background: rgba(255, 255, 255, 0.06) !important;
-          border: 1px solid rgba(255, 255, 255, 0.1) !important;
-          border-radius: 7px !important;
-          color: #CBD5E1 !important;
-          padding: 3px 6px !important;
-          box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2) !important;
-          transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1) !important;
+        /* The single unified outer composer pill */
+        [data-pc-composer="true"],
+        form[data-chatgpt-composer] [class^="ComposerLayoutRoot-"],
+        form[data-chatgpt-composer] [class^="ComposerLayoutBody-"],
+        form:has(#prompt-textarea) > div {
+          ${composerBgCss}
+          border: ${ibBorderAccent ? `1.5px solid ${hexToRgba(primary, 0.40)}` : `1px solid rgba(255, 255, 255, 0.16)`} !important;
+          box-shadow: ${ibBorderAccent ? `0 4px 20px rgba(0, 0, 0, 0.35), 0 0 14px ${hexToRgba(primary, 0.22)}` : `0 4px 20px rgba(0, 0, 0, 0.35)`} !important;
+          border-radius: 9999px !important;
+          transition: border-color 0.2s ease, box-shadow 0.2s ease !important;
         }
 
-        nav div:has(> [class*="font-semibold"]) button:hover,
-        nav div:has(> h2) button:hover,
-        nav div:has(> h3) button:hover,
-        nav button[aria-label*="project" i]:hover,
-        nav button[aria-label*="Project" i]:hover,
-        nav button[aria-label*="Add project" i]:hover,
-        nav button[aria-label*="New project" i]:hover {
-          background: ${sidebarHover} !important;
-          border-color: ${border} !important;
+        /* Focus-within glow on the outer composer pill */
+        [data-pc-composer="true"]:focus-within,
+        form[data-chatgpt-composer] [class^="ComposerLayoutRoot-"]:focus-within,
+        form[data-chatgpt-composer] [class^="ComposerLayoutBody-"]:focus-within,
+        form:has(#prompt-textarea) > div:focus-within {
+          border-color: ${primary} !important;
+          box-shadow: 0 4px 24px rgba(0, 0, 0, 0.45), 0 0 20px ${hexToRgba(primary, 0.35)} !important;
+        }
+
+
+        /* STRICTLY TRANSPARENT INSIDE: Remove inside black background and red border */
+        #composer-background,
+        div[id="composer-background"],
+        #prompt-textarea,
+        .ProseMirror,
+        div:has(> #prompt-textarea),
+        div:has(> .ProseMirror),
+        div[class*="ProseMirror"],
+        form div:has(#prompt-textarea):not([data-pc-composer="true"]) {
+          background: transparent !important;
+          background-color: transparent !important;
+          border: none !important;
+          border-color: transparent !important;
+          box-shadow: none !important;
+          outline: none !important;
+          backdrop-filter: none !important;
+          -webkit-backdrop-filter: none !important;
+        }
+
+        #composer-background:focus-within,
+        div[id="composer-background"]:focus-within,
+        #prompt-textarea:focus,
+        #prompt-textarea:focus-within,
+        .ProseMirror:focus,
+        .ProseMirror:focus-within,
+        div:has(> #prompt-textarea):focus-within {
+          background: transparent !important;
+          background-color: transparent !important;
+          border: none !important;
+          border-color: transparent !important;
+          box-shadow: none !important;
+          outline: none !important;
+        }
+
+        /* ==========================================================================
+           COMPOSER TEXT & HINT / PLACEHOLDER (100% Crisp Visibility & High Contrast)
+           ========================================================================== */
+        /* Active Typed Text */
+        #prompt-textarea,
+        .ProseMirror,
+        #prompt-textarea p,
+        .ProseMirror p {
           color: #FFFFFF !important;
-          box-shadow: 0 0 10px ${sidebarHover} !important;
+          -webkit-text-fill-color: #FFFFFF !important;
+        }
+
+        /* Native Textarea Placeholder */
+        #prompt-textarea::placeholder,
+        #prompt-textarea::-webkit-input-placeholder,
+        textarea#prompt-textarea::placeholder,
+        textarea#prompt-textarea::-webkit-input-placeholder,
+        textarea::placeholder {
+          color: rgba(255, 255, 255, 0.65) !important;
+          -webkit-text-fill-color: rgba(255, 255, 255, 0.65) !important;
+          opacity: 1 !important;
+          visibility: visible !important;
+        }
+
+        /* ProseMirror Placeholder Pseudo-elements */
+        #prompt-textarea [data-placeholder]::before,
+        #prompt-textarea p[data-placeholder]::before,
+        #prompt-textarea p.placeholder::before,
+        #prompt-textarea p.is-editor-empty::before,
+        #prompt-textarea p.is-empty::before,
+        .ProseMirror [data-placeholder]::before,
+        .ProseMirror p[data-placeholder]::before,
+        .ProseMirror p.placeholder::before,
+        .ProseMirror p.is-editor-empty::before,
+        .ProseMirror p.is-empty::before,
+        [data-placeholder]::before {
+          content: attr(data-placeholder) !important;
+          color: rgba(255, 255, 255, 0.65) !important;
+          -webkit-text-fill-color: rgba(255, 255, 255, 0.65) !important;
+          opacity: 1 !important;
+          display: block !important;
+          visibility: visible !important;
+          pointer-events: none !important;
+        }
+
+        /* Fallback: If data-placeholder is missing on an empty initial paragraph */
+        #prompt-textarea p:only-child:has(> br:only-child):not([data-placeholder])::before,
+        .ProseMirror p:only-child:has(> br:only-child):not([data-placeholder])::before {
+          content: "Ask anything" !important;
+          color: rgba(255, 255, 255, 0.65) !important;
+          -webkit-text-fill-color: rgba(255, 255, 255, 0.65) !important;
+          opacity: 1 !important;
+          display: block !important;
+          visibility: visible !important;
+          pointer-events: none !important;
+        }
+
+        /* Overlay Placeholder DOM Elements (Tailwind / Modern ChatGPT) */
+        #prompt-textarea .placeholder,
+        #prompt-textarea [class*="placeholder" i],
+        form:has(#prompt-textarea) [class*="placeholder" i],
+        form:has(#prompt-textarea) [class*="text-token-text-placeholder"],
+        form:has(#prompt-textarea) div.pointer-events-none:not(button):not(button *) {
+          color: rgba(255, 255, 255, 0.65) !important;
+          -webkit-text-fill-color: rgba(255, 255, 255, 0.65) !important;
+          opacity: 1 !important;
+          visibility: visible !important;
+        }
+
+        /* ==========================================================================
+           COMPOSER TOOL BUTTONS: Plus, Brain, Voice, Send (100% Transparent, No Glass)
+           ========================================================================== */
+
+        /* 1. Send Button: Transparent when empty/disabled, clean solid accent when ready */
+        [data-pc-btn="send"],
+        button[data-testid*="send" i],
+        button[aria-label*="Send" i],
+        #composer-background button[data-testid*="send" i] {
+          background: transparent !important;
+          background-color: transparent !important;
+          color: #94A3B8 !important;
+          border: none !important;
+          border-radius: 50% !important;
+          width: 36px !important;
+          height: 36px !important;
+          min-width: 36px !important;
+          display: inline-flex !important;
+          align-items: center !important;
+          justify-content: center !important;
+          box-shadow: none !important;
+          backdrop-filter: none !important;
+          -webkit-backdrop-filter: none !important;
+          transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
+        }
+
+        /* Active send button (when enabled/ready to submit) */
+        button.bg-composer-primary,
+        [data-pc-btn="send"]:not(:disabled):not([aria-disabled="true"]):not([disabled]),
+        button[data-testid*="send" i]:not(:disabled):not([aria-disabled="true"]):not([disabled]):has(svg) {
+          background: ${primary} !important;
+          background-color: ${primary} !important;
+          color: #FFFFFF !important;
+          box-shadow: 0 2px 10px rgba(0, 0, 0, 0.35) !important;
+          backdrop-filter: none !important;
+          -webkit-backdrop-filter: none !important;
+        }
+
+        button.bg-composer-primary:hover,
+        [data-pc-btn="send"]:not(:disabled):not([aria-disabled="true"]):hover,
+        button[data-testid*="send" i]:not(:disabled):not([aria-disabled="true"]):hover {
+          filter: brightness(1.15) !important;
           transform: scale(1.06) !important;
         }
 
-        nav div:has(> [class*="font-semibold"]) button svg,
-        nav button[aria-label*="project" i] svg,
-        nav button[aria-label*="Project" i] svg {
-          color: #CBD5E1 !important;
-          transition: color 0.15s ease, transform 0.2s ease !important;
-        }
-
-        nav div:has(> [class*="font-semibold"]) button:hover svg,
-        nav button[aria-label*="project" i]:hover svg,
-        nav button[aria-label*="Project" i]:hover svg {
-          color: ${primary} !important;
-          transform: rotate(90deg) scale(1.1) !important;
-        }
-
-        /* Project Folder Rows (Darkcry, ResumeMaker, braintumer detection, Agentic Web Browser) */
-        nav div[class*="group"]:has(svg path[d*="M2 6"]),
-        nav div[class*="group"]:has(svg path[d*="M3 7"]),
-        nav div[class*="group"]:has(svg path[d*="M4 4"]),
-        nav button:has(svg path[d*="M2 6"]),
-        nav button:has(svg path[d*="M3 7"]),
-        nav a:has(svg path[d*="M2 6"]),
-        nav a:has(svg path[d*="M3 7"]) {
-          background: transparent !important;
-          border-radius: 8px !important;
-          padding: 6px 10px !important;
-          margin: 1px 0 !important;
-          color: #F1F5F9 !important;
-          font-weight: 550 !important;
-          font-size: 13.5px !important;
-          transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1) !important;
-        }
-
-        nav div[class*="group"]:has(svg path[d*="M2 6"]):hover,
-        nav div[class*="group"]:has(svg path[d*="M3 7"]):hover,
-        nav button:has(svg path[d*="M2 6"]):hover,
-        nav button:has(svg path[d*="M3 7"]):hover,
-        nav a:has(svg path[d*="M2 6"]):hover,
-        nav a:has(svg path[d*="M3 7"]):hover {
-          background: rgba(255, 255, 255, 0.07) !important;
-          color: #FFFFFF !important;
-          box-shadow: 0 0 12px rgba(255, 255, 255, 0.04) !important;
-          transform: translateX(2px) !important;
-        }
-
-        /* Folder Icon Tint */
-        nav svg path[d*="M2 6"],
-        nav svg path[d*="M3 7"],
-        nav svg path[d*="M4 4"],
-        nav svg[class*="folder"] {
-          color: ${primary} !important;
-        }
-
-        /* Project Sub-items (DarkCry Settings Guide, Choose Case Details, etc.) */
-        nav div[class*="group"]:has(svg path[d*="M2 6"]) ~ div a,
-        nav div[class*="group"]:has(svg path[d*="M3 7"]) ~ div a,
-        nav div[class*="pl-"],
-        nav div[class*="ml-"] a,
-        nav div[class*="pl-"] a {
-          color: #94A3B8 !important;
-          font-size: 13px !important;
-          border-radius: 7px !important;
-          padding: 5px 10px !important;
-          transition: all 0.15s ease !important;
-        }
-
-        nav div[class*="pl-"] a:hover,
-        nav div[class*="ml-"] a:hover {
-          background: rgba(255, 255, 255, 0.06) !important;
-          color: #FFFFFF !important;
-          padding-left: 14px !important;
-        }
-
-        /* Chat History Rows - Professional, Flush, Calm */
-        nav ol li,
-        nav ul li,
-        nav ol li div[class*="group"],
-        nav ul li div[class*="group"],
-        nav ol a,
-        nav ul a,
-        nav li a,
-        nav a[href*="/c/"] {
+        /* 2. Voice / Dictation / Audio button: 100% Transparent, No Glass Effect */
+        [data-pc-btn="voice"],
+        button[aria-label*="Voice" i],
+        button[aria-label*="dictation" i],
+        button[data-testid*="voice" i] {
           background: transparent !important;
           background-color: transparent !important;
-          border: 1px solid transparent !important;
-          border-radius: 7px !important;
-          box-shadow: none !important;
-          transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease !important;
-        }
-
-        nav a[href*="/c/"],
-        nav ol a,
-        nav ul a,
-        nav li a,
-        nav ol li div[class*="grow"],
-        nav ul li div[class*="grow"],
-        nav ol li span,
-        nav ul li span {
           color: #CBD5E1 !important;
-          font-size: 13.5px !important;
-          font-weight: 400 !important;
-        }
-
-        /* Soft neutral glass highlight on row hover */
-        nav ol li:hover,
-        nav ul li:hover,
-        nav ol li:hover > div,
-        nav ul li:hover > div,
-        nav ol li:hover a,
-        nav ul li:hover a,
-        nav a[href*="/c/"]:hover {
-          background: rgba(255, 255, 255, 0.06) !important;
-          color: #FFFFFF !important;
-          border-color: rgba(255, 255, 255, 0.08) !important;
-        }
-
-        nav ol li:hover div[class*="grow"],
-        nav ul li:hover div[class*="grow"],
-        nav ol li:hover span,
-        nav ul li:hover span {
-          color: #FFFFFF !important;
-        }
-
-        nav ol li:hover svg,
-        nav ul li:hover svg,
-        nav a[href*="/c/"]:hover svg {
-          color: ${primary} !important;
-        }
-
-        /* Active / Currently Open Chat - Linear Style Indicator & Glowing State */
-        nav ol li:has([class*="bg-token-sidebar-surface-secondary"]) > div,
-        nav ul li:has([class*="bg-token-sidebar-surface-secondary"]) > div,
-        nav li:has([class*="bg-token-sidebar-surface-secondary"]),
-        nav ol li:has([class*="bg-token-sidebar-surface-tertiary"]),
-        nav ul li:has([class*="bg-token-sidebar-surface-tertiary"]),
-        nav ol li:has(a[aria-current="page"]) > div,
-        nav ul li:has(a[aria-current="page"]) > div,
-        nav li[data-active="true"] > div,
-        nav ol li:has(a[aria-current="page"]),
-        nav ul li:has(a[aria-current="page"]) {
-          background: ${sidebarHover} !important;
-          border: 1px solid ${border} !important;
-          border-left: 3px solid ${primary} !important;
-          border-radius: 8px !important;
-          box-shadow: 0 0 16px ${sidebarHover} !important;
-        }
-
-        nav a[aria-current="page"],
-        nav li[data-active="true"] a {
           border: none !important;
-          background: transparent !important;
+          border-radius: 50% !important;
           box-shadow: none !important;
-        }
-
-        nav li:has([class*="bg-token-sidebar-surface-secondary"]) div[class*="grow"],
-        nav li:has([class*="bg-token-sidebar-surface-secondary"]) span,
-        nav a[aria-current="page"] div[class*="grow"],
-        nav li[data-active="true"] div[class*="grow"],
-        nav a[aria-current="page"] span,
-        nav li[data-active="true"] span {
-          color: #FFFFFF !important;
-          font-weight: 600 !important;
-        }
-
-        nav li:has([class*="bg-token-sidebar-surface-secondary"]) svg,
-        nav a[aria-current="page"] svg,
-        nav li[data-active="true"] svg {
-          color: ${primary} !important;
-        }
-
-        /* Chat Item Action Menu Button (...) */
-        nav li button,
-        nav ol li button,
-        nav button[id^="radix-"][aria-haspopup="menu"] {
-          background: rgba(255, 255, 255, 0.08) !important;
-          border-radius: 5px !important;
-          color: #94A3B8 !important;
-          transition: all 0.15s ease !important;
-        }
-
-        nav li button:hover,
-        nav ol li button:hover {
-          background: ${sidebarHover} !important;
-          color: ${primary} !important;
-          transform: scale(1.08) !important;
-        }
-
-        /* Bottom User Profile Card ("Saisagar") */
-        nav div[class*="sticky bottom-0"],
-        aside div[class*="sticky bottom-0"],
-        nav > div:last-child:has([data-testid*="user-menu"]),
-        nav > div:last-child:has([data-testid*="profile"]) {
-          background: transparent !important;
-          background-color: transparent !important;
-          border-top: 1px solid rgba(255, 255, 255, 0.08) !important;
-          padding: 10px 6px 12px 6px !important;
-          margin-top: 8px !important;
-        }
-
-        nav div[class*="sticky bottom-0"] button,
-        nav [data-testid*="user-menu"],
-        nav [data-testid*="profile"],
-        nav div[class*="sticky bottom-0"] [role="button"],
-        nav > div:last-child [role="button"] {
-          background: rgba(255, 255, 255, 0.05) !important;
-          border: 1px solid rgba(255, 255, 255, 0.1) !important;
-          border-radius: 12px !important;
-          padding: 8px 12px !important;
-          width: 100% !important;
-          box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25) !important;
-          backdrop-filter: blur(14px) !important;
-          -webkit-backdrop-filter: blur(14px) !important;
-          transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1) !important;
-        }
-
-        nav div[class*="sticky bottom-0"] button:hover,
-        nav [data-testid*="user-menu"]:hover,
-        nav [data-testid*="profile"]:hover,
-        nav div[class*="sticky bottom-0"] [role="button"]:hover,
-        nav > div:last-child [role="button"]:hover {
-          background: rgba(255, 255, 255, 0.09) !important;
-          border-color: ${border} !important;
-          box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4), 0 0 14px ${sidebarHover} !important;
-          transform: translateY(-1px) !important;
-        }
-
-        /* User Avatar Circle ("SA") */
-        nav div[class*="sticky bottom-0"] button div[class*="rounded-full"],
-        nav [data-testid*="user-menu"] div[class*="rounded-full"],
-        nav [data-testid*="profile"] div[class*="rounded-full"],
-        nav div[class*="sticky bottom-0"] button span[class*="rounded-full"],
-        nav div[class*="sticky bottom-0"] img[class*="rounded-full"],
-        nav [data-testid*="user-menu"] img[class*="rounded-full"],
-        nav [data-testid*="profile"] img[class*="rounded-full"] {
-          background: linear-gradient(135deg, ${primary}, ${secondary}) !important;
-          color: #FFFFFF !important;
-          font-weight: 700 !important;
-          font-size: 13px !important;
-          border: 1.5px solid rgba(255, 255, 255, 0.25) !important;
-          box-shadow: 0 0 12px ${sidebarHover} !important;
-        }
-
-        /* User Name ("Saisagar") */
-        nav div[class*="sticky bottom-0"] button [class*="font-semibold"],
-        nav div[class*="sticky bottom-0"] button div[class*="text-token-text-primary"],
-        nav [data-testid*="user-menu"] [class*="font-semibold"],
-        nav [data-testid*="user-menu"] div[class*="text-token-text-primary"],
-        nav [data-testid*="profile"] [class*="font-semibold"],
-        nav [data-testid*="profile"] div[class*="text-token-text-primary"] {
-          color: #F8FAFC !important;
-          font-size: 13.5px !important;
-          font-weight: 600 !important;
-          letter-spacing: 0.01em !important;
-        }
-
-        /* Subtitle / Plan ("Go") */
-        nav div[class*="sticky bottom-0"] button [class*="text-xs"],
-        nav div[class*="sticky bottom-0"] button div[class*="text-token-text-tertiary"],
-        nav [data-testid*="user-menu"] [class*="text-xs"],
-        nav [data-testid*="user-menu"] div[class*="text-token-text-tertiary"],
-        nav [data-testid*="profile"] [class*="text-xs"],
-        nav [data-testid*="profile"] div[class*="text-token-text-tertiary"] {
-          color: ${secondary} !important;
-          font-size: 11.5px !important;
-          font-weight: 600 !important;
-          letter-spacing: 0.04em !important;
-        }
-
-        /* Sidebar Custom Scrollbar */
-        nav ::-webkit-scrollbar,
-        aside ::-webkit-scrollbar {
-          width: 4px !important;
-        }
-        nav ::-webkit-scrollbar-track,
-        aside ::-webkit-scrollbar-track {
-          background: transparent !important;
-        }
-        nav ::-webkit-scrollbar-thumb,
-        aside ::-webkit-scrollbar-thumb {
-          background: ${sidebarHover} !important;
-          border-radius: 4px !important;
-        }
-        nav ::-webkit-scrollbar-thumb:hover,
-        aside ::-webkit-scrollbar-thumb:hover {
-          background: ${primary} !important;
-        }
-
-        /* Top Header and All Inner Header Containers - Full Transparency */
-        header,
-        header *,
-        div.draggable,
-        div.draggable *,
-        div[class*="draggable"],
-        div[class*="draggable"] *,
-        div[class*="min-h-[--header-height]"],
-        div[class*="min-h-[--header-height]"] *,
-        div.sticky.top-0:not(nav *):not(aside *),
-        div.sticky.top-0:not(nav *):not(aside *) *,
-        div[class*="top-0"]:not(nav *):not(aside *),
-        div[class*="top-0"]:not(nav *):not(aside *) * {
-          --main-surface-primary: transparent !important;
-          --main-surface-secondary: transparent !important;
-          --main-surface-tertiary: transparent !important;
-          --token-main-surface-primary: transparent !important;
-          --token-main-surface-secondary: transparent !important;
-          --token-main-surface-tertiary: transparent !important;
-          --token-surface-primary: transparent !important;
-          --token-surface-secondary: transparent !important;
-          --token-surface-tertiary: transparent !important;
-        }
-
-        header,
-        header > div,
-        header div,
-        div.draggable,
-        div[class*="draggable"],
-        div[class*="min-h-[--header-height]"],
-        div[class*="min-h-[--header-height]"] div,
-        div.sticky.top-0:not(nav *):not(aside *),
-        div.sticky.top-0:not(nav *):not(aside *) div,
-        div[class*="top-0"]:not(nav *):not(aside *),
-        div[class*="top-0"]:not(nav *):not(aside *) div,
-        div[class*="bg-white"]:has(button[aria-label*="Share"]),
-        div[class*="bg-token-main-surface-primary"]:has(button[aria-label*="Share"]) {
-          background: transparent !important;
-          background-color: transparent !important;
-          border-color: rgba(255, 255, 255, 0.08) !important;
-        }
-
-        header button,
-        header a,
-        div[class*="top-0"]:not(nav *):not(aside *) button,
-        div[class*="top-0"]:not(nav *):not(aside *) a,
-        button[aria-label*="Share"],
-        button[data-testid*="share"],
-        div[class*="draggable"] button,
-        button[class*="bg-token-main-surface-primary"]:not(#composer-background *):not(div:has(#prompt-textarea) *):not(form *):not(nav *),
-        button[class*="bg-white"]:not(#composer-background *):not(div:has(#prompt-textarea) *):not(form *):not(#promptcanvas-root *):not(nav *) {
-          background: rgba(18, 15, 28, 0.75) !important;
-          border: 1px solid ${border} !important;
-          border-radius: 9999px !important;
-          color: #F8FAFC !important;
-          backdrop-filter: blur(14px) !important;
-          -webkit-backdrop-filter: blur(14px) !important;
-          box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35) !important;
-          padding: 6px 14px !important;
+          backdrop-filter: none !important;
+          -webkit-backdrop-filter: none !important;
           transition: all 0.2s ease !important;
         }
 
-        header button:hover,
-        header a:hover,
-        div[class*="top-0"]:not(nav *):not(aside *) button:hover,
-        button[aria-label*="Share"]:hover,
-        button[class*="bg-token-main-surface-primary"]:hover {
-          background: ${sidebarHover} !important;
-          border-color: ${border} !important;
-          color: ${primary} !important;
+        [data-pc-btn="voice"]:hover,
+        button[aria-label*="Voice" i]:hover,
+        button[aria-label*="dictation" i]:hover,
+        button[data-testid*="voice" i]:hover {
+          background: transparent !important;
+          color: #FFFFFF !important;
+          box-shadow: none !important;
+          transform: scale(1.08) !important;
         }
 
-        header button svg,
-        div[class*="top-0"]:not(nav *):not(aside *) button svg,
-        button[aria-label*="Share"] svg {
-          color: #F8FAFC !important;
-          fill: currentColor !important;
+        /* 3. "+ Attach" Button: 100% Transparent, No Glass Effect */
+        [data-pc-btn="attach"],
+        button[aria-label*="Attach" i],
+        button[aria-label*="Upload" i],
+        button[data-testid*="attach" i] {
+          background: transparent !important;
+          background-color: transparent !important;
+          color: #CBD5E1 !important;
+          border: none !important;
+          border-radius: 50% !important;
+          box-shadow: none !important;
+          backdrop-filter: none !important;
+          -webkit-backdrop-filter: none !important;
+          transition: all 0.2s ease !important;
         }
+
+        [data-pc-btn="attach"]:hover,
+        button[aria-label*="Attach" i]:hover,
+        button[aria-label*="Upload" i]:hover,
+        button[data-testid*="attach" i]:hover {
+          background: transparent !important;
+          color: #FFFFFF !important;
+          box-shadow: none !important;
+          transform: scale(1.08) !important;
+        }
+
+        /* 4. Think / Brain / Reasoning Button: 100% Transparent, No Glass Effect */
+        [data-pc-btn="think"],
+        button[aria-label*="Think" i],
+        button[aria-label*="reason" i],
+        button[data-testid*="think" i] {
+          background: transparent !important;
+          background-color: transparent !important;
+          border: none !important;
+          border-radius: 9999px !important;
+          box-shadow: none !important;
+          backdrop-filter: none !important;
+          -webkit-backdrop-filter: none !important;
+          color: #CBD5E1 !important;
+          height: 36px !important;
+          padding: 0 10px !important;
+          display: inline-flex !important;
+          align-items: center !important;
+          gap: 6px !important;
+          transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
+        }
+
+        [data-pc-btn="think"]:hover,
+        button[aria-label*="Think" i]:hover,
+        button[aria-label*="reason" i]:hover,
+        button[data-testid*="think" i]:hover {
+          background: transparent !important;
+          color: #FFFFFF !important;
+          box-shadow: none !important;
+        }
+
+        /* Ensure all SVG icons inside composer buttons inherit transparent & clean colors */
+        [data-pc-btn="attach"] svg,
+        [data-pc-btn="think"] svg,
+        [data-pc-btn="voice"] svg,
+        #composer-background button:not([data-pc-btn="send"]) svg {
+          color: inherit !important;
+          fill: currentColor !important;
+          stroke: currentColor !important;
+        }
+
+        /* ==========================================================================
+           6. SETTINGS & MODAL DIALOGS (Theme Harmony)
+           ========================================================================== */
+        [role="dialog"],
+        [data-testid="modal-settings"],
+        div[id^="radix-"][role="dialog"] {
+          background: ${isWp ? hexToRgba(baseColor, 0.95) : baseColor} !important;
+          background-color: ${isWp ? hexToRgba(baseColor, 0.95) : baseColor} !important;
+          border: 1px solid ${border} !important;
+          color: #F8FAFC !important;
+          box-shadow: 0 16px 48px rgba(0, 0, 0, 0.6) !important;
+        }
+
+        [role="dialog"] h2,
+        [role="dialog"] h3,
+        [data-testid="modal-settings"] h2,
+        [data-testid="modal-settings"] h3 {
+          color: #FFFFFF !important;
+        }
+
+        [role="dialog"] nav button,
+        [role="dialog"] [role="tab"] {
+          color: #CBD5E1 !important;
+        }
+
+        [role="dialog"] [role="tab"][aria-selected="true"],
+        [role="dialog"] [role="tab"][data-state="active"] {
+          color: #FFFFFF !important;
+          background: ${hexToRgba(primary, 0.25)} !important;
+          border-left: 3px solid ${primary} !important;
+        }
+
+        /* ==========================================================================
+           7. HOME PAGE PROMPT SUGGESTIONS & STARTER CARDS (Premium, Ultra-Visible)
+           ========================================================================== */
+        /* Starter suggestion buttons ONLY (never layout containers) */
+        [data-pc-starter="true"],
+        button[data-pc-starter="true"],
+        a[data-pc-starter="true"],
+        button[data-testid*="prompt-suggestion"],
+        button[data-testid*="starter"],
+        [data-testid="use-case-prompt-chips"] button,
+        main button:has(svg):has(span):not(form *):not(header *):not(nav *):not(aside *),
+        main a:has(svg):has(span):not(form *):not(header *):not(nav *):not(aside *),
+        main div[class*="grid"] button:not(form *):not(header *):not(nav *):not(aside *) {
+          color: #F8FAFC !important;
+          background: ${isWp ? 'rgba(18, 16, 26, 0.86)' : hexToRgba(baseColor, 0.90)} !important;
+          background-color: ${isWp ? 'rgba(18, 16, 26, 0.86)' : hexToRgba(baseColor, 0.90)} !important;
+          border: 1px solid rgba(255, 255, 255, 0.15) !important;
+          border-radius: 14px !important;
+          padding: 10px 16px !important;
+          font-size: 13.5px !important;
+          font-weight: 500 !important;
+          text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8) !important;
+          box-shadow: 0 4px 18px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.12) !important;
+          backdrop-filter: none !important;
+          -webkit-backdrop-filter: none !important;
+          cursor: pointer !important;
+          transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1) !important;
+          display: inline-flex !important;
+          align-items: center !important;
+          gap: 10px !important;
+        }
+
+        /* Inner text elements inside starter cards */
+        [data-pc-starter="true"] :is(span, p, div, b, strong),
+        button[data-testid*="prompt-suggestion"] :is(span, p, div),
+        button[data-testid*="starter"] :is(span, p, div),
+        [data-testid="use-case-prompt-chips"] button :is(span, p, div),
+        main button:has(svg):has(span):not(form *) :is(span, p, div),
+        main a:has(svg):has(span):not(form *) :is(span, p, div) {
+          color: #F8FAFC !important;
+          font-weight: 500 !important;
+          background: transparent !important;
+          background-color: transparent !important;
+        }
+
+        /* SVG Icons in starter cards: Glowing Accent */
+        [data-pc-starter="true"] svg,
+        button[data-testid*="prompt-suggestion"] svg,
+        button[data-testid*="starter"] svg,
+        [data-testid="use-case-prompt-chips"] button svg,
+        main button:has(svg):has(span):not(form *) svg,
+        main a:has(svg):has(span):not(form *) svg {
+          color: ${primary} !important;
+          stroke: currentColor !important;
+          filter: drop-shadow(0 0 6px ${hexToRgba(primary, 0.55)}) !important;
+          transition: transform 0.22s ease, filter 0.22s ease !important;
+          flex-shrink: 0 !important;
+        }
+
+        /* Starter card hover: Luminous lift & Theme Accent Border */
+        [data-pc-starter="true"]:hover,
+        button[data-testid*="prompt-suggestion"]:hover,
+        button[data-testid*="starter"]:hover,
+        [data-testid="use-case-prompt-chips"] button:hover,
+        main button:has(svg):has(span):not(form *):hover,
+        main a:has(svg):has(span):not(form *):hover {
+          background: ${isWp ? 'rgba(28, 25, 40, 0.96)' : hexToRgba(baseColor, 0.96)} !important;
+          background-color: ${isWp ? 'rgba(28, 25, 40, 0.96)' : hexToRgba(baseColor, 0.96)} !important;
+          border-color: ${primary} !important;
+          color: #FFFFFF !important;
+          box-shadow: 0 8px 28px rgba(0, 0, 0, 0.55), 0 0 16px ${hexToRgba(primary, 0.35)}, inset 0 1px 0 rgba(255, 255, 255, 0.2) !important;
+          transform: translateY(-2px) !important;
+        }
+
+        [data-pc-starter="true"]:hover svg,
+        button[data-testid*="prompt-suggestion"]:hover svg,
+        button[data-testid*="starter"]:hover svg,
+        [data-testid="use-case-prompt-chips"] button:hover svg,
+        main button:has(svg):has(span):not(form *):hover svg,
+        main a:has(svg):has(span):not(form *):hover svg {
+          transform: scale(1.12) !important;
+          filter: drop-shadow(0 0 10px ${primary}) !important;
+        }
+
+
+        /* Active prompt suggestion card / attachment chip under composer */
+        div[class*="rounded"]:has(button[aria-label*="close" i]),
+        div[class*="rounded"]:has(button[aria-label*="Remove" i]),
+        div[class*="bg-token-main-surface-secondary"]:has(button) {
+          background: ${hexToRgba(baseColor, 0.92)} !important;
+          border: 1px solid ${border} !important;
+          border-radius: 14px !important;
+          backdrop-filter: none !important;
+          -webkit-backdrop-filter: none !important;
+          color: #FFFFFF !important;
+          box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4) !important;
+        }
+
 
         /* Bottom Disclaimer Text */
         div[class*="text-token-text-secondary"],
@@ -1422,31 +1135,7 @@
           text-shadow: 0 1px 4px rgba(0, 0, 0, 0.85) !important;
         }
 
-        /* Scroll-to-bottom Floating Button */
-        button:has(svg [d*="M12 4v16"]),
-        button:has(svg path[d*="m19 14"]),
-        button:has(svg [d*="M19 14l-7 7m0 0l-7-7"]),
-        button[class*="rounded-full"][class*="bottom-"]:not(#composer-background *):not(div:has(#prompt-textarea) *):not(form *),
-        button[class*="rounded-full"]:has(svg):not(#composer-background *):not(div:has(#prompt-textarea) *):not(form *):not(nav *):not(header *) {
-          background: rgba(18, 15, 28, 0.85) !important;
-          border: 1px solid ${border} !important;
-          color: #F8FAFC !important;
-          box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4), 0 0 12px ${sidebarHover} !important;
-          backdrop-filter: blur(14px) !important;
-        }
-        button:has(svg [d*="M12 4v16"]):hover,
-        button[class*="rounded-full"][class*="bottom-"]:not(form *):hover {
-          background: ${sidebarHover} !important;
-          color: ${primary} !important;
-          border-color: ${primary} !important;
-        }
-        button:has(svg [d*="M12 4v16"]) svg,
-        button[class*="rounded-full"]:has(svg):not(form *):not(nav *):not(header *) svg {
-          color: #F8FAFC !important;
-          stroke: currentColor !important;
-        }
-
-        /* Code Blocks - Outer Glass Container targeting ChatGPT's exact DOM structure */
+        /* Code Blocks - Glass Container */
         div.contain-inline-size,
         div[class*="contain-inline-size"],
         div:has(> pre),
@@ -1456,40 +1145,20 @@
         div[class*="rounded"]:has(pre),
         pre:not(#promptcanvas-root *),
         div[class*="code-block"] {
-          background-color: ${isWp ? 'rgba(14, 12, 22, 0.88)' : c.background} !important;
-          background: ${isWp ? 'rgba(14, 12, 22, 0.88)' : c.background} !important;
+          background-color: ${isWp ? hexToRgba(baseColor, 0.88) : c.background} !important;
+          background: ${isWp ? hexToRgba(baseColor, 0.88) : c.background} !important;
           border: 1px solid ${border} !important;
-          border-radius: 14px !important;
+          border-radius: 12px !important;
           box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5), 0 0 16px ${sidebarHover} !important;
           backdrop-filter: blur(20px) saturate(140%) !important;
           -webkit-backdrop-filter: blur(20px) saturate(140%) !important;
           overflow: hidden !important;
-          color: #F8FAFC !important;
           margin: 14px 0 !important;
         }
 
-        /* Reset all intermediate wrappers inside the code block container to transparent */
-        div.contain-inline-size > div,
-        div[class*="contain-inline-size"] > div,
-        div:has(> pre) > div,
-        div:has(> div > pre) > div,
-        div:has(> div > code) > div,
-        pre,
-        pre code,
-        pre code span,
-        pre span,
-        code[class*="hljs"] {
-          background: transparent !important;
-          background-color: transparent !important;
-          border: none !important;
-          box-shadow: none !important;
-        }
-
-        /* Code block top header bar (e.g. "</> Plain text [Copy]") */
         div.contain-inline-size > div:first-child,
         div[class*="contain-inline-size"] > div:first-child,
         div:has(> pre) > div:first-child,
-        div:has(> div > pre) > div:first-child,
         pre > div:first-child {
           background: rgba(255, 255, 255, 0.06) !important;
           border-bottom: 1px solid ${border} !important;
@@ -1497,42 +1166,9 @@
           padding: 8px 14px !important;
         }
 
-        div.contain-inline-size span,
-        div[class*="contain-inline-size"] span,
-        div:has(> pre) span {
-          color: #CBD5E1 !important;
-          font-weight: 500 !important;
-        }
-
-        /* Action buttons in code block header (Copy, expand) */
-        div.contain-inline-size button,
-        div[class*="contain-inline-size"] button,
-        div:has(> pre) button,
-        div:has(> div > pre) button,
-        pre button {
-          background: rgba(255, 255, 255, 0.08) !important;
-          border: 1px solid rgba(255, 255, 255, 0.12) !important;
-          border-radius: 6px !important;
-          color: #CBD5E1 !important;
-          padding: 4px 8px !important;
-          transition: all 0.15s ease !important;
-        }
-
-        div.contain-inline-size button:hover,
-        div[class*="contain-inline-size"] button:hover,
-        div:has(> pre) button:hover,
-        pre button:hover {
-          background: ${sidebarHover} !important;
-          color: ${primary} !important;
-          border-color: ${border} !important;
-        }
-
-        /* Code Text Typography & Color - Crisp & High Contrast */
         div.contain-inline-size code,
         div[class*="contain-inline-size"] code,
         div:has(> pre) code,
-        div:has(> div > pre) code,
-        div:has(> div > code) code,
         pre code,
         pre span,
         code span {
@@ -1542,27 +1178,13 @@
           line-height: 1.6 !important;
         }
 
-        /* Only standalone inline code gets a pill */
-        :not(pre):not(div.contain-inline-size):not([class*="contain-inline-size"]) > code {
-          background: rgba(255, 255, 255, 0.10) !important;
-          border: 1px solid ${border} !important;
-          border-radius: 4px !important;
-          padding: 2px 6px !important;
-          font-family: 'JetBrains Mono', monospace !important;
-          color: ${primary} !important;
-        }
-
         /* Headings & Text Contrast */
         h1, h2, h3, [class*="text-2xl"], [class*="text-3xl"] {
           color: #FFFFFF !important;
           text-shadow: 0 2px 14px rgba(0, 0, 0, 0.7) !important;
         }
 
-        :is(p, span, li):not(#promptcanvas-root *):not(#pc-toggle-btn *) {
-          color: ${isWp ? '#F8FAFC' : c.text} !important;
-        }
-
-        a:not(#promptcanvas-root *) { color: ${c.primary} !important; }
+        /* Scrollbars */
         ::-webkit-scrollbar { width: 5px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: ${sidebarHover}; border-radius: 3px; }

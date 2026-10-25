@@ -426,7 +426,10 @@
             <div class="pc-section-label">AI Chat Presets</div>
             <div class="pc-theme-grid" id="pc-theme-grid"></div>
 
-            <div class="pc-section-label" style="margin-top:12px;">Atmospheric Wallpaper & Glass</div>
+            <div class="pc-section-label" style="margin-top:12px; display:flex; justify-content:space-between; align-items:center;">
+              <span>Atmospheric Wallpaper & Glass</span>
+              <button type="button" class="pc-link-btn" id="btn-open-wallpapers-studio" style="font-size:10px; opacity:0.8; text-transform:none; letter-spacing:0; cursor:pointer; background:none; border:none; color:inherit; text-decoration:underline;">Options Studio ↗</button>
+            </div>
             <div class="pc-control-group">
               <div class="pc-control-row">
                 <span class="pc-control-label">Enable Wallpaper</span>
@@ -1170,6 +1173,7 @@
       document.getElementById('pc-header-options-btn')?.addEventListener('click', () => this.callbacks.onOpenOptions?.());
       document.getElementById('btn-open-options-page')?.addEventListener('click', () => this.callbacks.onOpenOptions?.('palette'));
       document.getElementById('btn-open-studio-card')?.addEventListener('click', () => this.callbacks.onOpenOptions?.('palette'));
+      document.getElementById('btn-open-wallpapers-studio')?.addEventListener('click', () => this.callbacks.onOpenOptions?.('wallpapers'));
       document.getElementById('pc-btn-footer-options')?.addEventListener('click', () => this.callbacks.onOpenOptions?.());
 
       // Search

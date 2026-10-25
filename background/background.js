@@ -149,6 +149,20 @@ const DEFAULT_SETTINGS = {
     overlayOpacity: 35,
     panelBlur: 14
   },
+  sidebarStyle: {
+    backgroundMode: 'transparent', // 'transparent' | 'solid'
+    glassBlur: 24,                  // 0 to 40px
+    borderEnabled: true,            // show subtle theme border
+    accentHeaders: true,            // highlight Recents / Projects in c3
+    textColorMode: 'theme_harmony', // 'theme_harmony' (c4) | 'crisp_white'
+  },
+  inputBarStyle: {
+    backgroundMode: 'transparent', // 'transparent' | 'solid'
+    borderAccent: true,             // glowing accent border in c2
+    actionButtonsMode: 'accent',    // Send/voice in c2
+    toolPillsMode: 'accent',        // "+", "Think" in c3
+    glassBlur: 16,                  // 0 to 30px
+  },
   customTheme: null,
 };
 
@@ -176,6 +190,12 @@ chrome.runtime.onInstalled.addListener(async () => {
   // Ensure decoupled wallpaper settings exist
   if (!currentSettings.wallpaper) {
     currentSettings.wallpaper = Object.assign({}, DEFAULT_SETTINGS.wallpaper);
+  }
+  if (!currentSettings.sidebarStyle) {
+    currentSettings.sidebarStyle = Object.assign({}, DEFAULT_SETTINGS.sidebarStyle);
+  }
+  if (!currentSettings.inputBarStyle) {
+    currentSettings.inputBarStyle = Object.assign({}, DEFAULT_SETTINGS.inputBarStyle);
   }
 
   await chrome.storage.local.set({

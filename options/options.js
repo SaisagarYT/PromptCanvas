@@ -234,6 +234,8 @@ async function init() {
   renderThemeFilterBar();
   renderThemeGrid();
   initWallpaperStudio();
+  initSidebarCustomizer();
+  initInputBarCustomizer();
   renderPromptTable();
   loadSettings();
   setupNavigation();
@@ -353,6 +355,8 @@ function renderThemeGrid() {
       grid.querySelectorAll('.theme-card-full').forEach(c => c.classList.remove('selected'));
       card.classList.add('selected');
       showToast('Theme palette activated: ' + (themes[themeId]?.name || themeId));
+      window.updateSidebarMockup?.();
+      window.updateInputBarMockup?.();
     });
   });
 }
@@ -363,6 +367,7 @@ function initWallpaperStudio() {
     type: 'preset',
     presetId: 'abstract-purple',
     url: '',
+    dataUrl: '',
     blur: 0,
     brightness: 85,
     overlayOpacity: 35,
@@ -372,8 +377,22 @@ function initWallpaperStudio() {
   const toggle = document.getElementById('opt-wallpaper-enabled');
   const workbench = document.getElementById('wallpaper-workbench');
   const presetsGrid = document.getElementById('wallpaper-presets-grid');
-  const urlInput = document.getElementById('opt-wallpaper-url');
 
+  // Custom upload elements
+  const dropzone = document.getElementById('wallpaper-upload-dropzone');
+  const fileInput = document.getElementById('opt-wallpaper-file');
+  const browseBtn = document.getElementById('btn-browse-wallpaper');
+  const customStatus = document.getElementById('custom-wallpaper-status');
+  const customThumb = document.getElementById('custom-wallpaper-thumb');
+  const customName = document.getElementById('custom-wallpaper-name');
+  const removeCustomBtn = document.getElementById('btn-remove-custom-wallpaper');
+
+  // Custom URL elements
+  const urlInput = document.getElementById('opt-wallpaper-url');
+  const applyUrlBtn = document.getElementById('btn-apply-wallpaper-url');
+
+  // Sliders and controls
+  const resetSlidersBtn = document.getElementById('btn-reset-wallpaper-sliders');
   const blurSlider = document.getElementById('opt-wallpaper-blur');
   const brightSlider = document.getElementById('opt-wallpaper-brightness');
   const overlaySlider = document.getElementById('opt-wallpaper-overlay');
@@ -394,7 +413,9 @@ function initWallpaperStudio() {
     if (workbench) workbench.style.opacity = isEnabled ? '1' : '0.45';
 
     let bgUrl = '';
-    if (wp.presetId && wp.presetId !== 'none') {
+    if (wp.type === 'custom_upload' && wp.dataUrl) {
+      bgUrl = wp.dataUrl;
+    } else if (wp.presetId && wp.presetId !== 'none') {
       const p = WALLPAPER_PRESETS.find(item => item.id === wp.presetId);
       if (p && p.path) bgUrl = p.path;
     } else if (wp.url) {
@@ -421,12 +442,25 @@ function initWallpaperStudio() {
       glassCard.style.backdropFilter = `blur(${panelBlur}px) saturate(140%)`;
       glassCard.style.webkitBackdropFilter = `blur(${panelBlur}px) saturate(140%)`;
     }
+    window.updateSidebarMockup?.();
+    window.updateInputBarMockup?.();
+
+    // Sync custom wallpaper status badge
+    if (customStatus) {
+      if (wp.type === 'custom_upload' && wp.dataUrl) {
+        if (customThumb) customThumb.src = wp.dataUrl;
+        if (customName) customName.textContent = 'Active Custom Upload';
+        customStatus.style.display = 'block';
+      } else {
+        customStatus.style.display = 'none';
+      }
+    }
   }
 
   // Populate presets
   if (presetsGrid) {
     presetsGrid.innerHTML = WALLPAPER_PRESETS.map(preset => {
-      const isActive = wp.presetId === preset.id;
+      const isActive = (wp.type === 'preset' || wp.type === 'none') && wp.presetId === preset.id;
       const bgStyle = preset.path ? `background-image: url('${preset.path}');` : 'background: #27272A; display: flex; align-items: center; justify-content: center; font-size: 10px; color: #A1A1AA; font-weight: 700;';
       return `
         <div class="wallpaper-preset-card ${isActive ? 'active' : ''}" data-preset-id="${preset.id}">
@@ -443,20 +477,170 @@ function initWallpaperStudio() {
         const presetId = card.dataset.presetId;
         wp.presetId = presetId;
         wp.type = presetId === 'none' ? 'none' : 'preset';
-        if (urlInput) urlInput.value = '';
+        wp.dataUrl = '';
         wp.url = '';
+        if (urlInput) urlInput.value = '';
+        if (customStatus) customStatus.style.display = 'none';
 
         presetsGrid.querySelectorAll('.wallpaper-preset-card').forEach(c => c.classList.remove('active'));
         card.classList.add('active');
 
         await saveWallpaperSettings();
         updateLivePreview();
-        showToast('Wallpaper backdrop updated');
+        const pName = WALLPAPER_PRESETS.find(item => item.id === presetId)?.name || presetId;
+        showToast('Wallpaper preset activated: ' + pName);
       });
     });
   }
 
-  // Set initial slider & toggle values
+  // Image File Upload Processor
+  function processImageFile(file) {
+    if (!file) return;
+    if (!file.type || !file.type.startsWith('image/')) {
+      showToast('Please select a valid image file (JPG, PNG, WEBP, GIF).');
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = (loadEvt) => {
+      const img = new Image();
+      img.onload = async () => {
+        const canvas = document.createElement('canvas');
+        let w = img.width;
+        let h = img.height;
+        const maxDim = 1920;
+        if (w > maxDim || h > maxDim) {
+          if (w > h) {
+            h = Math.round((h * maxDim) / w);
+            w = maxDim;
+          } else {
+            w = Math.round((w * maxDim) / h);
+            h = maxDim;
+          }
+        }
+        canvas.width = w;
+        canvas.height = h;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, w, h);
+        const dataUrl = canvas.toDataURL('image/jpeg', 0.85);
+
+        wp.enabled = true;
+        wp.type = 'custom_upload';
+        wp.dataUrl = dataUrl;
+        wp.presetId = '';
+        wp.url = '';
+
+        if (toggle) toggle.checked = true;
+        if (urlInput) urlInput.value = '';
+        presetsGrid?.querySelectorAll('.wallpaper-preset-card').forEach(c => c.classList.remove('active'));
+
+        if (customStatus) {
+          if (customThumb) customThumb.src = dataUrl;
+          if (customName) customName.textContent = file.name || 'Custom Uploaded Wallpaper';
+          customStatus.style.display = 'block';
+        }
+
+        await saveWallpaperSettings();
+        updateLivePreview();
+        showToast('Custom wallpaper uploaded and applied successfully!');
+      };
+      img.src = loadEvt.target.result;
+    };
+    reader.readAsDataURL(file);
+  }
+
+  // Browse & Dropzone Events
+  browseBtn?.addEventListener('click', (e) => {
+    e.stopPropagation();
+    fileInput?.click();
+  });
+
+  if (dropzone) {
+    dropzone.addEventListener('click', (e) => {
+      if (e.target !== browseBtn) {
+        fileInput?.click();
+      }
+    });
+
+    dropzone.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      dropzone.classList.add('drag-over');
+    });
+
+    dropzone.addEventListener('dragleave', () => {
+      dropzone.classList.remove('drag-over');
+    });
+
+    dropzone.addEventListener('drop', (e) => {
+      e.preventDefault();
+      dropzone.classList.remove('drag-over');
+      const file = e.dataTransfer?.files?.[0];
+      if (file) processImageFile(file);
+    });
+  }
+
+  fileInput?.addEventListener('change', (e) => {
+    const file = e.target.files?.[0];
+    if (file) processImageFile(file);
+  });
+
+  // Remove Custom Wallpaper
+  removeCustomBtn?.addEventListener('click', async () => {
+    wp.type = 'preset';
+    wp.presetId = 'abstract-purple';
+    wp.dataUrl = '';
+    wp.url = '';
+    if (customStatus) customStatus.style.display = 'none';
+    if (urlInput) urlInput.value = '';
+
+    presetsGrid?.querySelectorAll('.wallpaper-preset-card').forEach(c => {
+      c.classList.toggle('active', c.dataset.presetId === 'abstract-purple');
+    });
+
+    await saveWallpaperSettings();
+    updateLivePreview();
+    showToast('Custom wallpaper removed. Reverted to Violet Radiance.');
+  });
+
+  // Custom Image URL Handlers
+  const applyCustomUrl = async () => {
+    const url = urlInput ? urlInput.value.trim() : '';
+    if (url) {
+      wp.type = 'custom_url';
+      wp.url = url;
+      wp.presetId = '';
+      wp.dataUrl = '';
+      if (customStatus) customStatus.style.display = 'none';
+      presetsGrid?.querySelectorAll('.wallpaper-preset-card').forEach(c => c.classList.remove('active'));
+
+      await saveWallpaperSettings();
+      updateLivePreview();
+      showToast('Custom wallpaper URL applied!');
+    }
+  };
+
+  applyUrlBtn?.addEventListener('click', applyCustomUrl);
+  urlInput?.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      applyCustomUrl();
+    }
+  });
+
+  urlInput?.addEventListener('input', async (e) => {
+    const val = e.target.value.trim();
+    if (val.startsWith('http://') || val.startsWith('https://')) {
+      wp.url = val;
+      wp.type = 'custom_url';
+      wp.presetId = '';
+      wp.dataUrl = '';
+      if (customStatus) customStatus.style.display = 'none';
+      presetsGrid?.querySelectorAll('.wallpaper-preset-card').forEach(c => c.classList.remove('active'));
+      await saveWallpaperSettings();
+      updateLivePreview();
+    }
+  });
+
+  // Toggle Atmospheric Wallpaper
   if (toggle) {
     toggle.checked = wp.enabled !== false;
     toggle.addEventListener('change', async (e) => {
@@ -467,20 +651,7 @@ function initWallpaperStudio() {
     });
   }
 
-  if (urlInput) {
-    urlInput.value = wp.url || '';
-    urlInput.addEventListener('input', async (e) => {
-      wp.url = e.target.value.trim();
-      if (wp.url) {
-        wp.type = 'custom_url';
-        wp.presetId = '';
-        presetsGrid?.querySelectorAll('.wallpaper-preset-card').forEach(c => c.classList.remove('active'));
-      }
-      await saveWallpaperSettings();
-      updateLivePreview();
-    });
-  }
-
+  // Sliders
   if (blurSlider && valBlur) {
     blurSlider.value = typeof wp.blur !== 'undefined' ? wp.blur : 0;
     valBlur.textContent = `${blurSlider.value}px`;
@@ -525,11 +696,39 @@ function initWallpaperStudio() {
     panelBlurSlider.addEventListener('change', saveWallpaperSettings);
   }
 
+  // Reset Sliders
+  resetSlidersBtn?.addEventListener('click', async () => {
+    wp.blur = 0;
+    wp.brightness = 85;
+    wp.overlayOpacity = 35;
+    wp.panelBlur = 14;
+
+    if (blurSlider) blurSlider.value = 0;
+    if (valBlur) valBlur.textContent = '0px';
+
+    if (brightSlider) brightSlider.value = 85;
+    if (valBright) valBright.textContent = '85%';
+
+    if (overlaySlider) overlaySlider.value = 35;
+    if (valOverlay) valOverlay.textContent = '35%';
+
+    if (panelBlurSlider) panelBlurSlider.value = 14;
+    if (valPanelBlur) valPanelBlur.textContent = '14px';
+
+    await saveWallpaperSettings();
+    updateLivePreview();
+    showToast('Atmospheric controls reset to defaults');
+  });
+
   async function saveWallpaperSettings() {
     const settings = storageData.settings || {};
     settings.wallpaper = wp;
     storageData.settings = settings;
     await chrome.storage.local.set({ settings });
+  }
+
+  if (urlInput && wp.type === 'custom_url') {
+    urlInput.value = wp.url || '';
   }
 
   updateLivePreview();
@@ -653,6 +852,459 @@ let currentStudioPalette = {
   text: '#151E25',
   accent: '#FFA649',
 };
+
+// ===== CHATGPT SIDEBAR CUSTOMIZER =====
+function initSidebarCustomizer() {
+  const settings = storageData.settings || {};
+  const sb = settings.sidebarStyle || {
+    backgroundMode: 'transparent',
+    glassBlur: 24,
+    borderEnabled: true,
+    accentHeaders: true,
+    textColorMode: 'theme_harmony',
+  };
+
+  const bgControl = document.getElementById('sidebar-bg-mode-control');
+  const blurRow = document.getElementById('row-sidebar-blur');
+  const blurSlider = document.getElementById('opt-sidebar-blur');
+  const valBlur = document.getElementById('val-sidebar-blur');
+  const borderToggle = document.getElementById('opt-sidebar-border');
+  const headersToggle = document.getElementById('opt-sidebar-accent-headers');
+  const textControl = document.getElementById('sidebar-text-mode-control');
+  const resetBtn = document.getElementById('btn-reset-sidebar-customizer');
+
+  // Active theme swatches badge
+  function updateHarmonyBadge() {
+    const activeId = storageData.settings?.activeTheme || 'orchidNoir';
+    const themes = (storageData.themes && Object.keys(storageData.themes).length) ? storageData.themes : DEFAULT_THEMES;
+    const theme = themes[activeId] || DEFAULT_THEMES[activeId] || Object.values(DEFAULT_THEMES)[0];
+    const swatches = theme.colors?.swatches || ['#141016', '#EF4444', '#F59E0B', '#F8FAFC'];
+
+    const themeNameEl = document.getElementById('sidebar-active-theme-name');
+    const swatchesEl = document.getElementById('sidebar-harmony-swatches');
+    if (themeNameEl) themeNameEl.textContent = theme.name || activeId;
+    if (swatchesEl) {
+      const labels = ['Base Canvas', 'Primary Accent', 'Tools Accent', 'Text Contrast'];
+      swatchesEl.innerHTML = swatches.map((hex, i) => `
+        <div class="harmony-swatch-chip" title="${labels[i]}: ${hex}">
+          <span class="harmony-dot" style="background-color: ${hex};"></span>
+          <span><b>${labels[i]}</b> (${hex})</span>
+        </div>
+      `).join('');
+    }
+  }
+
+  function updateSidebarMockup() {
+    updateHarmonyBadge();
+    const activeId = storageData.settings?.activeTheme || 'orchidNoir';
+    const themes = (storageData.themes && Object.keys(storageData.themes).length) ? storageData.themes : DEFAULT_THEMES;
+    const theme = themes[activeId] || DEFAULT_THEMES[activeId] || Object.values(DEFAULT_THEMES)[0];
+    const swatches = theme.colors?.swatches || ['#141016', '#EF4444', '#F59E0B', '#F8FAFC'];
+    const [c1, c2, c3, c4] = swatches;
+
+    const wp = storageData.settings?.wallpaper || {};
+    let bgUrl = '';
+    if (wp.type === 'custom_upload' && wp.dataUrl) bgUrl = wp.dataUrl;
+    else if (wp.presetId && wp.presetId !== 'none') {
+      const p = WALLPAPER_PRESETS.find(item => item.id === wp.presetId);
+      if (p && p.path) bgUrl = p.path;
+    } else if (wp.url) bgUrl = wp.url;
+
+    const frame = document.getElementById('mockup-sidebar-frame');
+    if (frame) {
+      if (bgUrl) {
+        frame.style.backgroundImage = `url("${bgUrl}")`;
+      } else {
+        frame.style.backgroundImage = 'none';
+        frame.style.backgroundColor = '#111827';
+      }
+    }
+
+    const sbBox = document.getElementById('mockup-sidebar-box');
+    const newChatBtn = document.getElementById('mock-sb-new-chat');
+    const headerEl = document.getElementById('mock-sb-header');
+    const chatActive = document.getElementById('mock-sb-chat-active');
+    const chatHover = document.getElementById('mock-sb-chat-hover');
+    const chatNormal = document.getElementById('mock-sb-chat-normal');
+
+    const isSolid = sb.backgroundMode === 'solid';
+    const blur = typeof sb.glassBlur !== 'undefined' ? sb.glassBlur : 24;
+
+    if (sbBox) {
+      if (isSolid) {
+        sbBox.style.background = c1;
+        sbBox.style.backdropFilter = 'none';
+        sbBox.style.webkitBackdropFilter = 'none';
+      } else {
+        sbBox.style.background = hexToRgba(c1, 0.72);
+        sbBox.style.backdropFilter = `blur(${blur}px) saturate(150%)`;
+        sbBox.style.webkitBackdropFilter = `blur(${blur}px) saturate(150%)`;
+      }
+      sbBox.style.borderRight = sb.borderEnabled !== false ? `1px solid ${hexToRgba(c2, 0.28)}` : 'none';
+    }
+
+    if (newChatBtn) {
+      newChatBtn.style.background = 'rgba(255, 255, 255, 0.08)';
+      newChatBtn.style.border = `1px solid ${hexToRgba(c3, 0.25)}`;
+      newChatBtn.style.color = '#F8FAFC';
+    }
+
+    if (headerEl) {
+      headerEl.style.color = sb.accentHeaders !== false ? c3 : c2;
+    }
+
+    if (chatActive) {
+      chatActive.style.background = hexToRgba(c2, 0.25);
+      chatActive.style.color = '#FFFFFF';
+      chatActive.style.fontWeight = '600';
+      chatActive.style.borderLeft = `3px solid ${c2}`;
+    }
+
+    if (chatHover) {
+      chatHover.style.background = hexToRgba(c2, 0.15);
+      chatHover.style.color = '#FFFFFF';
+    }
+
+    if (chatNormal) {
+      chatNormal.style.background = 'transparent';
+      chatNormal.style.color = '#E2E8F0';
+    }
+  }
+
+  window.updateSidebarMockup = updateSidebarMockup;
+
+  // Initial Control States
+  if (bgControl) {
+    bgControl.querySelectorAll('.segmented-btn').forEach(btn => {
+      btn.classList.toggle('active', btn.dataset.mode === (sb.backgroundMode || 'transparent'));
+      btn.addEventListener('click', async () => {
+        bgControl.querySelectorAll('.segmented-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        sb.backgroundMode = btn.dataset.mode;
+        if (blurRow) blurRow.style.opacity = sb.backgroundMode === 'solid' ? '0.4' : '1';
+        await saveSidebarStyle();
+        updateSidebarMockup();
+        showToast(`Sidebar style: ${sb.backgroundMode === 'solid' ? 'Solid Theme Color' : 'Frosted Glass'}`);
+      });
+    });
+  }
+
+  if (blurSlider && valBlur) {
+    blurSlider.value = typeof sb.glassBlur !== 'undefined' ? sb.glassBlur : 24;
+    valBlur.textContent = `${blurSlider.value}px`;
+    blurSlider.addEventListener('input', (e) => {
+      valBlur.textContent = `${e.target.value}px`;
+      sb.glassBlur = parseInt(e.target.value, 10);
+      updateSidebarMockup();
+    });
+    blurSlider.addEventListener('change', saveSidebarStyle);
+  }
+
+  if (borderToggle) {
+    borderToggle.checked = sb.borderEnabled !== false;
+    borderToggle.addEventListener('change', async (e) => {
+      sb.borderEnabled = e.target.checked;
+      await saveSidebarStyle();
+      updateSidebarMockup();
+      showToast(sb.borderEnabled ? 'Sidebar divider border enabled' : 'Sidebar divider border hidden');
+    });
+  }
+
+  if (headersToggle) {
+    headersToggle.checked = sb.accentHeaders !== false;
+    headersToggle.addEventListener('change', async (e) => {
+      sb.accentHeaders = e.target.checked;
+      await saveSidebarStyle();
+      updateSidebarMockup();
+      showToast(sb.accentHeaders ? 'Sidebar headers in secondary accent (c3)' : 'Sidebar headers in primary accent (c2)');
+    });
+  }
+
+  if (textControl) {
+    textControl.querySelectorAll('.segmented-btn').forEach(btn => {
+      btn.classList.toggle('active', btn.dataset.mode === (sb.textColorMode || 'theme_harmony'));
+      btn.addEventListener('click', async () => {
+        textControl.querySelectorAll('.segmented-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        sb.textColorMode = btn.dataset.mode;
+        await saveSidebarStyle();
+        updateSidebarMockup();
+        showToast(`Chat history text: ${sb.textColorMode === 'crisp_white' ? 'Crisp White' : 'Theme Harmony Tint'}`);
+      });
+    });
+  }
+
+  if (resetBtn) {
+    resetBtn.addEventListener('click', async () => {
+      sb.backgroundMode = 'transparent';
+      sb.glassBlur = 24;
+      sb.borderEnabled = true;
+      sb.accentHeaders = true;
+      sb.textColorMode = 'theme_harmony';
+
+      if (bgControl) {
+        bgControl.querySelectorAll('.segmented-btn').forEach(b => b.classList.toggle('active', b.dataset.mode === 'transparent'));
+      }
+      if (blurSlider) blurSlider.value = 24;
+      if (valBlur) valBlur.textContent = '24px';
+      if (borderToggle) borderToggle.checked = true;
+      if (headersToggle) headersToggle.checked = true;
+      if (textControl) {
+        textControl.querySelectorAll('.segmented-btn').forEach(b => b.classList.toggle('active', b.dataset.mode === 'theme_harmony'));
+      }
+      if (blurRow) blurRow.style.opacity = '1';
+
+      await saveSidebarStyle();
+      updateSidebarMockup();
+      showToast('Sidebar controls reset to defaults');
+    });
+  }
+
+  async function saveSidebarStyle() {
+    const s = storageData.settings || {};
+    s.sidebarStyle = sb;
+    storageData.settings = s;
+    await chrome.storage.local.set({ settings: s });
+  }
+
+  updateSidebarMockup();
+}
+
+// ===== CHATGPT INPUT BAR (COMPOSER) CUSTOMIZER =====
+function initInputBarCustomizer() {
+  const settings = storageData.settings || {};
+  const ib = settings.inputBarStyle || {
+    backgroundMode: 'transparent',
+    borderAccent: true,
+    actionButtonsMode: 'accent',
+    toolPillsMode: 'accent',
+    glassBlur: 16,
+  };
+
+  const bgControl = document.getElementById('inputbar-bg-mode-control');
+  const blurRow = document.getElementById('row-inputbar-blur');
+  const blurSlider = document.getElementById('opt-inputbar-blur');
+  const valBlur = document.getElementById('val-inputbar-blur');
+  const borderToggle = document.getElementById('opt-inputbar-border-accent');
+  const actionToggle = document.getElementById('opt-inputbar-action-accent');
+  const toolToggle = document.getElementById('opt-inputbar-tool-accent');
+  const resetBtn = document.getElementById('btn-reset-inputbar-customizer');
+
+  // Active theme swatches badge
+  function updateHarmonyBadge() {
+    const activeId = storageData.settings?.activeTheme || 'orchidNoir';
+    const themes = (storageData.themes && Object.keys(storageData.themes).length) ? storageData.themes : DEFAULT_THEMES;
+    const theme = themes[activeId] || DEFAULT_THEMES[activeId] || Object.values(DEFAULT_THEMES)[0];
+    const swatches = theme.colors?.swatches || ['#141016', '#EF4444', '#F59E0B', '#F8FAFC'];
+
+    const themeNameEl = document.getElementById('inputbar-active-theme-name');
+    const swatchesEl = document.getElementById('inputbar-harmony-swatches');
+    if (themeNameEl) themeNameEl.textContent = theme.name || activeId;
+    if (swatchesEl) {
+      const labels = ['Base Canvas', 'Primary Accent', 'Tools Accent', 'Text Contrast'];
+      swatchesEl.innerHTML = swatches.map((hex, i) => `
+        <div class="harmony-swatch-chip" title="${labels[i]}: ${hex}">
+          <span class="harmony-dot" style="background-color: ${hex};"></span>
+          <span><b>${labels[i]}</b> (${hex})</span>
+        </div>
+      `).join('');
+    }
+  }
+
+  function updateInputBarMockup() {
+    updateHarmonyBadge();
+    const activeId = storageData.settings?.activeTheme || 'orchidNoir';
+    const themes = (storageData.themes && Object.keys(storageData.themes).length) ? storageData.themes : DEFAULT_THEMES;
+    const theme = themes[activeId] || DEFAULT_THEMES[activeId] || Object.values(DEFAULT_THEMES)[0];
+    const swatches = theme.colors?.swatches || ['#141016', '#EF4444', '#F59E0B', '#F8FAFC'];
+    const [c1, c2, c3, c4] = swatches;
+
+    const wp = storageData.settings?.wallpaper || {};
+    let bgUrl = '';
+    if (wp.type === 'custom_upload' && wp.dataUrl) bgUrl = wp.dataUrl;
+    else if (wp.presetId && wp.presetId !== 'none') {
+      const p = WALLPAPER_PRESETS.find(item => item.id === wp.presetId);
+      if (p && p.path) bgUrl = p.path;
+    } else if (wp.url) bgUrl = wp.url;
+
+    const frame = document.getElementById('mockup-inputbar-frame');
+    if (frame) {
+      if (bgUrl) {
+        frame.style.backgroundImage = `url("${bgUrl}")`;
+      } else {
+        frame.style.backgroundImage = 'none';
+        frame.style.backgroundColor = '#111827';
+      }
+    }
+
+    const composerBox = document.getElementById('mockup-composer-box');
+    const attachBtn = document.getElementById('mock-ib-attach');
+    const placeholder = document.getElementById('mock-ib-placeholder');
+    const thinkPill = document.getElementById('mock-ib-think');
+    const voiceBtn = document.getElementById('mock-ib-voice');
+    const sendBtn = document.getElementById('mock-ib-send');
+
+    const isSolid = ib.backgroundMode === 'solid';
+    const blur = typeof ib.glassBlur !== 'undefined' ? ib.glassBlur : 16;
+
+    if (composerBox) {
+      if (isSolid) {
+        composerBox.style.background = c1;
+        composerBox.style.backdropFilter = 'none';
+        composerBox.style.webkitBackdropFilter = 'none';
+      } else {
+        composerBox.style.background = hexToRgba(c1, 0.40);
+        composerBox.style.backdropFilter = `blur(${blur}px) saturate(140%)`;
+        composerBox.style.webkitBackdropFilter = `blur(${blur}px) saturate(140%)`;
+      }
+
+      if (ib.borderAccent !== false) {
+        composerBox.style.border = `1px solid ${hexToRgba(c2, 0.40)}`;
+        composerBox.style.boxShadow = `0 10px 40px rgba(0, 0, 0, 0.65), 0 0 20px ${hexToRgba(c2, 0.20)}`;
+      } else {
+        composerBox.style.border = '1px solid rgba(255, 255, 255, 0.15)';
+        composerBox.style.boxShadow = '0 10px 40px rgba(0, 0, 0, 0.65)';
+      }
+    }
+
+    if (placeholder) {
+      placeholder.style.color = c4;
+    }
+
+    if (sendBtn) {
+      sendBtn.style.background = `linear-gradient(135deg, ${c2}, ${c3})`;
+      sendBtn.style.boxShadow = `0 0 16px ${hexToRgba(c2, 0.4)}`;
+    }
+
+    if (voiceBtn) {
+      if (ib.actionButtonsMode !== 'default') {
+        voiceBtn.style.background = hexToRgba(c2, 0.22);
+        voiceBtn.style.color = c2;
+        voiceBtn.style.border = `1px solid ${hexToRgba(c2, 0.35)}`;
+      } else {
+        voiceBtn.style.background = 'rgba(255, 255, 255, 0.08)';
+        voiceBtn.style.color = '#CBD5E1';
+        voiceBtn.style.border = '1px solid rgba(255, 255, 255, 0.12)';
+      }
+    }
+
+    if (attachBtn) {
+      if (ib.toolPillsMode !== 'default') {
+        attachBtn.style.background = hexToRgba(c3, 0.18);
+        attachBtn.style.color = c3;
+        attachBtn.style.border = `1px solid ${hexToRgba(c3, 0.35)}`;
+      } else {
+        attachBtn.style.background = 'rgba(255, 255, 255, 0.08)';
+        attachBtn.style.color = '#F8FAFC';
+        attachBtn.style.border = '1px solid rgba(255, 255, 255, 0.15)';
+      }
+    }
+
+    if (thinkPill) {
+      if (ib.toolPillsMode !== 'default') {
+        thinkPill.style.background = hexToRgba(c3, 0.18);
+        thinkPill.style.color = c3;
+        thinkPill.style.border = `1px solid ${hexToRgba(c3, 0.35)}`;
+      } else {
+        thinkPill.style.background = 'rgba(255, 255, 255, 0.09)';
+        thinkPill.style.color = '#F8FAFC';
+        thinkPill.style.border = '1px solid rgba(255, 255, 255, 0.15)';
+      }
+    }
+  }
+
+  window.updateInputBarMockup = updateInputBarMockup;
+
+  // Initial Control States
+  if (bgControl) {
+    bgControl.querySelectorAll('.segmented-btn').forEach(btn => {
+      btn.classList.toggle('active', btn.dataset.mode === (ib.backgroundMode || 'transparent'));
+      btn.addEventListener('click', async () => {
+        bgControl.querySelectorAll('.segmented-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        ib.backgroundMode = btn.dataset.mode;
+        if (blurRow) blurRow.style.opacity = ib.backgroundMode === 'solid' ? '0.4' : '1';
+        await saveInputBarStyle();
+        updateInputBarMockup();
+        showToast(`Composer style: ${ib.backgroundMode === 'solid' ? 'Solid Theme Color' : 'Frosted Glass'}`);
+      });
+    });
+  }
+
+  if (blurSlider && valBlur) {
+    blurSlider.value = typeof ib.glassBlur !== 'undefined' ? ib.glassBlur : 16;
+    valBlur.textContent = `${blurSlider.value}px`;
+    blurSlider.addEventListener('input', (e) => {
+      valBlur.textContent = `${e.target.value}px`;
+      ib.glassBlur = parseInt(e.target.value, 10);
+      updateInputBarMockup();
+    });
+    blurSlider.addEventListener('change', saveInputBarStyle);
+  }
+
+  if (borderToggle) {
+    borderToggle.checked = ib.borderAccent !== false;
+    borderToggle.addEventListener('change', async (e) => {
+      ib.borderAccent = e.target.checked;
+      await saveInputBarStyle();
+      updateInputBarMockup();
+      showToast(ib.borderAccent ? 'Composer accent glow enabled' : 'Composer accent glow hidden');
+    });
+  }
+
+  if (actionToggle) {
+    actionToggle.checked = ib.actionButtonsMode !== 'default';
+    actionToggle.addEventListener('change', async (e) => {
+      ib.actionButtonsMode = e.target.checked ? 'accent' : 'default';
+      await saveInputBarStyle();
+      updateInputBarMockup();
+      showToast(e.target.checked ? 'Action buttons in primary accent (c2)' : 'Action buttons default');
+    });
+  }
+
+  if (toolToggle) {
+    toolToggle.checked = ib.toolPillsMode !== 'default';
+    toolToggle.addEventListener('change', async (e) => {
+      ib.toolPillsMode = e.target.checked ? 'accent' : 'default';
+      await saveInputBarStyle();
+      updateInputBarMockup();
+      showToast(e.target.checked ? 'Tool pills in secondary accent (c3)' : 'Tool pills default');
+    });
+  }
+
+  if (resetBtn) {
+    resetBtn.addEventListener('click', async () => {
+      ib.backgroundMode = 'transparent';
+      ib.glassBlur = 16;
+      ib.borderAccent = true;
+      ib.actionButtonsMode = 'accent';
+      ib.toolPillsMode = 'accent';
+
+      if (bgControl) {
+        bgControl.querySelectorAll('.segmented-btn').forEach(b => b.classList.toggle('active', b.dataset.mode === 'transparent'));
+      }
+      if (blurSlider) blurSlider.value = 16;
+      if (valBlur) valBlur.textContent = '16px';
+      if (borderToggle) borderToggle.checked = true;
+      if (actionToggle) actionToggle.checked = true;
+      if (toolToggle) toolToggle.checked = true;
+      if (blurRow) blurRow.style.opacity = '1';
+
+      await saveInputBarStyle();
+      updateInputBarMockup();
+      showToast('Input bar controls reset to defaults');
+    });
+  }
+
+  async function saveInputBarStyle() {
+    const s = storageData.settings || {};
+    s.inputBarStyle = ib;
+    storageData.settings = s;
+    await chrome.storage.local.set({ settings: s });
+  }
+
+  updateInputBarMockup();
+}
 
 function initColorStudio() {
   const initial = storageData.uiPalette || DESIGNER_PRESETS[0];

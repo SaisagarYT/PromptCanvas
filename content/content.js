@@ -215,159 +215,108 @@
   }
 
   function observeComposer() {
+    // Strictly ChatGPT-only logic. Claude, Gemini, DeepSeek, and LeetCode must never execute this.
+    if (PLATFORM !== 'chatgpt') return;
+
     function tagComposer() {
       if (state.settings?.themeEnabled === false) return;
-
-      const input = document.querySelector('#prompt-textarea') ||
-                    document.querySelector('.ProseMirror') ||
-                    document.querySelector('textarea[placeholder]') ||
-                    document.querySelector('div[contenteditable="true"]:not(#promptcanvas-root *)');
+      const input = document.querySelector('#prompt-textarea');
       if (!input) return;
-
       const formEl = input.closest('form');
-      let capsule = null;
-
-      // 1. Walk upward from input to find the immediate pill capsule that wraps input and buttons
-      let current = input.parentElement;
-      while (current && current !== formEl && current !== document.body && current !== document.documentElement) {
-        const cls = String(current.className || '');
-        const id = String(current.id || '');
-        const hasButtons = Boolean(current.querySelector('button'));
-
-        // Check if element has rounded styling (via Tailwind classes or computed style) and buttons
-        let isRounded = cls.includes('rounded') || id.includes('composer') || current.hasAttribute('data-composer-surface');
-        if (!isRounded && window.getComputedStyle) {
-          try {
-            const br = parseInt(window.getComputedStyle(current).borderRadius, 10);
-            if (br >= 14) isRounded = true;
-          } catch (e) {}
-        }
-
-        if (isRounded && hasButtons) {
-          capsule = current;
-          break;
-        }
-        current = current.parentElement;
+      if (!formEl) return;
+      const capsule = formEl.querySelector(':scope > div') || formEl;
+      if (capsule && !capsule.hasAttribute('data-pc-composer')) {
+        capsule.setAttribute('data-pc-composer', 'true');
       }
 
-      // 2. Fallbacks if not found by the walk
-      if (!capsule) {
-        capsule = input.closest('#composer-background') ||
-                  input.closest('[data-composer-surface]') ||
-                  input.closest('[data-testid*="composer"]') ||
-                  input.closest('form div:has(button):has(#prompt-textarea)') ||
-                  input.parentElement;
+      // Ensure placeholder / hint text is active when empty
+      if (input.tagName === 'TEXTAREA' && !input.getAttribute('placeholder')) {
+        input.setAttribute('placeholder', 'Ask anything');
       }
-
-      if (capsule) {
-        // Tag the capsule
-        if (!capsule.hasAttribute('data-pc-composer')) {
-          capsule.setAttribute('data-pc-composer', 'true');
-          capsule.classList.add('pc-composer-capsule');
-        }
-
-        // Ensure outer form and parents do NOT paint white
-        let p = capsule.parentElement;
-        while (p && p !== document.body && p !== document.documentElement) {
-          if (p === formEl || (p.classList && (p.classList.contains('stretch') || p.className.includes('w-full')))) {
-            p.style.setProperty('background', 'transparent', 'important');
-            p.style.setProperty('background-color', 'transparent', 'important');
-          }
-          p = p.parentElement;
-        }
-
-        // Ensure ALL inner container divs inside capsule don't paint solid white
-        const innerDivs = capsule.querySelectorAll('div, span');
-        innerDivs.forEach((d) => {
-          if (d !== capsule && !d.matches('button') && !d.hasAttribute('data-pc-composer')) {
-            d.style.setProperty('background', 'transparent', 'important');
-            d.style.setProperty('background-color', 'transparent', 'important');
-            d.style.setProperty('box-shadow', 'none', 'important');
-          }
-        });
-
-        // Tag and directly style all buttons and interactive controls inside capsule and form
-        const buttons = capsule.querySelectorAll('button, [role="button"]');
-        buttons.forEach((btn, idx) => {
-          const aria = (btn.getAttribute('aria-label') || '').toLowerCase();
-          const testid = (btn.getAttribute('data-testid') || '').toLowerCase();
-          const txt = (btn.innerText || '').toLowerCase();
-
-          // Reset parent wrappers between button and capsule to transparent
-          let par = btn.parentElement;
-          while (par && par !== capsule) {
-            par.style.setProperty('background', 'transparent', 'important');
-            par.style.setProperty('background-color', 'transparent', 'important');
-            par.style.setProperty('box-shadow', 'none', 'important');
-            par = par.parentElement;
-          }
-
-          // Clear any background on internal child nodes inside the button
-          btn.querySelectorAll('*').forEach((el) => {
-            el.style.setProperty('background', 'transparent', 'important');
-            el.style.setProperty('background-color', 'transparent', 'important');
-            el.style.setProperty('color', 'inherit', 'important');
-          });
-
-          // Style according to button type
-          const isReasoningBtn = aria.includes('think') || testid.includes('think') || txt.includes('think') || aria.includes('reason') || Boolean(btn.querySelector('span')) || Boolean(btn.innerText && btn.innerText.trim().length > 0);
-
-          if (isReasoningBtn && !aria.includes('send') && !testid.includes('send')) {
-            btn.setAttribute('data-pc-btn', 'think');
-            btn.style.setProperty('width', 'auto', 'important');
-            btn.style.setProperty('min-width', 'fit-content', 'important');
-            btn.style.setProperty('max-width', 'none', 'important');
-            btn.style.setProperty('height', '36px', 'important');
-            btn.style.setProperty('padding', '0 12px 0 10px', 'important');
-            btn.style.setProperty('gap', '7px', 'important');
-            btn.style.setProperty('display', 'inline-flex', 'important');
-            btn.style.setProperty('align-items', 'center', 'important');
-            btn.style.setProperty('justify-content', 'center', 'important');
-            btn.style.setProperty('background', 'rgba(255, 255, 255, 0.09)', 'important');
-            btn.style.setProperty('background-color', 'rgba(255, 255, 255, 0.09)', 'important');
-            btn.style.setProperty('border', '1px solid rgba(255, 255, 255, 0.18)', 'important');
-            btn.style.setProperty('border-radius', '9999px', 'important');
-            btn.style.setProperty('color', '#F8FAFC', 'important');
-            btn.style.setProperty('box-shadow', '0 2px 8px rgba(0, 0, 0, 0.25)', 'important');
-          } else if (aria.includes('send') || testid.includes('send')) {
-            btn.setAttribute('data-pc-btn', 'send');
-            btn.style.setProperty('width', '36px', 'important');
-            btn.style.setProperty('height', '36px', 'important');
-            btn.style.setProperty('border-radius', '50%', 'important');
-            btn.style.setProperty('border', 'none', 'important');
-            btn.style.setProperty('color', '#FFFFFF', 'important');
-          } else if (idx === 0 || aria.includes('attach') || aria.includes('upload') || aria.includes('add') || aria.includes('file') || aria.includes('tool') || aria.includes('more') || testid.includes('attach')) {
-            btn.setAttribute('data-pc-btn', 'attach');
-            btn.style.setProperty('width', '36px', 'important');
-            btn.style.setProperty('height', '36px', 'important');
-            btn.style.setProperty('background', 'rgba(255, 255, 255, 0.08)', 'important');
-            btn.style.setProperty('background-color', 'rgba(255, 255, 255, 0.08)', 'important');
-            btn.style.setProperty('border', '1px solid rgba(255, 255, 255, 0.15)', 'important');
-            btn.style.setProperty('border-radius', '50%', 'important');
-            btn.style.setProperty('color', '#F8FAFC', 'important');
-            btn.style.setProperty('box-shadow', '0 2px 8px rgba(0, 0, 0, 0.25)', 'important');
-          } else {
-            // Voice, dictation, microphone, or any other trailing circular action buttons
-            btn.setAttribute('data-pc-btn', 'voice');
-            btn.style.setProperty('width', '36px', 'important');
-            btn.style.setProperty('height', '36px', 'important');
-            btn.style.setProperty('background', 'rgba(255, 255, 255, 0.06)', 'important');
-            btn.style.setProperty('background-color', 'rgba(255, 255, 255, 0.06)', 'important');
-            btn.style.setProperty('border', '1px solid rgba(255, 255, 255, 0.12)', 'important');
-            btn.style.setProperty('border-radius', '50%', 'important');
-            btn.style.setProperty('color', '#CBD5E1', 'important');
-            btn.style.setProperty('box-shadow', '0 2px 8px rgba(0, 0, 0, 0.2)', 'important');
-          }
-        });
+      const p = input.querySelector('p');
+      if (p && !p.getAttribute('data-placeholder') && (!p.textContent || p.textContent.trim() === '')) {
+        p.setAttribute('data-placeholder', 'Ask anything');
       }
     }
 
+    function checkSidebarState() {
+      const openBtn = document.querySelector('button[aria-label*="Open sidebar" i], button[aria-label*="Open navigation" i], button[data-testid*="open-sidebar" i]');
+      const closeBtn = document.querySelector('button[aria-label*="Close sidebar" i], button[aria-label*="Close navigation" i], button[data-testid*="close-sidebar" i]');
+
+      let isClosed = false;
+      if (openBtn && !closeBtn) {
+        isClosed = true;
+      } else {
+        const historyLink = document.querySelector('nav a[href*="/c/"], nav ol li a');
+        if (historyLink) {
+          const r = historyLink.getBoundingClientRect();
+          if (r.width === 0 || r.right <= 60 || r.left < -20) {
+            isClosed = true;
+          }
+        } else {
+          const shell = document.querySelector('#app-shell-sidebar');
+          if (!shell || shell.getBoundingClientRect().width <= 60) {
+            isClosed = true;
+          }
+        }
+      }
+
+      const nextVal = isClosed ? 'closed' : 'open';
+      if (document.documentElement.getAttribute('data-pc-sidebar') !== nextVal) {
+        document.documentElement.setAttribute('data-pc-sidebar', nextVal);
+        document.body.setAttribute('data-pc-sidebar', nextVal);
+      }
+    }
+
+    function tagStarters() {
+      // Don't waste CPU querying while chatting inside a conversation
+      if (window.location.pathname.startsWith('/c/')) return;
+      const candidates = document.querySelectorAll(`
+        button[data-testid*="starter"],
+        button[data-testid*="suggestion"],
+        [data-testid="use-case-prompt-chips"] button,
+        main div[class*="grid"] button,
+        main div[class*="flex"] > button:has(svg),
+        main button:has(svg):has(span),
+        main a:has(svg):has(span)
+      `);
+      candidates.forEach(btn => {
+        if (btn.closest('form') || btn.closest('#composer-background') || btn.closest('nav') || btn.closest('aside') || btn.closest('header')) return;
+        if (!btn.hasAttribute('data-pc-starter')) {
+          btn.setAttribute('data-pc-starter', 'true');
+        }
+      });
+    }
+
     tagComposer();
+    checkSidebarState();
+    tagStarters();
+
+    // Fast reaction to sidebar collapse/expand clicks
+    document.addEventListener('click', (e) => {
+      const btn = e.target.closest('button[aria-label*="sidebar" i], button[aria-label*="navigation" i], button[data-testid*="sidebar" i]');
+      if (btn) {
+        setTimeout(checkSidebarState, 50);
+        setTimeout(checkSidebarState, 200);
+      }
+    }, true);
+
+    // Heavily debounced, childList-only observer (never observes attributes/styles to prevent recursion)
     try {
-      const observer = new MutationObserver(() => tagComposer());
+      let debounceTimer = null;
+      const observer = new MutationObserver(() => {
+        if (debounceTimer) return;
+        debounceTimer = setTimeout(() => {
+          debounceTimer = null;
+          tagComposer();
+          checkSidebarState();
+          tagStarters();
+        }, 300);
+      });
       observer.observe(document.body, { childList: true, subtree: true });
     } catch (e) {}
   }
+
 
   function onStorageChanged(changes) {
     const updates = {};
@@ -401,8 +350,10 @@
     const theme = state.themes[state.activeTheme] || Object.values(state.themes)[0];
     if (!theme) return;
     const globalWp = state.settings.wallpaper;
+    const sidebarStyle = state.settings.sidebarStyle;
+    const inputBarStyle = state.settings.inputBarStyle;
     window.PCThemeEngine?.applyCSSVars(theme, state.settings.themeEnabled, globalWp);
-    window.PCThemeEngine?.applyPageTheme(theme, PLATFORM, state.settings.themeEnabled, globalWp);
+    window.PCThemeEngine?.applyPageTheme(theme, PLATFORM, state.settings.themeEnabled, globalWp, sidebarStyle, inputBarStyle);
   }
 
   function applyCustomFont(font) {

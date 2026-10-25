@@ -409,10 +409,10 @@
       display: inline-block;
     }
 
-    /* ===== WALLPAPER STUDIO ===== */
+    /* ===== WALLPAPER STUDIO & CUSTOM IMAGES ===== */
     .wallpaper-workbench {
       display: grid;
-      grid-template-columns: 1.1fr 0.9fr;
+      grid-template-columns: 1.15fr 0.85fr;
       gap: 24px;
       margin-top: 16px;
     }
@@ -432,20 +432,22 @@
       background: #FFFFFF;
       transition: all 0.15s ease;
       text-align: left;
+      position: relative;
     }
 
     .wallpaper-preset-card:hover {
       border-color: var(--color-dark);
       transform: translateY(-1px);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
     }
 
     .wallpaper-preset-card.active {
-      border-color: var(--color-dark);
-      box-shadow: 0 0 0 1.5px var(--color-dark);
+      border-color: var(--color-amber);
+      box-shadow: 0 0 0 2px var(--color-amber);
     }
 
     .wallpaper-preset-thumb {
-      height: 52px;
+      height: 56px;
       background-size: cover;
       background-position: center;
       position: relative;
@@ -454,12 +456,63 @@
     .wallpaper-preset-name {
       padding: 6px 8px;
       font-family: 'Plus Jakarta Sans', sans-serif;
-      font-size: 10px;
+      font-size: 10.5px;
       font-weight: 700;
       color: var(--color-darker);
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
+    }
+
+    /* Custom Wallpaper Upload Area */
+    .wallpaper-upload-box {
+      border: 1.5px dashed var(--color-border-strong);
+      border-radius: var(--radius-sm);
+      padding: 14px 16px;
+      background: var(--color-dark-subtle);
+      transition: all 0.2s ease;
+      cursor: pointer;
+    }
+
+    .wallpaper-upload-box:hover,
+    .wallpaper-upload-box.drag-over {
+      border-color: var(--color-amber);
+      background: rgba(255, 166, 73, 0.08);
+    }
+
+    .upload-icon-circle {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: rgba(40, 56, 69, 0.08);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--color-dark);
+      flex-shrink: 0;
+    }
+
+    .custom-wallpaper-status {
+      padding: 10px 12px;
+      background: #FFFFFF;
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-sm);
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+    }
+
+    .btn-danger {
+      background: #FEE2E2;
+      color: #DC2626;
+      border: 1px solid #FCA5A5;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.15s ease;
+    }
+
+    .btn-danger:hover {
+      background: #FCA5A5;
+      color: #991B1B;
     }
 
     .slider-group {
@@ -1252,6 +1305,187 @@
       opacity: 1;
       transform: translateY(0);
     }
+  
+    /* ===== COMPONENT CUSTOMIZERS (SIDEBAR & INPUT BAR) ===== */
+    .component-workbench {
+      display: grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: 24px;
+      margin-top: 18px;
+    }
+
+    .harmony-palette-badge {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--color-dark-subtle);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-sm);
+      padding: 10px 14px;
+      margin-bottom: 18px;
+    }
+
+    .harmony-swatches-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .harmony-swatch-chip {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: #FFFFFF;
+      border: 1px solid var(--color-border);
+      border-radius: 4px;
+      padding: 3px 8px;
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--color-dark);
+    }
+
+    .harmony-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      border: 1px solid rgba(0,0,0,0.15);
+      flex-shrink: 0;
+    }
+
+    .segmented-control {
+      display: flex;
+      background: var(--color-dark-subtle);
+      border: 1.5px solid var(--color-border);
+      border-radius: 8px;
+      padding: 4px;
+      gap: 6px;
+      margin-top: 8px;
+    }
+
+    .segmented-btn {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 9px 14px;
+      border: 1px solid transparent;
+      background: transparent;
+      border-radius: 6px;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--color-dark-muted);
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .segmented-btn:hover {
+      color: var(--color-darker);
+      background: rgba(40, 56, 69, 0.05);
+    }
+
+    .segmented-btn.active {
+      background: var(--color-dark);
+      color: #FFFFFF !important;
+      border-color: var(--color-dark);
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.18);
+    }
+
+    .segmented-btn.active svg {
+      stroke: #FFFFFF !important;
+    }
+
+    /* General Button Styles */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 11px;
+      font-weight: 700;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--color-border);
+      padding: 8px 16px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      background: #FFFFFF;
+      color: var(--color-darker);
+      text-decoration: none;
+    }
+
+    .btn:hover {
+      border-color: var(--color-dark);
+      background: var(--color-light);
+    }
+
+    .btn-secondary {
+      background: #FFFFFF;
+      border-color: var(--color-border);
+      color: var(--color-darker);
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+    }
+
+    .btn-secondary:hover {
+      border-color: var(--color-dark);
+      background: var(--color-dark-subtle);
+    }
+
+    .btn-sm {
+      padding: 6px 12px;
+      font-size: 10.5px;
+    }
+
+    /* Live Mockup Containers */
+    .mockup-frame {
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-sm);
+      height: 380px;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #111827;
+      background-size: cover;
+      background-position: center;
+    }
+
+    .mockup-overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(10, 8, 18, 0.35);
+      transition: background-color 0.2s ease;
+    }
+
+    .mockup-sidebar-box {
+      position: relative;
+      z-index: 2;
+      width: 220px;
+      height: 92%;
+      border-radius: 8px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+      transition: all 0.2s ease;
+    }
+
+    .mockup-composer-box {
+      position: relative;
+      z-index: 2;
+      width: 90%;
+      border-radius: 9999px;
+      padding: 10px 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+      transition: all 0.2s ease;
+    }
+
   </style>
 </head>
 
@@ -1294,6 +1528,35 @@
           </svg>
         </span>
         <span>Themes</span>
+      </button>
+      <button class="nav-item" data-panel="wallpapers">
+        <span class="nav-icon">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect width="18" height="18" x="3" y="3" rx="2" ry="2"/>
+            <circle cx="9" cy="9" r="2"/>
+            <path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/>
+          </svg>
+        </span>
+        <span>Wallpapers</span>
+      </button>
+      <button class="nav-item" data-panel="sidebar-customizer">
+        <span class="nav-icon">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect width="18" height="18" x="3" y="3" rx="2" ry="2"/>
+            <line x1="9" y1="3" x2="9" y2="21"/>
+          </svg>
+        </span>
+        <span>Sidebar</span>
+      </button>
+      <button class="nav-item" data-panel="inputbar-customizer">
+        <span class="nav-icon">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect width="20" height="12" x="2" y="6" rx="6" ry="6"/>
+            <line x1="6" y1="12" x2="10" y2="12"/>
+            <circle cx="17" cy="12" r="2" fill="currentColor"/>
+          </svg>
+        </span>
+        <span>Input Bar</span>
       </button>
       <button class="nav-item" data-panel="prompts">
         <span class="nav-icon">
@@ -1355,15 +1618,18 @@
           <div class="theme-grid-full" id="options-theme-grid"></div>
         </div>
 
-        <!-- Section 2: Decoupled Wallpaper & Atmosphere Studio -->
-        <div class="card">
-          <div class="card-title">Atmospheric Wallpaper & Glassmorphism Studio</div>
-          <div class="card-desc">Decoupled background atmosphere system. Pair any color palette above with your favorite backdrop artwork or ultra-clean solid acrylic glass.</div>
+        </div>
 
-          <div class="settings-row" style="padding-top: 0;">
+      <!-- Wallpapers & Custom Images Panel -->
+      <div class="panel" id="panel-wallpapers">
+        <div class="card">
+          <div class="card-title">Atmospheric Wallpaper & Custom Image Studio</div>
+          <div class="card-desc">Decoupled backdrop atmosphere system. Select a curated high-definition artwork, upload your own custom photo, or paste an image URL to float your chat interfaces in atmospheric glass.</div>
+
+          <div class="settings-row" style="padding-top: 0; margin-bottom: 20px;">
             <div class="settings-row-info">
               <h3>Enable Atmospheric Wallpaper</h3>
-              <p>Display full-bleed backdrop behind floating glass chat interfaces</p>
+              <p>Display full-bleed backdrop behind floating glass chat interfaces across ChatGPT, Claude, Gemini, DeepSeek, and LeetCode</p>
             </div>
             <label class="toggle-wrap">
               <input type="checkbox" id="opt-wallpaper-enabled" checked>
@@ -1372,20 +1638,67 @@
           </div>
 
           <div class="wallpaper-workbench" id="wallpaper-workbench">
-            <!-- Left Column: Presets & Custom -->
+            <!-- Left Column: Presets & Custom Upload / URL -->
             <div>
-              <div class="form-label" style="margin-bottom: 8px;">Curated Backdrop Presets</div>
+              <div class="form-label" style="margin-bottom: 8px; font-weight: 800;">Curated Backdrop Presets</div>
               <div class="wallpaper-preset-grid" id="wallpaper-presets-grid"></div>
 
-              <div style="margin-top: 18px;">
-                <div class="form-label">Custom Image URL</div>
-                <input type="text" class="form-input" id="opt-wallpaper-url" placeholder="https://example.com/wallpaper.jpg">
+              <!-- Dedicated Custom Wallpaper Section -->
+              <div class="custom-wallpaper-section" style="margin-top: 24px;">
+                <div class="form-label" style="margin-bottom: 10px; font-weight: 800; display: flex; align-items: center; justify-content: space-between;">
+                  <span>Custom Wallpaper</span>
+                  <span style="font-size: 11px; font-weight: 500; color: var(--color-dark-muted);">Local File or Direct URL</span>
+                </div>
+
+                <!-- File Upload Dropzone / Button -->
+                <div class="wallpaper-upload-box" id="wallpaper-upload-dropzone">
+                  <input type="file" id="opt-wallpaper-file" accept="image/jpeg,image/png,image/webp,image/gif" style="display:none;">
+                  <div style="display: flex; align-items: center; gap: 12px;">
+                    <div class="upload-icon-circle">
+                      <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                        <polyline points="17 8 12 3 7 8"/>
+                        <line x1="12" y1="3" x2="12" y2="15"/>
+                      </svg>
+                    </div>
+                    <div style="text-align: left; flex: 1;">
+                      <button type="button" class="btn btn-secondary btn-sm" id="btn-browse-wallpaper">Upload Image File</button>
+                      <div style="font-size: 11px; color: var(--color-dark-muted); margin-top: 4px;">Drag & drop image here or click browse (JPG, PNG, WEBP)</div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Active Custom Upload Info Badge -->
+                <div class="custom-wallpaper-status" id="custom-wallpaper-status" style="display: none; margin-top: 10px;">
+                  <div style="display: flex; align-items: center; gap: 10px;">
+                    <img id="custom-wallpaper-thumb" alt="Custom Preview" style="width: 48px; height: 32px; object-fit: cover; border-radius: var(--radius-sm); border: 1px solid var(--color-border); box-shadow: 0 1px 3px rgba(0,0,0,0.15);">
+                    <div style="flex: 1; min-width: 0;">
+                      <div style="font-size: 12px; font-weight: 700; color: var(--color-darker); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" id="custom-wallpaper-name">Active Custom Upload</div>
+                      <div style="font-size: 10px; color: var(--color-dark-muted);">Personal high-definition backdrop</div>
+                    </div>
+                    <button type="button" class="btn btn-danger btn-sm" id="btn-remove-custom-wallpaper" title="Remove custom wallpaper and revert to presets" style="padding: 3px 8px; font-size: 11px;">Remove</button>
+                  </div>
+                </div>
+
+                <!-- Custom Image URL -->
+                <div style="margin-top: 14px;">
+                  <div class="form-label" style="font-size: 11px; margin-bottom: 5px;">Or Direct Image URL</div>
+                  <div style="display: flex; gap: 8px;">
+                    <input type="text" class="form-input" id="opt-wallpaper-url" placeholder="https://images.unsplash.com/... or https://..." style="flex: 1;">
+                    <button type="button" class="btn btn-secondary btn-sm" id="btn-apply-wallpaper-url">Apply</button>
+                  </div>
+                </div>
               </div>
             </div>
 
             <!-- Right Column: Atmospheric Controls & Live Preview -->
             <div>
               <div class="slider-group">
+                <div class="slider-header" style="margin-bottom: 4px;">
+                  <span class="slider-label" style="font-size: 12px; font-weight: 800;">Atmosphere Controls</span>
+                  <button type="button" class="btn btn-secondary btn-sm" id="btn-reset-wallpaper-sliders" style="padding: 2px 8px; font-size: 10px;">Reset</button>
+                </div>
+
                 <div class="slider-row">
                   <div class="slider-header">
                     <span class="slider-label">Background Blur</span>
@@ -1421,6 +1734,7 @@
 
               <!-- Live Mini Preview -->
               <div style="margin-top: 14px;">
+                <div class="form-label" style="margin-bottom: 6px; font-size: 11px; font-weight: 700;">Live Atmosphere Preview</div>
                 <div class="wallpaper-live-preview" id="wallpaper-live-preview">
                   <div class="wallpaper-live-overlay" id="wallpaper-live-overlay"></div>
                   <div class="wallpaper-live-glass-card" id="wallpaper-live-glass-card">
@@ -1434,7 +1748,232 @@
         </div>
       </div>
 
-      <!-- Prompts Panel -->
+      <!-- Sidebar Customizer Panel -->
+      <div class="panel" id="panel-sidebar-customizer">
+        <div class="card">
+          <div class="card-title">ChatGPT Sidebar Customizer</div>
+          <div class="card-desc">Customize how ChatGPT's navigation drawer appears for the active theme. Toggle between ethereal frosted glass and rich solid surfaces, with automated 4-color harmony.</div>
+
+          <!-- Active Theme Harmony Indicator -->
+          <div class="harmony-palette-badge" id="sidebar-harmony-badge">
+            <div style="font-size: 11px; font-weight: 700; color: var(--color-darker);">Active Theme: <span id="sidebar-active-theme-name" style="color: var(--color-amber);">Orchid Noir</span></div>
+            <div class="harmony-swatches-row" id="sidebar-harmony-swatches"></div>
+          </div>
+
+          <div class="component-workbench">
+            <!-- Left: Controls -->
+            <div>
+              <!-- Background Style (Glass vs Solid) -->
+              <div style="margin-bottom: 18px;">
+                <div class="form-label" style="font-weight: 800; margin-bottom: 2px;">Sidebar Background Style</div>
+                <div style="font-size: 11px; color: var(--color-dark-muted); margin-bottom: 6px;">Choose between translucent frosted glass or rich solid color matching the theme</div>
+                <div class="segmented-control" id="sidebar-bg-mode-control">
+                  <button type="button" class="segmented-btn active" data-mode="transparent">
+                    <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><rect width="18" height="18" x="3" y="3" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg>
+                    <span>Frosted Glass (Transparent)</span>
+                  </button>
+                  <button type="button" class="segmented-btn" data-mode="solid">
+                    <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><rect width="18" height="18" x="3" y="3" rx="2"/></svg>
+                    <span>Solid Theme Color</span>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Glass Blur Slider (active in transparent mode) -->
+              <div class="slider-row" id="row-sidebar-blur" style="margin-bottom: 16px;">
+                <div class="slider-header">
+                  <span class="slider-label">Sidebar Frosted Blur</span>
+                  <span class="slider-val" id="val-sidebar-blur">24px</span>
+                </div>
+                <input type="range" class="slider-input" id="opt-sidebar-blur" min="0" max="40" value="24">
+              </div>
+
+              <!-- Sidebar Right Border Toggle -->
+              <div class="settings-row" style="padding: 12px 0;">
+                <div class="settings-row-info">
+                  <h3 style="font-size: 13px;">Sidebar Divider Border</h3>
+                  <p style="font-size: 11px;">Subtle accent border separating the sidebar from chat messages</p>
+                </div>
+                <label class="toggle-wrap">
+                  <input type="checkbox" id="opt-sidebar-border" checked>
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+
+              <!-- Section Headers Accent Toggle -->
+              <div class="settings-row" style="padding: 12px 0;">
+                <div class="settings-row-info">
+                  <h3 style="font-size: 13px;">Accent Section Headers</h3>
+                  <p style="font-size: 11px;">Highlight "Recents", "Projects", "Pinned" in theme secondary accent (c3)</p>
+                </div>
+                <label class="toggle-wrap">
+                  <input type="checkbox" id="opt-sidebar-accent-headers" checked>
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+
+
+
+              <div style="margin-top: 20px;">
+                <button type="button" class="btn btn-secondary btn-sm" id="btn-reset-sidebar-customizer">Reset Sidebar to Defaults</button>
+              </div>
+            </div>
+
+            <!-- Right: Live Mockup -->
+            <div>
+              <div class="form-label" style="margin-bottom: 6px; font-weight: 700; font-size: 11px;">Live Sidebar Preview</div>
+              <div class="mockup-frame" id="mockup-sidebar-frame">
+                <div class="mockup-overlay" id="mockup-sidebar-overlay"></div>
+                <div class="mockup-sidebar-box" id="mockup-sidebar-box">
+                  <!-- Sidebar Top Actions -->
+                  <div style="padding: 10px; border-bottom: 1px solid rgba(255,255,255,0.06);">
+                    <div id="mock-sb-new-chat" style="padding: 7px 10px; border-radius: 6px; font-size: 11px; font-weight: 600; display: flex; align-items: center; gap: 8px;">
+                      <span>+ New Chat</span>
+                    </div>
+                  </div>
+                  <!-- Section Header -->
+                  <div style="padding: 10px 12px 4px 12px; font-size: 9.5px; font-weight: 800; text-transform: uppercase;" id="mock-sb-header">
+                    Recents
+                  </div>
+                  <!-- Chat List -->
+                  <div style="flex: 1; padding: 4px 8px; display: flex; flex-direction: column; gap: 4px; overflow: hidden;">
+                    <div id="mock-sb-chat-active" style="padding: 6px 10px; border-radius: 5px; font-size: 11px; font-weight: 600;">
+                      React Theme Engine
+                    </div>
+                    <div id="mock-sb-chat-hover" style="padding: 6px 10px; border-radius: 5px; font-size: 11px;">
+                      Architecture Overview
+                    </div>
+                    <div id="mock-sb-chat-normal" style="padding: 6px 10px; border-radius: 5px; font-size: 11px;">
+                      CSS Design System
+                    </div>
+                  </div>
+                  <!-- Sidebar Footer User Profile -->
+                  <div style="padding: 8px 10px; border-top: 1px solid rgba(255,255,255,0.06); font-size: 11px; display: flex; align-items: center; gap: 6px; color: #FFFFFF;">
+                    <div style="width: 20px; height: 20px; border-radius: 50%; background: rgba(255,255,255,0.2);"></div>
+                    <span style="font-weight: 600;">User Account</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Input Bar (Composer) Customizer Panel -->
+      <div class="panel" id="panel-inputbar-customizer">
+        <div class="card">
+          <div class="card-title">ChatGPT Input Bar (Composer) Customizer</div>
+          <div class="card-desc">Fine-tune the floating composer pill, tool buttons, and glowing accents matching your active theme's 4-color palette.</div>
+
+          <!-- Active Theme Harmony Indicator -->
+          <div class="harmony-palette-badge" id="inputbar-harmony-badge">
+            <div style="font-size: 11px; font-weight: 700; color: var(--color-darker);">Active Theme: <span id="inputbar-active-theme-name" style="color: var(--color-amber);">Orchid Noir</span></div>
+            <div class="harmony-swatches-row" id="inputbar-harmony-swatches"></div>
+          </div>
+
+          <div class="component-workbench">
+            <!-- Left: Controls -->
+            <div>
+              <!-- Background Style (Glass vs Solid) -->
+              <div style="margin-bottom: 18px;">
+                <div class="form-label" style="font-weight: 800; margin-bottom: 2px;">Composer Background Style</div>
+                <div style="font-size: 11px; color: var(--color-dark-muted); margin-bottom: 6px;">Choose between floating frosted glass or rich solid color pill</div>
+                <div class="segmented-control" id="inputbar-bg-mode-control">
+                  <button type="button" class="segmented-btn active" data-mode="transparent">
+                    <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><rect width="18" height="18" x="3" y="3" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/></svg>
+                    <span>Frosted Glass (Transparent)</span>
+                  </button>
+                  <button type="button" class="segmented-btn" data-mode="solid">
+                    <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><rect width="18" height="18" x="3" y="3" rx="2"/></svg>
+                    <span>Solid Theme Color</span>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Glass Blur Slider -->
+              <div class="slider-row" id="row-inputbar-blur" style="margin-bottom: 16px;">
+                <div class="slider-header">
+                  <span class="slider-label">Composer Frosted Blur</span>
+                  <span class="slider-val" id="val-inputbar-blur">16px</span>
+                </div>
+                <input type="range" class="slider-input" id="opt-inputbar-blur" min="0" max="30" value="16">
+              </div>
+
+              <!-- Accent Border & Focus Glow -->
+              <div class="settings-row" style="padding: 12px 0;">
+                <div class="settings-row-info">
+                  <h3 style="font-size: 13px;">Accent Glow & Outer Border</h3>
+                  <p style="font-size: 11px;">Radiant border and focus glow using the theme's primary accent (c2)</p>
+                </div>
+                <label class="toggle-wrap">
+                  <input type="checkbox" id="opt-inputbar-border-accent" checked>
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+
+              <!-- Action Buttons Styling (Send & Voice in c2) -->
+              <div class="settings-row" style="padding: 12px 0;">
+                <div class="settings-row-info">
+                  <h3 style="font-size: 13px;">Vibrant Action Buttons</h3>
+                  <p style="font-size: 11px;">Style the Send arrow and Voice orb with theme primary accent (c2)</p>
+                </div>
+                <label class="toggle-wrap">
+                  <input type="checkbox" id="opt-inputbar-action-accent" checked>
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+
+              <!-- Tool Pills Styling ("Think", "+ Attach" in c3) -->
+              <div class="settings-row" style="padding: 12px 0;">
+                <div class="settings-row-info">
+                  <h3 style="font-size: 13px;">Accent Tool Pills</h3>
+                  <p style="font-size: 11px;">Highlight "Think" and "+ Attach" in theme secondary accent (c3)</p>
+                </div>
+                <label class="toggle-wrap">
+                  <input type="checkbox" id="opt-inputbar-tool-accent" checked>
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+
+              <div style="margin-top: 20px;">
+                <button type="button" class="btn btn-secondary btn-sm" id="btn-reset-inputbar-customizer">Reset Input Bar to Defaults</button>
+              </div>
+            </div>
+
+            <!-- Right: Live Mockup -->
+            <div>
+              <div class="form-label" style="margin-bottom: 6px; font-weight: 700; font-size: 11px;">Live Composer Pill Preview</div>
+              <div class="mockup-frame" id="mockup-inputbar-frame" style="height: 280px;">
+                <div class="mockup-overlay" id="mockup-inputbar-overlay"></div>
+                <div class="mockup-composer-box" id="mockup-composer-box">
+                  <!-- Left Tool: + Attach -->
+                  <div id="mock-ib-attach" style="width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 15px; font-weight: bold; flex-shrink: 0;">
+                    +
+                  </div>
+                  <!-- Middle: Placeholder -->
+                  <div id="mock-ib-placeholder" style="flex: 1; font-size: 12px;">
+                    Ask ChatGPT...
+                  </div>
+                  <!-- Right Actions: Think + Mic + Voice/Send -->
+                  <div style="display: flex; align-items: center; gap: 6px; flex-shrink: 0;">
+                    <div id="mock-ib-think" style="padding: 4px 8px; border-radius: 9999px; font-size: 10px; font-weight: 700; display: flex; align-items: center; gap: 4px;">
+                      <span>Think</span>
+                    </div>
+                    <div id="mock-ib-voice" style="width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px;">
+                      🎙
+                    </div>
+                    <div id="mock-ib-send" style="width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; color: #FFFFFF; font-weight: bold;">
+                      ➔
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+<!-- Prompts Panel -->
       <div class="panel" id="panel-prompts">
         <div class="card">
           <div class="card-title">Prompt Template Library</div>
