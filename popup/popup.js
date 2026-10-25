@@ -3,10 +3,7 @@
 
 const SUPPORTED_PLATFORMS = {
   'chatgpt.com': { name: 'ChatGPT', id: 'chatgpt' },
-  'chat.openai.com': { name: 'ChatGPT', id: 'chatgpt' },
-  'gemini.google.com': { name: 'Gemini', id: 'gemini' },
-  'claude.ai': { name: 'Claude', id: 'claude' },
-  'chat.deepseek.com': { name: 'DeepSeek', id: 'deepseek' },
+  'chat.openai.com': { name: 'ChatGPT', id: 'chatgpt' }
 };
 
 const PALETTE_DEFINITIONS = [

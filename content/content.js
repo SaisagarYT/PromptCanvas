@@ -7,21 +7,11 @@
 
   if (document.getElementById('promptcanvas-root')) return;
 
-  const PLATFORM = (() => {
-    const host = window.location.hostname;
-    if (host.includes('chatgpt.com') || host.includes('openai.com')) return 'chatgpt';
-    if (host.includes('gemini.google.com')) return 'gemini';
-    if (host.includes('claude.ai')) return 'claude';
-    if (host.includes('deepseek.com')) return 'deepseek';
-    if (host.includes('leetcode.com')) return 'leetcode';
-    return 'unknown';
-  })();
+  const host = window.location.hostname;
+  if (!host.includes('chatgpt.com') && !host.includes('openai.com')) return;
 
-  const platformLabel = PLATFORM === 'chatgpt' ? 'ChatGPT' :
-                        PLATFORM === 'claude' ? 'Claude' :
-                        PLATFORM === 'deepseek' ? 'DeepSeek' :
-                        PLATFORM === 'gemini' ? 'Gemini' :
-                        PLATFORM === 'leetcode' ? 'LeetCode' : 'AI Chat';
+  const PLATFORM = 'chatgpt';
+  const platformLabel = 'ChatGPT';
 
   let state = {
     settings: {},

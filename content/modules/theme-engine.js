@@ -1,5 +1,5 @@
 // PromptCanvas Theme & Wallpaper Engine
-// Handles dynamic glassmorphism, wallpaper injection & non-invasive styling for ChatGPT, Claude, Gemini, DeepSeek, LeetCode
+// Handles dynamic glassmorphism, wallpaper injection & non-invasive styling specifically for ChatGPT
 // Guarantees zero layout shift & full transparency on host application wrappers
 
 (function (root) {
@@ -63,7 +63,7 @@
           if (typeof chrome !== 'undefined' && chrome.runtime?.getURL && chrome.runtime.id && !chrome.runtime.id.includes('mock')) {
             return chrome.runtime.getURL(relPath);
           }
-        } catch (e) {}
+        } catch (e) { }
         return '../' + relPath;
       }
       return wp.url || '';
@@ -181,18 +181,11 @@
       const isWp = Boolean(themeEnabled && wp && wp.enabled && wp.presetId !== 'none' && (wp.presetId || wp.url || wp.dataUrl));
       const glassBlur = isWp ? (wp?.panelBlur || 14) : 0;
 
-      let css = '';
-      if (platform === 'chatgpt') css = this.buildChatGPTTheme(c, theme, isWp, glassBlur, sidebarStyle, inputBarStyle);
-      else if (platform === 'gemini') css = this.buildGeminiTheme(c, theme, isWp, glassBlur);
-      else if (platform === 'claude') css = this.buildClaudeTheme(c, theme, isWp, glassBlur);
-      else if (platform === 'deepseek') css = this.buildDeepSeekTheme(c, theme, isWp, glassBlur);
-      else if (platform === 'leetcode') css = this.buildLeetCodeTheme(c, theme, isWp, glassBlur);
-      else css = this.buildGenericTheme(c, theme, isWp, glassBlur);
-
+      const css = this.buildChatGPTTheme(c, theme, isWp, glassBlur, sidebarStyle, inputBarStyle);
       themeStyleEl.textContent = css;
     },
 
-        buildChatGPTTheme(c, theme, isWp, glassBlur, sidebarStyle = {}, inputBarStyle = {}) {
+    buildChatGPTTheme(c, theme, isWp, glassBlur, sidebarStyle = {}, inputBarStyle = {}) {
       const swatches = theme.colors?.swatches || [
         c.background || '#18181B',
         c.primary || '#EF4444',
@@ -399,6 +392,17 @@
           background: transparent !important;
         }
 
+        /* Scroll-to-Bottom Arrow Button Styling (Preserves native positioning & avoids padding bloat) */
+        button[data-testid*="scroll-to-bottom"],
+        button[aria-label*="Scroll to bottom" i] {
+          background: rgba(24, 20, 34, 0.92) !important;
+          border: 1px solid rgba(255, 255, 255, 0.16) !important;
+          box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4) !important;
+          color: #FFFFFF !important;
+          backdrop-filter: blur(8px) !important;
+          -webkit-backdrop-filter: blur(8px) !important;
+        }
+
         html, body {
           font-family: '${theme.font || 'Inter'}', sans-serif !important;
           color: #F8FAFC !important;
@@ -558,7 +562,7 @@
           border-radius: 8px !important;
           color: #FFFFFF !important;
           font-weight: 600 !important;
-          box-shadow: 0 2px 10px rgba(0, 0, 0, 0.25), 0 0 12px ${hexToRgba(primary, 0.12)} !important;
+          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25) !important;
         }
 
         /* Wipe ALL child containers, spans, and icons inside the active link to transparent */
@@ -608,14 +612,17 @@
         /* User message bubble */
         [data-user-message-bubble],
         [data-message-author-role="user"] div[class*="rounded"],
-        div[class*="user-turn"] div[class*="rounded"] {
-          background: linear-gradient(135deg, ${hexToRgba(primary, 0.88)}, ${hexToRgba(secondary, 0.88)}) !important;
-          background-color: ${primary} !important;
+        [data-message-author-role="user"] [class*="bg-token-main-surface-secondary"],
+        [data-message-author-role="user"] .font-user-message,
+        div[data-testid*="user-message"],
+        div[class*="user-turn"] div[class*="rounded"],
+        div.items-end div[class*="rounded-3xl"] {
+          background: ${isWp ? hexToRgba(baseColor, 0.90) : hexToRgba(baseColor, 0.95)} !important;
+          background-color: ${isWp ? hexToRgba(baseColor, 0.90) : hexToRgba(baseColor, 0.95)} !important;
           border-radius: ${theme.messageBorderRadius || '18px'} !important;
-          color: ${userText} !important;
-          border: 1px solid ${border} !important;
-          ${isWp ? `backdrop-filter: blur(${glassBlur}px) saturate(140%) !important; -webkit-backdrop-filter: blur(${glassBlur}px) saturate(140%) !important;` : ''}
-          box-shadow: 0 6px 24px rgba(0, 0, 0, 0.45), 0 0 16px ${hexToRgba(primary, 0.25)} !important;
+          color: #FFFFFF !important;
+          border: 1px solid rgba(255, 255, 255, 0.16) !important;
+          box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35) !important;
           padding: 10px 18px !important;
           min-width: 48px !important;
           display: inline-flex !important;
@@ -624,29 +631,25 @@
 
         [data-user-message-bubble] :is(p, span, div),
         [data-message-author-role="user"] :is(p, span, div) {
-          color: ${userText} !important;
+          color: #FFFFFF !important;
           font-weight: 500 !important;
         }
 
-        /* Assistant message card */
+        /* Assistant message turn - Clean, compact, native alignment */
         [data-markdown-text-style="assistant-message"],
         [data-markdown-text-style="assistant-message"][class^="MarkdownRoot-"],
-        [data-message-author-role="assistant"],
-        div[class*="agent-turn"] {
-          display: block !important;
-          width: 100% !important;
-          background: ${isWp ? hexToRgba(baseColor, 0.80) : 'transparent'} !important;
-          background-color: ${isWp ? hexToRgba(baseColor, 0.80) : 'transparent'} !important;
-          border-radius: ${theme.messageBorderRadius || '18px'} !important;
-          border: ${isWp ? `1px solid ${border}` : 'none'} !important;
+        [data-message-author-role="assistant"] {
+          background: ${isWp ? hexToRgba(baseColor, 0.78) : 'transparent'} !important;
+          background-color: ${isWp ? hexToRgba(baseColor, 0.78) : 'transparent'} !important;
+          border-radius: ${theme.messageBorderRadius || '16px'} !important;
+          border: ${isWp ? '1px solid rgba(255, 255, 255, 0.10)' : 'none'} !important;
           ${isWp ? `backdrop-filter: blur(${glassBlur}px) saturate(140%) !important; -webkit-backdrop-filter: blur(${glassBlur}px) saturate(140%) !important;` : ''}
-          padding: 18px 24px !important;
-          margin: 12px 0 !important;
+          padding: 12px 18px !important;
+          margin: 6px 0 !important;
           color: #F8FAFC !important;
-          box-shadow: ${isWp ? `0 8px 32px rgba(0, 0, 0, 0.45), 0 0 14px ${sidebarHover}` : 'none'} !important;
+          box-shadow: ${isWp ? '0 4px 16px rgba(0, 0, 0, 0.3)' : 'none'} !important;
         }
 
-        [data-message-author-role="assistant"] > div,
         [data-message-author-role="assistant"] div.markdown,
         [data-markdown-text-style="assistant-message"] > div {
           background: transparent !important;
@@ -655,19 +658,13 @@
           backdrop-filter: none !important;
         }
 
-        /* Assistant Code Blocks */
-        div[class*="code-block"],
-        pre {
-          border: 1px solid ${secondaryBorder} !important;
-          border-radius: 8px !important;
-        }
-
-        div[class*="code-block"] > div:first-child,
-        pre > div:first-child {
-          background: ${hexToRgba(baseColor, 0.92)} !important;
-          color: ${secondary} !important;
-          border-bottom: 1px solid ${secondaryBorder} !important;
-          font-weight: 600 !important;
+        /* Standalone Code Blocks outside contain-inline-size */
+        pre:not(.contain-inline-size pre):not([class*="contain-inline-size"] pre):not(#promptcanvas-root *) {
+          border: 1px solid rgba(255, 255, 255, 0.12) !important;
+          border-radius: 12px !important;
+          background-color: ${isWp ? hexToRgba(baseColor, 0.88) : c.background} !important;
+          box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35) !important;
+          padding: 14px 16px !important;
         }
 
         blockquote {
@@ -675,7 +672,7 @@
           color: #CBD5E1 !important;
         }
 
-        /* Action buttons below assistant turn */
+        /* Action buttons below assistant turn - Clean Minimalist Ghost Buttons */
         div[class*="agent-turn"] button,
         [data-message-author-role="assistant"] button,
         [data-message-author-role="assistant"] ~ div button,
@@ -690,11 +687,13 @@
         button[aria-label*="Share" i],
         button[aria-label*="More actions" i],
         button[aria-label*="More options" i] {
-          background: rgba(255, 255, 255, 0.08) !important;
-          border: 1px solid ${border} !important;
-          border-radius: 8px !important;
-          color: #CBD5E1 !important;
-          padding: 4px 8px !important;
+          background: transparent !important;
+          background-color: transparent !important;
+          border: none !important;
+          box-shadow: none !important;
+          color: #94A3B8 !important;
+          border-radius: 6px !important;
+          padding: 4px 6px !important;
           margin: 0 2px !important;
           transition: all 0.15s ease !important;
         }
@@ -713,9 +712,10 @@
         button[aria-label*="Share" i]:hover,
         button[aria-label*="More actions" i]:hover,
         button[aria-label*="More options" i]:hover {
-          background: ${sidebarHover} !important;
-          color: ${primary} !important;
-          border-color: ${primary} !important;
+          background: rgba(255, 255, 255, 0.12) !important;
+          color: #FFFFFF !important;
+          border: none !important;
+          box-shadow: none !important;
         }
 
         /* ==========================================================================
@@ -743,19 +743,19 @@
         form[data-chatgpt-composer] [class^="ComposerLayoutBody-"],
         form:has(#prompt-textarea) > div {
           ${composerBgCss}
-          border: ${ibBorderAccent ? `1.5px solid ${hexToRgba(primary, 0.40)}` : `1px solid rgba(255, 255, 255, 0.16)`} !important;
-          box-shadow: ${ibBorderAccent ? `0 4px 20px rgba(0, 0, 0, 0.35), 0 0 14px ${hexToRgba(primary, 0.22)}` : `0 4px 20px rgba(0, 0, 0, 0.35)`} !important;
+          border: ${ibBorderAccent ? `1px solid ${hexToRgba(primary, 0.45)}` : `1px solid rgba(255, 255, 255, 0.16)`} !important;
+          box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35) !important;
           border-radius: 9999px !important;
           transition: border-color 0.2s ease, box-shadow 0.2s ease !important;
         }
 
-        /* Focus-within glow on the outer composer pill */
+        /* Focus-within on the outer composer pill - Clean outline, Zero fuzzy halo */
         [data-pc-composer="true"]:focus-within,
         form[data-chatgpt-composer] [class^="ComposerLayoutRoot-"]:focus-within,
         form[data-chatgpt-composer] [class^="ComposerLayoutBody-"]:focus-within,
         form:has(#prompt-textarea) > div:focus-within {
           border-color: ${primary} !important;
-          box-shadow: 0 4px 24px rgba(0, 0, 0, 0.45), 0 0 20px ${hexToRgba(primary, 0.35)} !important;
+          box-shadow: 0 6px 22px rgba(0, 0, 0, 0.45) !important;
         }
 
 
@@ -1154,7 +1154,7 @@
           background-color: transparent !important;
         }
 
-        /* SVG Icons in starter cards: Glowing Accent */
+        /* SVG Icons in starter cards: Clean Crisp Accent */
         [data-pc-starter="true"] svg,
         button[data-testid*="prompt-suggestion"] svg,
         button[data-testid*="starter"] svg,
@@ -1163,12 +1163,12 @@
         main a:has(svg):has(span):not(form *) svg {
           color: ${primary} !important;
           stroke: currentColor !important;
-          filter: drop-shadow(0 0 6px ${hexToRgba(primary, 0.55)}) !important;
-          transition: transform 0.22s ease, filter 0.22s ease !important;
+          filter: none !important;
+          transition: transform 0.22s ease !important;
           flex-shrink: 0 !important;
         }
 
-        /* Starter card hover: Luminous lift & Theme Accent Border */
+        /* Starter card hover: Clean lift & Theme Accent Border, Zero Fuzzy Glow */
         [data-pc-starter="true"]:hover,
         button[data-testid*="prompt-suggestion"]:hover,
         button[data-testid*="starter"]:hover,
@@ -1179,7 +1179,7 @@
           background-color: ${isWp ? 'rgba(28, 25, 40, 0.96)' : hexToRgba(baseColor, 0.96)} !important;
           border-color: ${primary} !important;
           color: #FFFFFF !important;
-          box-shadow: 0 8px 28px rgba(0, 0, 0, 0.55), 0 0 16px ${hexToRgba(primary, 0.35)}, inset 0 1px 0 rgba(255, 255, 255, 0.2) !important;
+          box-shadow: 0 6px 20px rgba(0, 0, 0, 0.45) !important;
           transform: translateY(-2px) !important;
         }
 
@@ -1189,8 +1189,8 @@
         [data-testid="use-case-prompt-chips"] button:hover svg,
         main button:has(svg):has(span):not(form *):hover svg,
         main a:has(svg):has(span):not(form *):hover svg {
-          transform: scale(1.12) !important;
-          filter: drop-shadow(0 0 10px ${primary}) !important;
+          transform: scale(1.10) !important;
+          filter: none !important;
         }
 
 
@@ -1217,41 +1217,55 @@
           text-shadow: 0 1px 4px rgba(0, 0, 0, 0.85) !important;
         }
 
-        /* Code Blocks - Glass Container */
+        /* ==========================================================================
+           8. CODE BLOCKS (Single Outer Shell - Eradicates Concentric Nested Borders)
+           ========================================================================== */
+        /* Single Outermost Container ONLY */
         div.contain-inline-size,
         div[class*="contain-inline-size"],
-        div:has(> pre),
-        div:has(> div > pre),
-        div:has(> div > code),
-        div[class*="rounded"]:has(code),
-        div[class*="rounded"]:has(pre),
-        pre:not(#promptcanvas-root *),
-        div[class*="code-block"] {
+        div[class*="code-block"]:not(div.contain-inline-size *) {
           background-color: ${isWp ? hexToRgba(baseColor, 0.88) : c.background} !important;
           background: ${isWp ? hexToRgba(baseColor, 0.88) : c.background} !important;
-          border: 1px solid ${border} !important;
+          border: 1px solid rgba(255, 255, 255, 0.14) !important;
           border-radius: 12px !important;
-          box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5), 0 0 16px ${sidebarHover} !important;
-          backdrop-filter: blur(20px) saturate(140%) !important;
-          -webkit-backdrop-filter: blur(20px) saturate(140%) !important;
+          box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35) !important;
+          backdrop-filter: blur(14px) !important;
+          -webkit-backdrop-filter: blur(14px) !important;
           overflow: hidden !important;
           margin: 14px 0 !important;
         }
 
-        div.contain-inline-size > div:first-child,
-        div[class*="contain-inline-size"] > div:first-child,
-        div:has(> pre) > div:first-child,
-        pre > div:first-child {
-          background: rgba(255, 255, 255, 0.06) !important;
-          border-bottom: 1px solid ${border} !important;
+        /* Strictly Eradicate ALL Concentric Nested Borders, Shadows & Margins on Inner Elements */
+        div.contain-inline-size div,
+        div.contain-inline-size pre,
+        div.contain-inline-size code,
+        div[class*="contain-inline-size"] div,
+        div[class*="contain-inline-size"] pre,
+        div[class*="contain-inline-size"] code {
+          border: none !important;
+          box-shadow: none !important;
+          margin: 0 !important;
+          background: transparent !important;
+          background-color: transparent !important;
+        }
+
+        /* Top Code Header Bar (Language Name & Copy Buttons) */
+        div.contain-inline-size > div > div:first-child,
+        div[class*="contain-inline-size"] > div > div:first-child {
+          background: rgba(255, 255, 255, 0.05) !important;
+          border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+          border-top: none !important;
+          border-left: none !important;
+          border-right: none !important;
+          border-radius: 0 !important;
           color: #CBD5E1 !important;
           padding: 8px 14px !important;
         }
 
+        /* Typography inside code blocks */
         div.contain-inline-size code,
         div[class*="contain-inline-size"] code,
-        div:has(> pre) code,
-        pre code,
+        pre:not(#promptcanvas-root *) code,
         pre span,
         code span {
           color: #F8FAFC !important;
@@ -1271,416 +1285,6 @@
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: ${sidebarHover}; border-radius: 3px; }
         ::-webkit-scrollbar-thumb:hover { background: ${primary}; }
-      `;
-    },
-
-    buildClaudeTheme(c, theme, isWp, glassBlur) {
-      const userText = c.userBubbleText || '#FFFFFF';
-      const rootBg = isWp ? 'transparent' : c.background;
-      const glassFilter = isWp ? `backdrop-filter: blur(${glassBlur}px) saturate(140%) !important; -webkit-backdrop-filter: blur(${glassBlur}px) saturate(140%) !important;` : '';
-
-      return `
-        :root {
-          --bg-000: ${rootBg} !important;
-          --bg-100: ${rootBg} !important;
-          --bg-200: ${rootBg} !important;
-        }
-
-        html, body, main, [class*="bg-bg-"] {
-          background-color: transparent !important;
-          background: transparent !important;
-          font-family: '${theme.font || 'Inter'}', sans-serif !important;
-          color: ${isWp ? '#F8FAFC' : c.text} !important;
-        }
-
-        nav, aside, [data-testid="sidebar"], [class*="bg-bg-000"], [class*="bg-bg-200"] {
-          background-color: ${isWp ? 'rgba(12, 10, 20, 0.85)' : c.sidebar} !important;
-          border-right: 1px solid ${c.border} !important;
-          ${glassFilter}
-        }
-
-        div[contenteditable="true"], .ProseMirror, textarea:not(#promptcanvas-root *) {
-          background-color: ${isWp ? 'rgba(18, 15, 28, 0.82)' : c.inputBg} !important;
-          color: #FFFFFF !important;
-          font-family: '${theme.font || 'Inter'}', sans-serif !important;
-          font-size: ${theme.fontSize || '15px'} !important;
-          border-radius: 20px !important;
-          border: 1px solid ${c.border} !important;
-          box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35) !important;
-          ${glassFilter}
-        }
-
-        [data-testid="user-message"], [class*="font-user-message"] {
-          background: ${isWp ? c.userBubble : c.userBubble} !important;
-          border-radius: ${theme.messageBorderRadius || '14px'} !important;
-          color: ${userText} !important;
-          border: 1px solid ${c.border} !important;
-          padding: 12px 18px !important;
-          box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25) !important;
-          ${glassFilter}
-        }
-
-        [class*="font-claude-message"] {
-          background-color: ${isWp ? 'rgba(18, 15, 28, 0.72)' : 'transparent'} !important;
-          border-radius: 14px !important;
-          border: ${isWp ? `1px solid ${c.border}` : 'none'} !important;
-          padding: 14px 18px !important;
-          color: #F8FAFC !important;
-          font-family: '${theme.font || 'Inter'}', sans-serif !important;
-          ${isWp ? glassFilter : ''}
-        }
-
-        pre:not(#promptcanvas-root *), [class*="code-block"] {
-          background-color: ${isWp ? 'rgba(10, 8, 16, 0.88)' : c.background} !important;
-          border: 1px solid ${c.border} !important;
-          border-radius: 8px !important;
-          font-family: 'JetBrains Mono', monospace !important;
-          color: ${c.primary} !important;
-        }
-
-        pre code, pre span {
-          background: transparent !important;
-          border: none !important;
-        }
-
-        :not(pre) > code {
-          background: rgba(255, 255, 255, 0.1) !important;
-          border: 1px solid ${c.border} !important;
-          border-radius: 4px !important;
-          padding: 2px 6px !important;
-        }
-
-        [role="tooltip"] {
-          background: ${c.background || '#18181B'} !important;
-          background-color: ${c.background || '#18181B'} !important;
-          color: ${c.secondary || c.primary || '#F59E0B'} !important;
-          border: 1px solid rgba(255, 255, 255, 0.16) !important;
-          border-radius: 9999px !important;
-          box-shadow: none !important;
-          filter: none !important;
-          -webkit-filter: none !important;
-          backdrop-filter: none !important;
-          -webkit-backdrop-filter: none !important;
-          padding: 6px 12px !important;
-          font-weight: 600 !important;
-          z-index: 99999 !important;
-        }
-
-        a:not(#promptcanvas-root *) { color: ${c.primary} !important; }
-        ::-webkit-scrollbar { width: 5px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: ${c.sidebarHover}; border-radius: 3px; }
-        ::-webkit-scrollbar-thumb:hover { background: ${c.primary}; }
-      `;
-    },
-
-    buildDeepSeekTheme(c, theme, isWp, glassBlur) {
-      const userText = c.userBubbleText || '#FFFFFF';
-      const rootBg = isWp ? 'transparent' : c.background;
-      const glassFilter = isWp ? `backdrop-filter: blur(${glassBlur}px) saturate(140%) !important; -webkit-backdrop-filter: blur(${glassBlur}px) saturate(140%) !important;` : '';
-
-      return `
-        html, body, #root, [class*="chat-page"], [class*="chat-scroll"] {
-          background-color: transparent !important;
-          background: transparent !important;
-          font-family: '${theme.font || 'Inter'}', sans-serif !important;
-          color: ${isWp ? '#F8FAFC' : c.text} !important;
-        }
-
-        [class*="sidebar"], [class*="side-bar"], [class*="ds-sidebar"] {
-          background-color: ${isWp ? 'rgba(12, 10, 20, 0.85)' : c.sidebar} !important;
-          border-right: 1px solid ${c.border} !important;
-          ${glassFilter}
-        }
-
-        #chat-input, textarea:not(#promptcanvas-root *), [class*="input-box"], [class*="ds-input"] {
-          background-color: ${isWp ? 'rgba(18, 15, 28, 0.82)' : c.inputBg} !important;
-          color: #FFFFFF !important;
-          font-family: '${theme.font || 'Inter'}', sans-serif !important;
-          font-size: ${theme.fontSize || '15px'} !important;
-          border-radius: 20px !important;
-          border: 1px solid ${c.border} !important;
-          box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35) !important;
-          ${glassFilter}
-        }
-
-        [class*="user-message"], [class*="bubble-user"], [class*="_user_"] {
-          background: ${isWp ? c.userBubble : c.userBubble} !important;
-          border-radius: ${theme.messageBorderRadius || '14px'} !important;
-          color: ${userText} !important;
-          border: 1px solid ${c.border} !important;
-          box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25) !important;
-          ${glassFilter}
-        }
-
-        [class*="assistant-message"], [class*="_assistant_"] {
-          background: ${isWp ? 'rgba(18, 15, 28, 0.72)' : 'transparent'} !important;
-          border-radius: 14px !important;
-          border: ${isWp ? `1px solid ${c.border}` : 'none'} !important;
-          padding: 14px 18px !important;
-          color: #F8FAFC !important;
-          font-family: '${theme.font || 'Inter'}', sans-serif !important;
-          ${isWp ? glassFilter : ''}
-        }
-
-        pre:not(#promptcanvas-root *), [class*="code-block"] {
-          background-color: ${isWp ? 'rgba(10, 8, 16, 0.88)' : c.background} !important;
-          border: 1px solid ${c.border} !important;
-          border-radius: 8px !important;
-          font-family: 'JetBrains Mono', monospace !important;
-          color: ${c.primary} !important;
-        }
-
-        pre code, pre span {
-          background: transparent !important;
-          border: none !important;
-        }
-
-        :not(pre) > code {
-          background: rgba(255, 255, 255, 0.1) !important;
-          border: 1px solid ${c.border} !important;
-          border-radius: 4px !important;
-          padding: 2px 6px !important;
-        }
-
-        [role="tooltip"] {
-          background: ${c.background || '#18181B'} !important;
-          background-color: ${c.background || '#18181B'} !important;
-          color: ${c.secondary || c.primary || '#F59E0B'} !important;
-          border: 1px solid rgba(255, 255, 255, 0.16) !important;
-          border-radius: 9999px !important;
-          box-shadow: none !important;
-          filter: none !important;
-          -webkit-filter: none !important;
-          backdrop-filter: none !important;
-          -webkit-backdrop-filter: none !important;
-          padding: 6px 12px !important;
-          font-weight: 600 !important;
-          z-index: 99999 !important;
-        }
-
-        a:not(#promptcanvas-root *) { color: ${c.primary} !important; }
-        ::-webkit-scrollbar { width: 5px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: ${c.sidebarHover}; border-radius: 3px; }
-        ::-webkit-scrollbar-thumb:hover { background: ${c.primary}; }
-      `;
-    },
-
-    buildGeminiTheme(c, theme, isWp, glassBlur) {
-      const userText = c.userBubbleText || '#FFFFFF';
-      const rootBg = isWp ? 'transparent' : c.background;
-      const glassFilter = isWp ? `backdrop-filter: blur(${glassBlur}px) saturate(140%) !important; -webkit-backdrop-filter: blur(${glassBlur}px) saturate(140%) !important;` : '';
-
-      return `
-        html, body, .conversation-container, .chat-history, main {
-          background-color: transparent !important;
-          background: transparent !important;
-          font-family: '${theme.font || 'Inter'}', sans-serif !important;
-          color: ${isWp ? '#F8FAFC' : c.text} !important;
-        }
-
-        side-nav, nav, mat-sidenav {
-          background-color: ${isWp ? 'rgba(12, 10, 20, 0.85)' : c.sidebar} !important;
-          border-right: 1px solid ${c.border} !important;
-          ${glassFilter}
-        }
-
-        .input-area, rich-textarea, .ql-editor, [jsname="tKMEOc"], footer {
-          background-color: ${isWp ? 'rgba(18, 15, 28, 0.82)' : c.inputBg} !important;
-          border: 1px solid ${c.border} !important;
-          color: #FFFFFF !important;
-          font-family: '${theme.font || 'Inter'}', sans-serif !important;
-          font-size: ${theme.fontSize || '15px'} !important;
-          border-radius: 22px !important;
-          box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35) !important;
-          ${glassFilter}
-        }
-
-        .user-query-bubble-with-background, .user-query-bubble {
-          background: ${isWp ? c.userBubble : c.userBubble} !important;
-          border-radius: ${theme.messageBorderRadius || '14px'} !important;
-          color: ${userText} !important;
-          border: 1px solid ${c.border} !important;
-          box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25) !important;
-          ${glassFilter}
-        }
-
-        model-response, .model-response-text {
-          color: #F8FAFC !important;
-          font-family: '${theme.font || 'Inter'}', sans-serif !important;
-        }
-
-        pre:not(#promptcanvas-root *), .code-block {
-          background-color: ${isWp ? 'rgba(10, 8, 16, 0.88)' : c.background} !important;
-          border: 1px solid ${c.border} !important;
-          border-radius: 8px !important;
-          font-family: 'JetBrains Mono', monospace !important;
-          color: ${c.primary} !important;
-        }
-
-        pre code, pre span {
-          background: transparent !important;
-          border: none !important;
-        }
-
-        :not(pre) > code {
-          background: rgba(255, 255, 255, 0.1) !important;
-          border: 1px solid ${c.border} !important;
-          border-radius: 4px !important;
-          padding: 2px 6px !important;
-        }
-
-        [role="tooltip"] {
-          background: ${c.background || '#18181B'} !important;
-          background-color: ${c.background || '#18181B'} !important;
-          color: ${c.secondary || c.primary || '#F59E0B'} !important;
-          border: 1px solid rgba(255, 255, 255, 0.16) !important;
-          border-radius: 9999px !important;
-          box-shadow: none !important;
-          filter: none !important;
-          -webkit-filter: none !important;
-          backdrop-filter: none !important;
-          -webkit-backdrop-filter: none !important;
-          padding: 6px 12px !important;
-          font-weight: 600 !important;
-          z-index: 99999 !important;
-        }
-
-        a:not(#promptcanvas-root *) { color: ${c.primary} !important; }
-        ::-webkit-scrollbar { width: 5px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: ${c.sidebarHover}; border-radius: 3px; }
-        ::-webkit-scrollbar-thumb:hover { background: ${c.primary}; }
-      `;
-    },
-
-    buildLeetCodeTheme(c, theme, isWp, glassBlur) {
-      const rootBg = isWp ? 'transparent' : c.background;
-      const glassFilter = isWp ? `backdrop-filter: blur(${glassBlur}px) saturate(140%) !important; -webkit-backdrop-filter: blur(${glassBlur}px) saturate(140%) !important;` : '';
-
-      return `
-        /* Non-invasive LeetCode Glassmorphism Theme (Zero layout shift) */
-        html, body, #__next {
-          background-color: ${rootBg} !important;
-          color: #F8FAFC !important;
-          font-family: '${theme.font || 'Inter'}', sans-serif !important;
-        }
-
-        /* Navigation Header */
-        nav, header, [id="navbar"], [class*="bg-layer-1"] {
-          background-color: ${isWp ? 'rgba(15, 13, 24, 0.82)' : c.surface} !important;
-          border-bottom: 1px solid rgba(255, 166, 73, 0.2) !important;
-          ${glassFilter}
-        }
-
-        /* Description / Editorial / Solutions Panels */
-        [data-track-load="description_content"],
-        [class*="description"],
-        div[class*="bg-layer-bg"],
-        div[class*="bg-layer-2"],
-        div[class*="bg-fill-"] {
-          background-color: ${isWp ? 'rgba(18, 15, 28, 0.74)' : c.surface} !important;
-          ${glassFilter}
-          border: 1px solid rgba(255, 166, 73, 0.22) !important;
-          box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35) !important;
-        }
-
-        /* Monaco Code Editor Translucency */
-        .monaco-editor,
-        .monaco-editor-background,
-        .monaco-editor .margin,
-        .monaco-editor .inputarea.ime-input {
-          background-color: ${isWp ? 'rgba(14, 12, 22, 0.78)' : c.background} !important;
-          ${glassFilter}
-        }
-
-        .monaco-editor .line-numbers {
-          color: rgba(255, 166, 73, 0.5) !important;
-        }
-
-        /* Submit Button Glow */
-        button[data-e2e-tracking="run-code"],
-        button[data-e2e-tracking="submit-code"],
-        [class*="btn-brand"],
-        [class*="bg-brand"] {
-          background: #FFA649 !important;
-          color: #0F172A !important;
-          font-weight: 700 !important;
-          border: none !important;
-          box-shadow: 0 0 16px rgba(255, 166, 73, 0.45) !important;
-        }
-
-        pre, code, [class*="example-"], [class*="code-"] {
-          background-color: ${isWp ? 'rgba(10, 8, 16, 0.88)' : c.background} !important;
-          border: 1px solid rgba(255, 166, 73, 0.25) !important;
-          border-radius: 6px !important;
-          color: #FFA649 !important;
-        }
-
-        /* Testcase & Console Tabs */
-        [class*="testcase"], [class*="console"], [class*="tab-pane"] {
-          background-color: ${isWp ? 'rgba(18, 15, 28, 0.74)' : c.surface} !important;
-          ${glassFilter}
-          border: 1px solid rgba(255, 166, 73, 0.22) !important;
-        }
-
-        a { color: #FFA649 !important; }
-        ::-webkit-scrollbar { width: 5px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: rgba(255, 166, 73, 0.25); border-radius: 3px; }
-        ::-webkit-scrollbar-thumb:hover { background: #FFA649; }
-      `;
-    },
-
-    buildGenericTheme(c, theme, isWp, glassBlur) {
-      const rootBg = isWp ? 'transparent' : c.background;
-      const glassFilter = isWp ? `backdrop-filter: blur(${glassBlur}px) saturate(140%) !important; -webkit-backdrop-filter: blur(${glassBlur}px) saturate(140%) !important;` : '';
-
-      return `
-        html, body {
-          background-color: ${rootBg} !important;
-          color: ${isWp ? '#F8FAFC' : c.text} !important;
-          font-family: '${theme.font || 'Inter'}', sans-serif !important;
-        }
-        main, section, article {
-          background-color: transparent !important;
-        }
-        nav, aside, header {
-          background-color: ${isWp ? 'rgba(14, 12, 22, 0.82)' : c.surface} !important;
-          border-color: rgba(255, 166, 73, 0.2) !important;
-          ${glassFilter}
-        }
-        textarea:not(#promptcanvas-root *), input[type="text"]:not(#promptcanvas-root *) {
-          background-color: ${isWp ? 'rgba(18, 15, 28, 0.82)' : c.inputBg} !important;
-          color: #FFFFFF !important;
-          border: 1px solid rgba(255, 166, 73, 0.3) !important;
-          border-radius: 12px !important;
-          ${glassFilter}
-        }
-        pre:not(#promptcanvas-root *), code:not(#promptcanvas-root *) {
-          background-color: ${isWp ? 'rgba(10, 8, 16, 0.88)' : c.background} !important;
-          color: ${c.primary || '#FFA649'} !important;
-          border: 1px solid rgba(255, 166, 73, 0.25) !important;
-          border-radius: 6px !important;
-        }
-        [role="tooltip"] {
-          background: ${c.background || '#18181B'} !important;
-          background-color: ${c.background || '#18181B'} !important;
-          color: ${c.primary || '#FFA649'} !important;
-          border: 1px solid rgba(255, 255, 255, 0.16) !important;
-          border-radius: 9999px !important;
-          box-shadow: none !important;
-          filter: none !important;
-          -webkit-filter: none !important;
-          backdrop-filter: none !important;
-          -webkit-backdrop-filter: none !important;
-          padding: 6px 12px !important;
-          font-weight: 600 !important;
-          z-index: 99999 !important;
-        }
-
-        a:not(#promptcanvas-root *) { color: ${c.primary || '#FFA649'} !important; }
       `;
     }
   };

@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
-  "name": "PromptCanvas — AI Theme & Prompt Engine",
+  "name": "PromptCanvas — AI Theme & Prompt Engine for ChatGPT",
   "version": "1.0.0",
-  "description": "A modern UI & custom theme engine for ChatGPT, Claude, DeepSeek, and Gemini. Inject stunning themes, manage prompt libraries, and supercharge your AI workflow.",
+  "description": "A modern UI & custom theme engine for ChatGPT. Inject stunning themes, manage prompt libraries, and supercharge your AI workflow.",
   "permissions": [
     "storage",
     "activeTab",
@@ -10,11 +10,7 @@
   ],
   "host_permissions": [
     "https://chatgpt.com/*",
-    "https://chat.openai.com/*",
-    "https://gemini.google.com/*",
-    "https://claude.ai/*",
-    "https://chat.deepseek.com/*",
-    "https://leetcode.com/*"
+    "https://chat.openai.com/*"
   ],
   "action": {
     "default_popup": "popup/popup.html",
@@ -35,11 +31,7 @@
     {
       "matches": [
         "https://chatgpt.com/*",
-        "https://chat.openai.com/*",
-        "https://gemini.google.com/*",
-        "https://claude.ai/*",
-        "https://chat.deepseek.com/*",
-        "https://leetcode.com/*"
+        "https://chat.openai.com/*"
       ],
       "js": [
         "content/modules/icons.js",
@@ -69,11 +61,7 @@
       ],
       "matches": [
         "https://chatgpt.com/*",
-        "https://chat.openai.com/*",
-        "https://gemini.google.com/*",
-        "https://claude.ai/*",
-        "https://chat.deepseek.com/*",
-        "https://leetcode.com/*"
+        "https://chat.openai.com/*"
       ]
     }
   ]

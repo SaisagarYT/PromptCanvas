@@ -1,33 +1,15 @@
 // PromptCanvas Composer Module
-// Handles direct prompt injection into ChatGPT, Claude, Gemini, and DeepSeek
+// Handles direct prompt injection into ChatGPT
 
 (function (root) {
   'use strict';
 
   const PCComposer = {
     insert(text, platform, btnEl) {
-      let textarea = null;
-
-      if (platform === 'chatgpt') {
-        textarea = document.querySelector('#prompt-textarea') ||
-                   document.querySelector('.ProseMirror') ||
-                   document.querySelector('textarea[placeholder]');
-      } else if (platform === 'gemini') {
-        textarea = document.querySelector('.ql-editor') ||
-                   document.querySelector('rich-textarea [contenteditable="true"]') ||
-                   document.querySelector('[contenteditable="true"]') ||
-                   document.querySelector('textarea');
-      } else if (platform === 'claude') {
-        textarea = document.querySelector('div.ProseMirror[contenteditable="true"]') ||
-                   document.querySelector('div[contenteditable="true"]') ||
-                   document.querySelector('textarea');
-      } else if (platform === 'deepseek') {
-        textarea = document.querySelector('#chat-input') ||
-                   document.querySelector('textarea[placeholder]') ||
-                   document.querySelector('textarea');
-      } else {
-        textarea = document.querySelector('textarea, [contenteditable="true"]');
-      }
+      const textarea = document.querySelector('#prompt-textarea') ||
+                       document.querySelector('.ProseMirror') ||
+                       document.querySelector('textarea[placeholder]') ||
+                       document.querySelector('textarea, [contenteditable="true"]');
 
       if (textarea) {
         if (textarea.tagName === 'TEXTAREA' || textarea.tagName === 'INPUT') {

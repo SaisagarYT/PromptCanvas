@@ -1,6 +1,6 @@
 # PromptCanvas — Tokyo Duo AI Theme & Prompt Engine
 
-> **Minimalist, high-contrast theme engine for ChatGPT, Claude, DeepSeek, and Gemini.**  
+> **Minimalist, high-contrast theme engine for ChatGPT.**  
 > Built around the **Tokyo Duo** colorway: Ultra-Light Linen (`#FFFBF5`) / Golden Amber (`#FFA649`) and Slate Navy (`#283845`) with Deep Slate (`#151E25`) typography.  
 > **Zero gradients · Zero glow effects · Crisp, minimal shadows.**
 
@@ -27,12 +27,12 @@
   - Pure flat design with hairline borders and subtle card elevations.
   - Clean, distraction-free reading experience for intensive AI workflows.
 - ⚡ **Prompt Library & Auto-Injection**:
-  - 1-click **Insert** into the active composer (ChatGPT, Claude, DeepSeek, Gemini).
+  - 1-click **Insert** into the active ChatGPT composer.
   - 1-click **Copy to Clipboard**.
   - Built-in prompt management and categorization.
 - 🎛️ **Quick Popup Switcher**:
   - Minimal toolbar popup with custom vector Lucide/Iconify SVGs.
-  - Live AI platform detection and standby mode for non-AI tabs.
+  - Live ChatGPT detection and standby mode for other tabs.
 - ⚙️ **Options Dashboard**:
   - Full-page palette preview and settings manager.
   - JSON Export & Import for prompt backups.
@@ -41,14 +41,11 @@
 
 ---
 
-## 🌐 Supported AI Platforms
+## 🌐 Supported AI Platform
 
 | Platform | URL Pattern | Status |
 |:---|:---|:---:|
-| **ChatGPT** | `https://chatgpt.com/*`, `https://chat.openai.com/*` | ✅ Supported |
-| **Claude** | `https://claude.ai/*` | ✅ Supported |
-| **DeepSeek** | `https://chat.deepseek.com/*` | ✅ Supported |
-| **Google Gemini** | `https://gemini.google.com/*` | ✅ Supported |
+| **ChatGPT** | `https://chatgpt.com/*`, `https://chat.openai.com/*` | ✅ Exclusively Optimized |
 
 ---
 
