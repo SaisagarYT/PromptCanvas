@@ -278,18 +278,56 @@
       });
     }
 
+    function tagChatRows() {
+      const currentPath = window.location.pathname;
+      const links = document.querySelectorAll('nav a[href*="/c/"]');
+      links.forEach(link => {
+        const row = link.closest('li') || link.closest('div[class*="group"]') || link.parentElement;
+        if (row && row !== link) {
+          if (!row.hasAttribute('data-pc-chat-row')) {
+            row.setAttribute('data-pc-chat-row', 'true');
+          }
+          const href = link.getAttribute('href') || '';
+          const isActive = link.getAttribute('aria-current') === 'page' ||
+                           link.classList.contains('active') ||
+                           (currentPath.startsWith('/c/') && href.includes(currentPath));
+          if (isActive) {
+            if (!row.hasAttribute('data-pc-active-chat')) {
+              row.setAttribute('data-pc-active-chat', 'true');
+            }
+          } else {
+            if (row.hasAttribute('data-pc-active-chat')) {
+              row.removeAttribute('data-pc-active-chat');
+            }
+          }
+        }
+      });
+    }
+
     tagComposer();
     checkSidebarState();
     tagStarters();
+    tagChatRows();
 
-    // Fast reaction to sidebar collapse/expand clicks
+    // Fast reaction to sidebar collapse/expand clicks & chat navigation clicks
     document.addEventListener('click', (e) => {
       const btn = e.target.closest('button[aria-label*="sidebar" i], button[aria-label*="navigation" i], button[data-testid*="sidebar" i]');
       if (btn) {
         setTimeout(checkSidebarState, 50);
         setTimeout(checkSidebarState, 200);
       }
+      const chatLink = e.target.closest('nav a[href*="/c/"]');
+      if (chatLink) {
+        setTimeout(tagChatRows, 50);
+        setTimeout(tagChatRows, 200);
+        setTimeout(tagChatRows, 500);
+      }
     }, true);
+
+    window.addEventListener('popstate', () => {
+      setTimeout(tagChatRows, 50);
+      setTimeout(tagChatRows, 200);
+    });
 
     // Heavily debounced, childList-only observer (never observes attributes/styles to prevent recursion)
     try {
@@ -301,6 +339,7 @@
           tagComposer();
           checkSidebarState();
           tagStarters();
+          tagChatRows();
         }, 300);
       });
       observer.observe(document.body, { childList: true, subtree: true });

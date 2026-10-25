@@ -528,11 +528,11 @@
           border-radius: 6px !important;
         }
 
-        #app-shell-sidebar nav a:hover,
+        #app-shell-sidebar nav a:not([href*="/c/"]):hover,
         #app-shell-sidebar nav button:hover,
-        #browser-sidebar-popover nav a:hover,
+        #browser-sidebar-popover nav a:not([href*="/c/"]):hover,
         #browser-sidebar-popover nav button:hover,
-        aside nav a:hover,
+        aside nav a:not([href*="/c/"]):hover,
         aside nav button:hover {
           background: ${sidebarHover} !important;
           color: #FFFFFF !important;
@@ -542,24 +542,27 @@
            Sidebar Chat History Items (Full Row Coverage: Entire Width & Height)
            ========================================================================== */
 
-        /* All chat history list items default to full-width, full-height rows */
+        /* All chat history list items & row containers default to full-width, full-height rows */
+        [data-pc-chat-row="true"],
         #app-shell-sidebar nav ol li,
         #app-shell-sidebar nav ul li,
         nav[aria-label="Chat history"] ol li,
         nav[aria-label="Chat history"] ul li,
         nav ol li,
-        nav ul li {
+        nav ul li,
+        nav div:has(> a[href*="/c/"]),
+        nav li:has(a[href*="/c/"]) {
           background: transparent !important;
           background-color: transparent !important;
           border: 1px solid transparent !important;
-          border-radius: 10px !important;
-          min-height: 42px !important;
-          height: 42px !important;
+          border-radius: 9px !important;
+          min-height: 40px !important;
+          height: 40px !important;
           width: 100% !important;
           display: flex !important;
           align-items: center !important;
           box-sizing: border-box !important;
-          padding: 0 12px !important;
+          padding: 0 10px !important;
           margin: 2px 0 !important;
           box-shadow: none !important;
           list-style: none !important;
@@ -567,20 +570,35 @@
           transition: background 0.15s ease, border-color 0.15s ease !important;
         }
 
-        /* Hover on inactive chat items highlights the entire full row */
+        /* Hover on inactive chat items highlights the ENTIRE full row container (NO thin string) */
+        [data-pc-chat-row="true"]:not([data-pc-active-chat="true"]):hover,
         #app-shell-sidebar nav ol li:not(:has(a[aria-current="page"])):not(:has(a[class*="active"])):hover,
         #app-shell-sidebar nav ul li:not(:has(a[aria-current="page"])):not(:has(a[class*="active"])):hover,
         nav[aria-label="Chat history"] ol li:not(:has(a[aria-current="page"])):not(:has(a[class*="active"])):hover,
         nav[aria-label="Chat history"] ul li:not(:has(a[aria-current="page"])):not(:has(a[class*="active"])):hover,
         nav ol li:not(:has(a[aria-current="page"])):not(:has(a[class*="active"])):hover,
-        nav ul li:not(:has(a[aria-current="page"])):not(:has(a[class*="active"])):hover {
+        nav ul li:not(:has(a[aria-current="page"])):not(:has(a[class*="active"])):hover,
+        nav div:has(> a[href*="/c/"]:not([aria-current="page"])):hover,
+        nav div[class*="group"]:has(a[href*="/c/"]:not([aria-current="page"])):hover,
+        nav li:has(a[href*="/c/"]:not([aria-current="page"])):hover {
           background: ${sidebarHover} !important;
           background-color: ${sidebarHover} !important;
           border-color: transparent !important;
-          border-radius: 10px !important;
+          border-radius: 9px !important;
         }
 
         /* ACTIVE CHAT ITEM: Entire Width & Height Fully Covered (Rich Surface, Zero Thin Boxes) */
+        [data-pc-active-chat="true"],
+        [data-pc-chat-row="true"]:has(a[aria-current="page"]),
+        [data-pc-chat-row="true"]:has(a[class*="active"]),
+        nav div:has(> a[aria-current="page"]),
+        nav div:has(> a[class*="active"]),
+        nav div:has(> a[href*="/c/"][aria-current="page"]),
+        nav div:has(> a[href*="/c/"][class*="active"]),
+        nav div[class*="group"]:has(a[aria-current="page"]),
+        nav div[class*="group"]:has(a[class*="active"]),
+        nav div[class*="group"]:has(a[href*="/c/"][aria-current="page"]),
+        nav div[class*="group"]:has(a[href*="/c/"][class*="active"]),
         #app-shell-sidebar nav ol li:has(a[aria-current="page"]),
         #app-shell-sidebar nav ol li:has(a[class*="active"]),
         #app-shell-sidebar nav ul li:has(a[aria-current="page"]),
@@ -600,20 +618,24 @@
           background: ${hexToRgba(primary, 0.35)} !important;
           background-color: ${hexToRgba(primary, 0.35)} !important;
           border: 1px solid ${hexToRgba(primary, 0.55)} !important;
-          border-radius: 10px !important;
+          border-radius: 9px !important;
           box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35) !important;
-          min-height: 42px !important;
-          height: 42px !important;
+          min-height: 40px !important;
+          height: 40px !important;
           width: 100% !important;
           display: flex !important;
           align-items: center !important;
           box-sizing: border-box !important;
-          padding: 0 12px !important;
+          padding: 0 10px !important;
           margin: 2px 0 !important;
           position: relative !important;
         }
 
         /* Hover on active item slightly brightens the full covered surface */
+        [data-pc-active-chat="true"]:hover,
+        nav div:has(> a[aria-current="page"]):hover,
+        nav div:has(> a[href*="/c/"][aria-current="page"]):hover,
+        nav div[class*="group"]:has(a[aria-current="page"]):hover,
         #app-shell-sidebar nav ol li:has(a[aria-current="page"]):hover,
         #app-shell-sidebar nav ul li:has(a[aria-current="page"]):hover,
         nav[aria-label="Chat history"] ol li:has(a[aria-current="page"]):hover,
@@ -626,11 +648,14 @@
         }
 
         /* ALL inner elements, wrappers, divs, and links inside chat rows are strictly transparent */
+        [data-pc-chat-row="true"] > div,
+        [data-pc-chat-row="true"] a,
         #app-shell-sidebar nav ol li > div,
         #app-shell-sidebar nav ul li > div,
         nav[aria-label="Chat history"] li > div,
         nav ol li > div,
         nav ul li > div,
+        nav div:has(> a[href*="/c/"]) > a,
         #app-shell-sidebar nav ol li a,
         #app-shell-sidebar nav ul li a,
         nav[aria-label="Chat history"] li a,
@@ -651,12 +676,17 @@
           text-decoration: none !important;
         }
 
+        /* Explicitly guarantee chat links NEVER get hover background (prevents thin string hover) */
+        [data-pc-chat-row="true"] a:hover,
+        #app-shell-sidebar nav a[href*="/c/"]:hover,
+        #browser-sidebar-popover nav a[href*="/c/"]:hover,
+        aside nav a[href*="/c/"]:hover,
+        nav a[href*="/c/"]:hover,
         #app-shell-sidebar nav ol li a:hover,
         #app-shell-sidebar nav ul li a:hover,
         nav[aria-label="Chat history"] li a:hover,
         nav ol li a:hover,
-        nav ul li a:hover,
-        nav a[href*="/c/"]:hover {
+        nav ul li a:hover {
           background: transparent !important;
           background-color: transparent !important;
           border: none !important;
@@ -664,11 +694,16 @@
         }
 
         /* Active chat item text: crisp white, bold, vertically centered */
+        [data-pc-active-chat="true"] a,
+        [data-pc-active-chat="true"] span,
+        [data-pc-active-chat="true"] div,
         #app-shell-sidebar nav ol li:has(a[aria-current="page"]) a,
         #app-shell-sidebar nav ol li:has(a[class*="active"]) a,
         nav[aria-label="Chat history"] li:has(a[aria-current="page"]) a,
         nav ol li:has(a[aria-current="page"]) a,
         nav li:has(a[aria-current="page"]) a,
+        nav div:has(> a[aria-current="page"]) a,
+        nav div[class*="group"]:has(a[aria-current="page"]) a,
         nav a[href*="/c/"][aria-current="page"],
         nav a[href*="/c/"][class*="active"] {
           color: #FFFFFF !important;
@@ -677,9 +712,11 @@
         }
 
         /* Text title container inside anchor: proper truncation and flex grow */
+        [data-pc-chat-row="true"] a > div,
         #app-shell-sidebar nav ol li a > div,
         nav[aria-label="Chat history"] li a > div,
-        nav ol li a > div {
+        nav ol li a > div,
+        nav a[href*="/c/"] > div {
           overflow: hidden !important;
           text-overflow: ellipsis !important;
           white-space: nowrap !important;
@@ -690,6 +727,7 @@
         }
 
         /* Wipe ALL child spans, texts, and icons inside chat links to transparent (NO inner boxes) */
+        [data-pc-chat-row="true"] a *,
         #app-shell-sidebar nav ol li a *,
         #app-shell-sidebar nav ul li a *,
         nav[aria-label="Chat history"] li a *,
@@ -706,6 +744,7 @@
         nav ol li button,
         nav ul li button,
         nav[aria-label="Chat history"] li button,
+        [data-pc-chat-row="true"] button,
         nav div:has(> a[href*="/c/"]) button {
           background: transparent !important;
           background-color: transparent !important;
@@ -721,6 +760,7 @@
         nav ol li button:hover,
         nav ul li button:hover,
         nav[aria-label="Chat history"] li button:hover,
+        [data-pc-chat-row="true"] button:hover,
         nav div:has(> a[href*="/c/"]) button:hover {
           background: rgba(255, 255, 255, 0.15) !important;
           border-radius: 6px !important;
