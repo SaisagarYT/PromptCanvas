@@ -659,12 +659,7 @@
         [data-message-author-role="user"] .font-user-message,
         [data-message-author-role="user"] div[class*="whitespace-pre-wrap"],
         [data-message-author-role="user"] div[class*="text-message"],
-        [data-message-author-role="user"] div[class*="break-words"],
-        [data-message-author-role="user"] div,
-        [data-message-author-role="user"] span,
-        [data-turn="user"] div,
-        [data-turn="user"] span,
-        div.items-end div:not([class*="rounded-3xl"]):not([class*="bg-token-main-surface"]):not([data-user-message-bubble]) {
+        [data-message-author-role="user"] div[class*="break-words"] {
           background: transparent !important;
           background-color: transparent !important;
           border: none !important;
@@ -691,9 +686,26 @@
           padding: 8px 12px !important;
         }
 
+        /* User Action Buttons Container - Strictly Horizontal Row */
+        [data-message-author-role="user"] div.items-end > div:last-child,
+        [data-message-author-role="user"] div:has(> button),
+        [data-turn="user"] div:has(> button),
+        div.items-end div:has(> button) {
+          display: flex !important;
+          flex-direction: row !important;
+          align-items: center !important;
+          justify-content: flex-end !important;
+          gap: 2px !important;
+          background: transparent !important;
+          border: none !important;
+          box-shadow: none !important;
+          margin-top: 4px !important;
+        }
+
         /* User Action Buttons (Edit, Copy, Share below bubble) */
         [data-message-author-role="user"] button,
-        [data-message-author-role="user"] ~ div button {
+        [data-message-author-role="user"] ~ div button,
+        [data-turn="user"] button {
           background: transparent !important;
           background-color: transparent !important;
           border: none !important;
@@ -701,12 +713,26 @@
           color: #94A3B8 !important;
           border-radius: 6px !important;
           padding: 4px 6px !important;
+          display: inline-flex !important;
+          align-items: center !important;
+          justify-content: center !important;
           transition: all 0.15s ease !important;
+          cursor: pointer !important;
         }
 
-        [data-message-author-role="user"] button:hover {
+        [data-message-author-role="user"] button:hover,
+        [data-message-author-role="user"] ~ div button:hover,
+        [data-turn="user"] button:hover {
           background: rgba(255, 255, 255, 0.12) !important;
           color: #FFFFFF !important;
+        }
+
+        [data-message-author-role="user"] button svg,
+        [data-message-author-role="user"] ~ div button svg,
+        [data-turn="user"] button svg {
+          color: inherit !important;
+          width: 16px !important;
+          height: 16px !important;
         }
 
         /* Assistant message turn - Clean, compact, native alignment */
@@ -769,7 +795,11 @@
           border-radius: 6px !important;
           padding: 4px 6px !important;
           margin: 0 2px !important;
+          display: inline-flex !important;
+          align-items: center !important;
+          justify-content: center !important;
           transition: all 0.15s ease !important;
+          cursor: pointer !important;
         }
 
         div[class*="agent-turn"] button:hover,
@@ -790,6 +820,33 @@
           color: #FFFFFF !important;
           border: none !important;
           box-shadow: none !important;
+        }
+
+        /* SVG Icons inside assistant action buttons - Uniform clean neutral styling, ZERO cyan bleed */
+        div[class*="agent-turn"] button svg,
+        [data-message-author-role="assistant"] button svg,
+        [data-message-author-role="assistant"] ~ div button svg,
+        button[aria-label*="Copy" i] svg,
+        button[aria-label*="Read aloud" i] svg,
+        button[aria-label*="Good response" i] svg,
+        button[aria-label*="Bad response" i] svg,
+        button[aria-label*="Retry" i] svg,
+        button[aria-label*="Try again" i] svg,
+        button[aria-label*="Regenerate" i] svg,
+        button[aria-label*="Share" i] svg,
+        button[aria-label*="More actions" i] svg,
+        button[aria-label*="More options" i] svg {
+          color: inherit !important;
+          stroke: currentColor !important;
+          filter: none !important;
+          width: 16px !important;
+          height: 16px !important;
+        }
+
+        button[aria-label*="More actions" i] svg,
+        button[aria-label*="More options" i] svg {
+          stroke: none !important;
+          fill: currentColor !important;
         }
 
         /* ==========================================================================
@@ -1186,16 +1243,16 @@
         /* ==========================================================================
            7. HOME PAGE PROMPT SUGGESTIONS & STARTER CARDS (Premium, Ultra-Visible)
            ========================================================================== */
-        /* Starter suggestion buttons ONLY (never layout containers) */
+        /* Starter suggestion buttons ONLY (never layout containers, never inside chat turns) */
         [data-pc-starter="true"],
         button[data-pc-starter="true"],
         a[data-pc-starter="true"],
         button[data-testid*="prompt-suggestion"],
         button[data-testid*="starter"],
         [data-testid="use-case-prompt-chips"] button,
-        main button:has(svg):has(span):not(form *):not(header *):not(nav *):not(aside *),
-        main a:has(svg):has(span):not(form *):not(header *):not(nav *):not(aside *),
-        main div[class*="grid"] button:not(form *):not(header *):not(nav *):not(aside *) {
+        main button:has(svg):has(span):not(form *):not(header *):not(nav *):not(aside *):not(article *):not([data-message-author-role] *):not([data-turn] *),
+        main a:has(svg):has(span):not(form *):not(header *):not(nav *):not(aside *):not(article *):not([data-message-author-role] *):not([data-turn] *),
+        main div[class*="grid"] button:not(form *):not(header *):not(nav *):not(aside *):not(article *):not([data-message-author-role] *):not([data-turn] *) {
           color: #F8FAFC !important;
           background: ${isWp ? 'rgba(18, 16, 26, 0.86)' : hexToRgba(baseColor, 0.90)} !important;
           background-color: ${isWp ? 'rgba(18, 16, 26, 0.86)' : hexToRgba(baseColor, 0.90)} !important;
@@ -1220,8 +1277,8 @@
         button[data-testid*="prompt-suggestion"] :is(span, p, div),
         button[data-testid*="starter"] :is(span, p, div),
         [data-testid="use-case-prompt-chips"] button :is(span, p, div),
-        main button:has(svg):has(span):not(form *) :is(span, p, div),
-        main a:has(svg):has(span):not(form *) :is(span, p, div) {
+        main button:has(svg):has(span):not(form *):not(article *):not([data-message-author-role] *):not([data-turn] *) :is(span, p, div),
+        main a:has(svg):has(span):not(form *):not(article *):not([data-message-author-role] *):not([data-turn] *) :is(span, p, div) {
           color: #F8FAFC !important;
           font-weight: 500 !important;
           background: transparent !important;
@@ -1233,8 +1290,8 @@
         button[data-testid*="prompt-suggestion"] svg,
         button[data-testid*="starter"] svg,
         [data-testid="use-case-prompt-chips"] button svg,
-        main button:has(svg):has(span):not(form *) svg,
-        main a:has(svg):has(span):not(form *) svg {
+        main button:has(svg):has(span):not(form *):not(article *):not([data-message-author-role] *):not([data-turn] *) svg,
+        main a:has(svg):has(span):not(form *):not(article *):not([data-message-author-role] *):not([data-turn] *) svg {
           color: ${primary} !important;
           stroke: currentColor !important;
           filter: none !important;
@@ -1247,8 +1304,8 @@
         button[data-testid*="prompt-suggestion"]:hover,
         button[data-testid*="starter"]:hover,
         [data-testid="use-case-prompt-chips"] button:hover,
-        main button:has(svg):has(span):not(form *):hover,
-        main a:has(svg):has(span):not(form *):hover {
+        main button:has(svg):has(span):not(form *):not(article *):not([data-message-author-role] *):not([data-turn] *):hover,
+        main a:has(svg):has(span):not(form *):not(article *):not([data-message-author-role] *):not([data-turn] *):hover {
           background: ${isWp ? 'rgba(28, 25, 40, 0.96)' : hexToRgba(baseColor, 0.96)} !important;
           background-color: ${isWp ? 'rgba(28, 25, 40, 0.96)' : hexToRgba(baseColor, 0.96)} !important;
           border-color: ${primary} !important;
@@ -1261,8 +1318,8 @@
         button[data-testid*="prompt-suggestion"]:hover svg,
         button[data-testid*="starter"]:hover svg,
         [data-testid="use-case-prompt-chips"] button:hover svg,
-        main button:has(svg):has(span):not(form *):hover svg,
-        main a:has(svg):has(span):not(form *):hover svg {
+        main button:has(svg):has(span):not(form *):not(article *):not([data-message-author-role] *):not([data-turn] *):hover svg,
+        main a:has(svg):has(span):not(form *):not(article *):not([data-message-author-role] *):not([data-turn] *):hover svg {
           transform: scale(1.10) !important;
           filter: none !important;
         }
