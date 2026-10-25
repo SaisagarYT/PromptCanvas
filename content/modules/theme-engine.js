@@ -772,25 +772,36 @@
           color: #CBD5E1 !important;
         }
 
-        /* Action buttons below assistant turn - Clean Minimalist Ghost Buttons */
+        /* Action buttons below assistant turn - Clean Minimalist Ghost Buttons Matching Human Side */
+        article:has([data-message-author-role="assistant"]) button,
+        article[data-testid^="conversation-turn-"]:not(:has([data-message-author-role="user"])) button,
         div[class*="agent-turn"] button,
         [data-message-author-role="assistant"] button,
         [data-message-author-role="assistant"] ~ div button,
+        [data-message-author-role="assistant"] ~ div div button,
+        div[class*="group/turn-messages"] button,
+        [class*="touch:-me-2"] button,
         div:has(> button[aria-label*="Copy"]) button,
         button[aria-label*="Copy" i],
         button[aria-label*="Read aloud" i],
+        button[aria-label*="Listen" i],
         button[aria-label*="Good response" i],
         button[aria-label*="Bad response" i],
+        button[aria-label*="Thumbs" i],
+        button[aria-label*="Like" i],
+        button[aria-label*="Dislike" i],
         button[aria-label*="Retry" i],
         button[aria-label*="Try again" i],
         button[aria-label*="Regenerate" i],
         button[aria-label*="Share" i],
-        button[aria-label*="More actions" i],
-        button[aria-label*="More options" i] {
+        button[aria-label*="More" i],
+        button[aria-label*="actions" i],
+        button[aria-label*="options" i] {
           background: transparent !important;
           background-color: transparent !important;
           border: none !important;
           box-shadow: none !important;
+          outline: none !important;
           color: #94A3B8 !important;
           border-radius: 6px !important;
           padding: 4px 6px !important;
@@ -802,51 +813,80 @@
           cursor: pointer !important;
         }
 
+        article:has([data-message-author-role="assistant"]) button:hover,
+        article[data-testid^="conversation-turn-"]:not(:has([data-message-author-role="user"])) button:hover,
         div[class*="agent-turn"] button:hover,
         [data-message-author-role="assistant"] button:hover,
         [data-message-author-role="assistant"] ~ div button:hover,
+        [data-message-author-role="assistant"] ~ div div button:hover,
+        div[class*="group/turn-messages"] button:hover,
+        [class*="touch:-me-2"] button:hover,
         div:has(> button[aria-label*="Copy"]) button:hover,
         button[aria-label*="Copy" i]:hover,
         button[aria-label*="Read aloud" i]:hover,
+        button[aria-label*="Listen" i]:hover,
         button[aria-label*="Good response" i]:hover,
         button[aria-label*="Bad response" i]:hover,
+        button[aria-label*="Thumbs" i]:hover,
+        button[aria-label*="Like" i]:hover,
+        button[aria-label*="Dislike" i]:hover,
         button[aria-label*="Retry" i]:hover,
         button[aria-label*="Try again" i]:hover,
         button[aria-label*="Regenerate" i]:hover,
         button[aria-label*="Share" i]:hover,
-        button[aria-label*="More actions" i]:hover,
-        button[aria-label*="More options" i]:hover {
+        button[aria-label*="More" i]:hover,
+        button[aria-label*="actions" i]:hover,
+        button[aria-label*="options" i]:hover {
           background: rgba(255, 255, 255, 0.12) !important;
+          background-color: rgba(255, 255, 255, 0.12) !important;
           color: #FFFFFF !important;
           border: none !important;
           box-shadow: none !important;
+          outline: none !important;
         }
 
-        /* SVG Icons inside assistant action buttons - Uniform clean neutral styling, ZERO cyan bleed */
+        /* SVG Icons inside assistant action buttons - Exactly matching Human Side */
+        article:has([data-message-author-role="assistant"]) button svg,
+        article[data-testid^="conversation-turn-"]:not(:has([data-message-author-role="user"])) button svg,
         div[class*="agent-turn"] button svg,
         [data-message-author-role="assistant"] button svg,
         [data-message-author-role="assistant"] ~ div button svg,
+        [data-message-author-role="assistant"] ~ div div button svg,
+        div[class*="group/turn-messages"] button svg,
+        [class*="touch:-me-2"] button svg,
         button[aria-label*="Copy" i] svg,
         button[aria-label*="Read aloud" i] svg,
+        button[aria-label*="Listen" i] svg,
         button[aria-label*="Good response" i] svg,
         button[aria-label*="Bad response" i] svg,
+        button[aria-label*="Thumbs" i] svg,
+        button[aria-label*="Like" i] svg,
+        button[aria-label*="Dislike" i] svg,
         button[aria-label*="Retry" i] svg,
         button[aria-label*="Try again" i] svg,
         button[aria-label*="Regenerate" i] svg,
         button[aria-label*="Share" i] svg,
-        button[aria-label*="More actions" i] svg,
-        button[aria-label*="More options" i] svg {
+        button[aria-label*="More" i] svg,
+        button[aria-label*="actions" i] svg,
+        button[aria-label*="options" i] svg {
           color: inherit !important;
-          stroke: currentColor !important;
-          filter: none !important;
           width: 16px !important;
           height: 16px !important;
+          filter: none !important;
+          border: none !important;
+          background: transparent !important;
         }
 
-        button[aria-label*="More actions" i] svg,
-        button[aria-label*="More options" i] svg {
-          stroke: none !important;
-          fill: currentColor !important;
+        /* Outer wrappers around assistant action buttons - Transparent & Borderless */
+        [data-message-author-role="assistant"] ~ div,
+        article:has([data-message-author-role="assistant"]) div:has(> button),
+        article[data-testid^="conversation-turn-"]:not(:has([data-message-author-role="user"])) div:has(> button),
+        div[class*="agent-turn"] div:has(> button),
+        [class*="touch:-me-2"] {
+          background: transparent !important;
+          background-color: transparent !important;
+          border: none !important;
+          box-shadow: none !important;
         }
 
         /* ==========================================================================
@@ -1391,6 +1431,34 @@
           border-radius: 0 !important;
           color: #CBD5E1 !important;
           padding: 8px 14px !important;
+        }
+
+        /* Copy code button in code blocks */
+        div.contain-inline-size:has(pre) > div > div:first-child button {
+          background: transparent !important;
+          background-color: transparent !important;
+          border: none !important;
+          box-shadow: none !important;
+          outline: none !important;
+          color: #94A3B8 !important;
+          padding: 3px 8px !important;
+          border-radius: 4px !important;
+          display: inline-flex !important;
+          align-items: center !important;
+          gap: 6px !important;
+          cursor: pointer !important;
+          transition: all 0.15s ease !important;
+        }
+
+        div.contain-inline-size:has(pre) > div > div:first-child button:hover {
+          background: rgba(255, 255, 255, 0.12) !important;
+          color: #FFFFFF !important;
+        }
+
+        div.contain-inline-size:has(pre) > div > div:first-child button svg {
+          color: inherit !important;
+          width: 14px !important;
+          height: 14px !important;
         }
 
         /* Typography inside code blocks */
