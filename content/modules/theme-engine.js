@@ -1032,24 +1032,33 @@
         }
 
         /* ==========================================================================
-           6B. TOOLTIPS (Always Solid Dark Theme Background - Zero Backdrop Shadows)
+           6B. TOOLTIPS (Single Sleek Pill Structure - No Outer Double Capsule)
            ========================================================================== */
+        /* Strictly neutralize tooltip popper wrappers (NO double capsule, NO extra padding) */
+        div[data-radix-popper-content-wrapper],
+        div[data-radix-popper-content-wrapper]:has([role="tooltip"]),
+        div[data-radix-popper-content-wrapper]:has([data-radix-tooltip-content]) {
+          background: transparent !important;
+          background-color: transparent !important;
+          border: none !important;
+          box-shadow: none !important;
+          padding: 0 !important;
+          margin: 0 !important;
+          filter: none !important;
+          -webkit-filter: none !important;
+        }
+
+        /* Unified Clean Single Pill Tooltip */
         [role="tooltip"],
         [data-radix-tooltip-content],
-        div[style*="--radix-tooltip-content"],
-        div[data-radix-popper-content-wrapper]:has([role="tooltip"]),
-        div[data-radix-popper-content-wrapper] [role="tooltip"],
-        div[data-radix-popper-content-wrapper] [data-radix-tooltip-content],
-        div[data-side][role="tooltip"],
-        div[data-state][role="tooltip"],
-        .bg-token-bg-tooltip,
-        [class*="bg-token-bg-tooltip"] {
+        div[style*="--radix-tooltip-content"]:not([data-radix-popper-content-wrapper]),
+        .bg-token-bg-tooltip {
           background: ${baseColor} !important;
           background-color: ${baseColor} !important;
           color: ${secondary || primary || '#F59E0B'} !important;
           border: 1px solid rgba(255, 255, 255, 0.16) !important;
           border-radius: 9999px !important;
-          padding: 6px 12px !important;
+          padding: 4px 10px !important;
           box-shadow: none !important;
           filter: none !important;
           -webkit-filter: none !important;
@@ -1059,33 +1068,43 @@
           visibility: visible !important;
           font-weight: 600 !important;
           font-size: 12px !important;
-          line-height: 1.3 !important;
+          line-height: 1.2 !important;
+          display: inline-flex !important;
+          align-items: center !important;
+          gap: 6px !important;
           z-index: 99999 !important;
         }
 
-        /* Ensure tooltip wrapper has no drop shadow */
-        div[data-radix-popper-content-wrapper]:has([role="tooltip"]) {
+        /* Prevent nested borders or double backgrounds inside the tooltip */
+        [role="tooltip"] *,
+        [data-radix-tooltip-content] * {
+          border: none !important;
           box-shadow: none !important;
-          filter: none !important;
-          -webkit-filter: none !important;
         }
 
         /* Tooltip text and inner elements */
-        [role="tooltip"] :is(span, p, div, b, strong),
-        [data-radix-tooltip-content] :is(span, p, div, b, strong),
-        div[style*="--radix-tooltip-content"] :is(span, p, div, b, strong),
-        .bg-token-bg-tooltip :is(span, p, div, b, strong) {
+        [role="tooltip"] :is(span, p, div, b, strong):not(kbd):not([class*="rounded"]) {
           color: ${secondary || primary || '#F59E0B'} !important;
           font-weight: 600 !important;
           background: transparent !important;
           background-color: transparent !important;
         }
 
+        /* Keyboard shortcut badge (e.g. Ctrl+Shift+S) inside tooltip */
+        [role="tooltip"] :is(kbd, span[class*="rounded"], [class*="bg-token-main-surface-secondary"]) {
+          background: rgba(255, 255, 255, 0.10) !important;
+          background-color: rgba(255, 255, 255, 0.10) !important;
+          color: ${secondary || primary || '#F59E0B'} !important;
+          border-radius: 4px !important;
+          padding: 1px 5px !important;
+          font-size: 11px !important;
+          font-weight: 500 !important;
+        }
+
         /* Tooltip arrow if present */
         [role="tooltip"] svg,
         [role="tooltip"] polygon,
-        [data-radix-tooltip-content] svg,
-        div[style*="--radix-tooltip-content"] svg {
+        [data-radix-tooltip-content] svg {
           fill: ${baseColor} !important;
           color: ${baseColor} !important;
         }
