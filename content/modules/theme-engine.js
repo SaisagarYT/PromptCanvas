@@ -1032,11 +1032,12 @@
         }
 
         /* ==========================================================================
-           6B. TOOLTIPS (Always Solid Dark Theme Background - Never Transparent)
+           6B. TOOLTIPS (Always Solid Dark Theme Background - Zero Backdrop Shadows)
            ========================================================================== */
         [role="tooltip"],
         [data-radix-tooltip-content],
         div[style*="--radix-tooltip-content"],
+        div[data-radix-popper-content-wrapper]:has([role="tooltip"]),
         div[data-radix-popper-content-wrapper] [role="tooltip"],
         div[data-radix-popper-content-wrapper] [data-radix-tooltip-content],
         div[data-side][role="tooltip"],
@@ -1049,7 +1050,9 @@
           border: 1px solid rgba(255, 255, 255, 0.16) !important;
           border-radius: 9999px !important;
           padding: 6px 12px !important;
-          box-shadow: 0 4px 20px rgba(0, 0, 0, 0.7), 0 0 12px rgba(0, 0, 0, 0.5) !important;
+          box-shadow: none !important;
+          filter: none !important;
+          -webkit-filter: none !important;
           backdrop-filter: none !important;
           -webkit-backdrop-filter: none !important;
           opacity: 1 !important;
@@ -1058,6 +1061,13 @@
           font-size: 12px !important;
           line-height: 1.3 !important;
           z-index: 99999 !important;
+        }
+
+        /* Ensure tooltip wrapper has no drop shadow */
+        div[data-radix-popper-content-wrapper]:has([role="tooltip"]) {
+          box-shadow: none !important;
+          filter: none !important;
+          -webkit-filter: none !important;
         }
 
         /* Tooltip text and inner elements */
@@ -1327,7 +1337,11 @@
           color: ${c.secondary || c.primary || '#F59E0B'} !important;
           border: 1px solid rgba(255, 255, 255, 0.16) !important;
           border-radius: 9999px !important;
-          box-shadow: 0 4px 18px rgba(0, 0, 0, 0.6) !important;
+          box-shadow: none !important;
+          filter: none !important;
+          -webkit-filter: none !important;
+          backdrop-filter: none !important;
+          -webkit-backdrop-filter: none !important;
           padding: 6px 12px !important;
           font-weight: 600 !important;
           z-index: 99999 !important;
@@ -1416,7 +1430,11 @@
           color: ${c.secondary || c.primary || '#F59E0B'} !important;
           border: 1px solid rgba(255, 255, 255, 0.16) !important;
           border-radius: 9999px !important;
-          box-shadow: 0 4px 18px rgba(0, 0, 0, 0.6) !important;
+          box-shadow: none !important;
+          filter: none !important;
+          -webkit-filter: none !important;
+          backdrop-filter: none !important;
+          -webkit-backdrop-filter: none !important;
           padding: 6px 12px !important;
           font-weight: 600 !important;
           z-index: 99999 !important;
@@ -1500,7 +1518,11 @@
           color: ${c.secondary || c.primary || '#F59E0B'} !important;
           border: 1px solid rgba(255, 255, 255, 0.16) !important;
           border-radius: 9999px !important;
-          box-shadow: 0 4px 18px rgba(0, 0, 0, 0.6) !important;
+          box-shadow: none !important;
+          filter: none !important;
+          -webkit-filter: none !important;
+          backdrop-filter: none !important;
+          -webkit-backdrop-filter: none !important;
           padding: 6px 12px !important;
           font-weight: 600 !important;
           z-index: 99999 !important;
@@ -1629,7 +1651,11 @@
           color: ${c.primary || '#FFA649'} !important;
           border: 1px solid rgba(255, 255, 255, 0.16) !important;
           border-radius: 9999px !important;
-          box-shadow: 0 4px 18px rgba(0, 0, 0, 0.6) !important;
+          box-shadow: none !important;
+          filter: none !important;
+          -webkit-filter: none !important;
+          backdrop-filter: none !important;
+          -webkit-backdrop-filter: none !important;
           padding: 6px 12px !important;
           font-weight: 600 !important;
           z-index: 99999 !important;
