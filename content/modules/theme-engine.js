@@ -206,6 +206,20 @@
       const sidebarHover = hexToRgba(primary, 0.16);
       const secondaryHover = hexToRgba(secondary, 0.16);
 
+      function isLightColor(hex) {
+        if (!hex || typeof hex !== 'string') return false;
+        const clean = hex.replace('#', '');
+        if (clean.length < 6) return false;
+        const r = parseInt(clean.substring(0, 2), 16) || 0;
+        const g = parseInt(clean.substring(2, 4), 16) || 0;
+        const b = parseInt(clean.substring(4, 6), 16) || 0;
+        return (0.299 * r + 0.587 * g + 0.114 * b) > 160;
+      }
+      const isLight = isLightColor(baseColor);
+      const sidebarItemColor = isLight ? '#334155' : '#E2E8F0';
+      const sidebarItemActiveColor = isLight ? '#0F172A' : '#FFFFFF';
+      const sidebarBtnColor = isLight ? '#64748B' : '#CBD5E1';
+
       // --- Sidebar Style Configurations ---
       const sbMode = sidebarStyle?.backgroundMode || 'transparent';
       const sbBlur = typeof sidebarStyle?.glassBlur !== 'undefined' ? sidebarStyle.glassBlur : (glassBlur || 24);
@@ -354,11 +368,14 @@
 
           /* Sidebar Tokens */
           --sidebar-surface-primary: ${sbMode === 'solid' ? baseColor : 'transparent'} !important;
-          --sidebar-surface-secondary: transparent !important;
-          --sidebar-surface-tertiary: transparent !important;
+          --sidebar-surface-secondary: ${hexToRgba(primary, isLight ? 0.15 : 0.20)} !important;
+          --sidebar-surface-tertiary: ${hexToRgba(primary, isLight ? 0.07 : 0.09)} !important;
           --token-sidebar-surface-primary: ${sbMode === 'solid' ? baseColor : 'transparent'} !important;
-          --token-sidebar-surface-secondary: transparent !important;
-          --token-sidebar-surface-tertiary: transparent !important;
+          --token-sidebar-surface-secondary: ${hexToRgba(primary, isLight ? 0.15 : 0.20)} !important;
+          --token-sidebar-surface-tertiary: ${hexToRgba(primary, isLight ? 0.07 : 0.09)} !important;
+          --menu-item-active: ${hexToRgba(primary, isLight ? 0.15 : 0.20)} !important;
+          --menu-item-hover: ${hexToRgba(primary, isLight ? 0.07 : 0.09)} !important;
+          --menu-item-highlighted: ${hexToRgba(primary, isLight ? 0.15 : 0.20)} !important;
         }
 
         /* ==========================================================================
@@ -509,11 +526,15 @@
         }
 
         nav button[data-app-action-sidebar-section-toggle] span.min-w-0 {
-          padding: 0.25rem 0.6rem !important;
-          background: ${hexToRgba(primary, 0.16)} !important;
-          box-shadow: 0 0 0 1px ${hexToRgba(primary, 0.32)} !important;
+          padding: 0.2rem 0.55rem !important;
+          background: ${hexToRgba(primary, isLight ? 0.12 : 0.16)} !important;
+          border: none !important;
+          box-shadow: none !important;
           border-radius: 50vw !important;
           color: ${primary} !important;
+          font-size: 11px !important;
+          font-weight: 700 !important;
+          letter-spacing: 0.5px !important;
         }
 
         /* Sidebar All Links & Buttons: Crystal Clear High-Contrast Visibility */
@@ -527,9 +548,9 @@
         nav ol li a,
         nav ul li a,
         nav a[href*="/c/"] {
-          color: #E2E8F0 !important;
+          color: ${sidebarItemColor} !important;
           transition: all 0.15s ease !important;
-          border-radius: 6px !important;
+          border-radius: 8px !important;
         }
 
         #app-shell-sidebar nav a:not([href*="/c/"]):hover,
@@ -538,12 +559,12 @@
         #browser-sidebar-popover nav button:hover,
         aside nav a:not([href*="/c/"]):hover,
         aside nav button:hover {
-          background: ${sidebarHover} !important;
-          color: #FFFFFF !important;
+          background: ${hexToRgba(primary, isLight ? 0.08 : 0.12)} !important;
+          color: ${sidebarItemActiveColor} !important;
         }
 
         /* ==========================================================================
-           Sidebar Chat History Items: Clean, Sleek, Single-Surface Navigation
+           Sidebar Chat History Items: Soft Seamless Pill (Reference Match)
            ========================================================================== */
 
         /* All parent li elements and wrappers are strictly transparent (NO giant blocks) */
@@ -568,12 +589,13 @@
         nav ul li > div {
           background: transparent !important;
           background-color: transparent !important;
-          border: 1px solid transparent !important;
+          border: none !important;
+          box-shadow: none !important;
           border-radius: 8px !important;
-          transition: background 0.15s ease, border-color 0.15s ease !important;
+          transition: background 0.15s ease !important;
         }
 
-        /* Hover on inactive chat rows: subtle, clean, translucent highlight */
+        /* Hover on inactive chat rows: soft subtle wash, NO border, NO shadow */
         #app-shell-sidebar nav ol li:not(:has(a[aria-current="page"])):not(:has(a[class*="active"])):not(:has([class*="sidebar-surface-secondary"])) > div:hover,
         #app-shell-sidebar nav ul li:not(:has(a[aria-current="page"])):not(:has(a[class*="active"])):not(:has([class*="sidebar-surface-secondary"])) > div:hover,
         nav[aria-label="Chat history"] li:not(:has(a[aria-current="page"])):not(:has(a[class*="active"])):not(:has([class*="sidebar-surface-secondary"])) > div:hover,
@@ -581,13 +603,14 @@
         nav ul li:not(:has(a[aria-current="page"])):not(:has(a[class*="active"])):not(:has([class*="sidebar-surface-secondary"])) > div:hover,
         nav ol li:not(:has(div)):hover,
         nav ul li:not(:has(div)):hover {
-          background: rgba(255, 255, 255, 0.08) !important;
-          background-color: rgba(255, 255, 255, 0.08) !important;
-          border-color: transparent !important;
+          background: ${hexToRgba(primary, isLight ? 0.07 : 0.09)} !important;
+          background-color: ${hexToRgba(primary, isLight ? 0.07 : 0.09)} !important;
+          border: none !important;
+          box-shadow: none !important;
           border-radius: 8px !important;
         }
 
-        /* ACTIVE CHAT ITEM: Single sleek glass pill on the row container (NO double boxes, NO giant slabs) */
+        /* ACTIVE CHAT ITEM: Soft translucent pastel pill (Pure Flat Wash, NO border, NO shadow) */
         #app-shell-sidebar nav ol li:has(a[aria-current="page"]) > div,
         #app-shell-sidebar nav ol li:has(a[class*="active"]) > div,
         #app-shell-sidebar nav ol li:has([class*="sidebar-surface-secondary"]) > div,
@@ -606,11 +629,11 @@
         nav ol li:not(:has(div)):has(a[class*="active"]),
         nav ul li:not(:has(div)):has(a[aria-current="page"]),
         nav ul li:not(:has(div)):has(a[class*="active"]) {
-          background: ${hexToRgba(primary, 0.18)} !important;
-          background-color: ${hexToRgba(primary, 0.18)} !important;
-          border: 1px solid ${hexToRgba(primary, 0.38)} !important;
+          background: ${hexToRgba(primary, isLight ? 0.15 : 0.20)} !important;
+          background-color: ${hexToRgba(primary, isLight ? 0.15 : 0.20)} !important;
+          border: none !important;
+          box-shadow: none !important;
           border-radius: 8px !important;
-          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25) !important;
         }
 
         /* Hover on active chat item */
@@ -618,9 +641,10 @@
         #app-shell-sidebar nav ul li:has(a[aria-current="page"]) > div:hover,
         nav[aria-label="Chat history"] li:has(a[aria-current="page"]) > div:hover,
         nav ol li:not(:has(div)):has(a[aria-current="page"]):hover {
-          background: ${hexToRgba(primary, 0.26)} !important;
-          background-color: ${hexToRgba(primary, 0.26)} !important;
-          border-color: ${hexToRgba(primary, 0.55)} !important;
+          background: ${hexToRgba(primary, isLight ? 0.22 : 0.27)} !important;
+          background-color: ${hexToRgba(primary, isLight ? 0.22 : 0.27)} !important;
+          border: none !important;
+          box-shadow: none !important;
         }
 
         /* ALL inner anchor tags and child elements are strictly transparent (NO double borders, NO inner boxes) */
@@ -659,7 +683,7 @@
           box-shadow: none !important;
         }
 
-        /* Active chat text: crisp white and clear */
+        /* Active chat text: crisp and clear */
         #app-shell-sidebar nav ol li:has(a[aria-current="page"]) a,
         #app-shell-sidebar nav ol li:has(a[class*="active"]) a,
         nav[aria-label="Chat history"] li:has(a[aria-current="page"]) a,
@@ -668,8 +692,8 @@
         nav ul li:has(a[aria-current="page"]) a,
         nav a[href*="/c/"][aria-current="page"],
         nav a[href*="/c/"][class*="active"] {
-          color: #FFFFFF !important;
-          font-weight: 600 !important;
+          color: ${sidebarItemActiveColor} !important;
+          font-weight: 500 !important;
         }
 
         /* Wipe ALL child spans, texts, and icons inside chat links to transparent (NO inner boxes) */
@@ -694,16 +718,16 @@
           background-color: transparent !important;
           border: none !important;
           box-shadow: none !important;
-          color: #CBD5E1 !important;
+          color: ${sidebarBtnColor} !important;
         }
 
         nav ol li button:hover,
         nav ul li button:hover,
         nav[aria-label="Chat history"] li button:hover,
         nav div:has(> a[href*="/c/"]) button:hover {
-          background: rgba(255, 255, 255, 0.15) !important;
+          background: ${isLight ? 'rgba(0, 0, 0, 0.08)' : 'rgba(255, 255, 255, 0.15)'} !important;
           border-radius: 6px !important;
-          color: #FFFFFF !important;
+          color: ${sidebarItemActiveColor} !important;
         }
 
         /* "New chat" Quick Action Pill */
