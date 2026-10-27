@@ -6,34 +6,41 @@ const SUPPORTED_PLATFORMS = {
   'chat.openai.com': { name: 'ChatGPT', id: 'chatgpt' }
 };
 
-const PALETTE_DEFINITIONS = [
-  { id: 'orchidNoir', name: 'Orchid Noir', dot: '#BE5CA9' },
-  { id: 'cyberTeal', name: 'Electric Teal', dot: '#43D9E7' },
-  { id: 'crimsonVelvet', name: 'Crimson Velvet', dot: '#FD0053' },
-  { id: 'abyssalGold', name: 'Abyssal Gold', dot: '#FFD716' },
-  { id: 'denimSunset', name: 'Denim Sunset', dot: '#F23456' },
-  { id: 'neonSeafoam', name: 'Neon Seafoam', dot: '#5BE7C4' },
-  { id: 'ultramarineMagenta', name: 'Ultramarine', dot: '#FF008E' },
-  { id: 'peacockNoir', name: 'Peacock Noir', dot: '#1A8B9D' },
-  { id: 'terracottaSlate', name: 'Terracotta', dot: '#C24D2C' },
-  { id: 'alpineMeadow', name: 'Alpine Meadow', dot: '#66D47E' },
-  { id: 'apricotEmerald', name: 'Apricot Emerald', dot: '#F4C180' },
-  { id: 'amethystMint', name: 'Amethyst Mint', dot: '#15CDA9' },
-  { id: 'mandarinEmber', name: 'Mandarin Ember', dot: '#FF6D24' },
-  { id: 'nordicGlacier', name: 'Nordic Glacier', dot: '#FAEE5A' },
-  { id: 'twilightPersimmon', name: 'Twilight Persimmon', dot: '#ED743F' },
-  { id: 'sageOlive', name: 'Sage & Olive', dot: '#437A5B' },
-  { id: 'ferrariCorse', name: 'Scuderia Corse', dot: '#EF4444' },
-  { id: 'cyberpunkTokyo', name: 'Cyberpunk Tokyo', dot: '#00F0FF' },
-  { id: 'roseGoldMirage', name: 'Rose Gold', dot: '#FB7185' },
-  { id: 'solarFlare', name: 'Solar Flare', dot: '#F59E0B' }
-];
+const PALETTE_DEFINITIONS = (typeof window !== 'undefined' && window.PALETTE_DEFINITIONS ? window.PALETTE_DEFINITIONS : [
+  { id: 'orchidNoir', name: 'Orchid Noir', swatches: ['#4D3A4D', '#BE5CA9'] },
+  { id: 'cyberTeal', name: 'Electric Teal', swatches: ['#2A2C5F', '#43D9E7'] },
+  { id: 'crimsonVelvet', name: 'Crimson Velvet', swatches: ['#2B2024', '#FD0053'] },
+  { id: 'abyssalGold', name: 'Abyssal Gold', swatches: ['#001F3E', '#FFD716'] },
+  { id: 'denimSunset', name: 'Denim Sunset', swatches: ['#3B4A6B', '#F23456'] },
+  { id: 'neonSeafoam', name: 'Neon Seafoam', swatches: ['#7A56D0', '#5BE7C4'] },
+  { id: 'ultramarineMagenta', name: 'Ultramarine', swatches: ['#124E96', '#FF008E'] },
+  { id: 'peacockNoir', name: 'Peacock Noir', swatches: ['#000000', '#1A8B9D'] },
+  { id: 'terracottaSlate', name: 'Terracotta', swatches: ['#1A273A', '#C24D2C'] },
+  { id: 'alpineMeadow', name: 'Alpine Meadow', swatches: ['#073835', '#66D47E'] },
+  { id: 'apricotEmerald', name: 'Apricot Emerald', swatches: ['#007064', '#F4C180'] },
+  { id: 'amethystMint', name: 'Amethyst Mint', swatches: ['#9765C8', '#15CDA9'] },
+  { id: 'mandarinEmber', name: 'Mandarin Ember', swatches: ['#4E413B', '#FF6D24'] },
+  { id: 'nordicGlacier', name: 'Nordic Glacier', swatches: ['#4A89AC', '#FAEE5A'] },
+  { id: 'twilightPersimmon', name: 'Twilight Persimmon', swatches: ['#423465', '#ED743F'] },
+  { id: 'sageOlive', name: 'Sage & Olive', swatches: ['#3F3F3F', '#437A5B'] },
+  { id: 'ferrariCorse', name: 'Scuderia Corse', swatches: ['#141016', '#EF4444'] },
+  { id: 'cyberpunkTokyo', name: 'Cyberpunk Tokyo', swatches: ['#0B0C16', '#00F0FF'] },
+  { id: 'roseGoldMirage', name: 'Rose Gold', swatches: ['#1C131D', '#FB7185'] },
+  { id: 'solarFlare', name: 'Solar Flare', swatches: ['#0F172A', '#F59E0B'] }
+]).map(p => ({
+  id: p.id,
+  name: p.name,
+  dot: p.swatches?.[1] || p.dot
+}));
 
 let currentTabId = null;
 let currentPlatform = null;
 let storageData = {};
 
 function escapeHtml(str) {
+  if (typeof window !== 'undefined' && window.PCDomUtils?.escapeHtml) {
+    return window.PCDomUtils.escapeHtml(str);
+  }
   const d = document.createElement('div');
   d.textContent = str || '';
   return d.innerHTML;

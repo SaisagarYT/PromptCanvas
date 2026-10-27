@@ -34,9 +34,25 @@
         "https://chat.openai.com/*"
       ],
       "js": [
+        "common/utils/color.js",
+        "common/utils/dom.js",
+        "common/constants/wallpapers.js",
+        "common/constants/themes.js",
+        "common/constants/defaults.js",
         "content/modules/icons.js",
+        "content/modules/wallpaper-engine.js",
+        "content/modules/theme-css/tokens.js",
+        "content/modules/theme-css/layout.js",
+        "content/modules/theme-css/sidebar.js",
+        "content/modules/theme-css/messages.js",
+        "content/modules/theme-css/composer.js",
+        "content/modules/theme-css/dialogs.js",
+        "content/modules/theme-css/starters.js",
+        "content/modules/theme-css/codeblocks.js",
+        "content/modules/theme-css/index.js",
         "content/modules/theme-engine.js",
         "content/modules/composer.js",
+        "sidebar/components/templates.js",
         "sidebar/sidebar.js",
         "content/content.js"
       ],
@@ -53,6 +69,7 @@
   "web_accessible_resources": [
     {
       "resources": [
+        "common/*",
         "content/*",
         "sidebar/*",
         "icons/*",
