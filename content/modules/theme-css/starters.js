@@ -90,10 +90,13 @@
           filter: none !important;
         }
 
-        /* Active attachment chip under composer */
-        form div[class*="rounded"]:has(button[aria-label*="close" i]),
-        form div[class*="rounded"]:has(button[aria-label*="Remove" i]),
-        form div[class*="bg-token-main-surface-secondary"]:has(button) {
+        /* Active attachment chip inside composer (thumbnails & file preview cards ONLY) */
+        form div:has(> button[aria-label*="Remove" i]):not(#composer-background):not([data-pc-composer="true"]):not(form:has(#prompt-textarea) > div),
+        form div:has(> button[aria-label*="close" i]):not(#composer-background):not([data-pc-composer="true"]):not(form:has(#prompt-textarea) > div),
+        form div:has(> div > button[aria-label*="Remove" i]):not(#composer-background):not([data-pc-composer="true"]):not(form:has(#prompt-textarea) > div),
+        form div:has(> div > button[aria-label*="close" i]):not(#composer-background):not([data-pc-composer="true"]):not(form:has(#prompt-textarea) > div),
+        form [data-testid*="attachment"]:not(#composer-background):not([data-pc-composer="true"]):not(form:has(#prompt-textarea) > div),
+        form [data-testid*="file-item"]:not(#composer-background):not([data-pc-composer="true"]):not(form:has(#prompt-textarea) > div) {
           background: ${hexToRgba(baseColor, 0.92)} !important;
           border: 1px solid ${border} !important;
           border-radius: 14px !important;
@@ -101,6 +104,13 @@
           -webkit-backdrop-filter: none !important;
           color: #FFFFFF !important;
           box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4) !important;
+        }
+
+        /* Attachment chip text & labels */
+        form div:has(> button[aria-label*="Remove" i]) span,
+        form div:has(> button[aria-label*="close" i]) span,
+        form [data-testid*="attachment"] span {
+          color: #FFFFFF !important;
         }
 
 

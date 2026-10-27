@@ -44,7 +44,7 @@
           ${composerBgCss}
           border: ${ibBorderAccent ? `1px solid ${hexToRgba(primary, 0.45)}` : `1px solid rgba(255, 255, 255, 0.16)`} !important;
           box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35) !important;
-          border-radius: 9999px !important;
+          border-radius: 26px !important;
           transition: border-color 0.2s ease, box-shadow 0.2s ease !important;
         }
 
@@ -77,6 +77,11 @@
           -webkit-backdrop-filter: none !important;
         }
 
+        #composer-background,
+        div[id="composer-background"] {
+          border-radius: 26px !important;
+        }
+
         #composer-background:focus-within,
         div[id="composer-background"]:focus-within,
         #prompt-textarea:focus,
@@ -95,13 +100,36 @@
         /* ==========================================================================
            COMPOSER TEXT & HINT / PLACEHOLDER (100% Crisp Visibility & High Contrast)
            ========================================================================== */
-        /* Active Typed Text */
+        /* Active Typed Text & Multiline Scroll Constraint */
         #prompt-textarea,
-        .ProseMirror,
+        .ProseMirror {
+          color: #FFFFFF !important;
+          -webkit-text-fill-color: #FFFFFF !important;
+          max-height: 240px !important;
+          overflow-y: auto !important;
+          scrollbar-width: thin !important;
+        }
+
         #prompt-textarea p,
         .ProseMirror p {
           color: #FFFFFF !important;
           -webkit-text-fill-color: #FFFFFF !important;
+        }
+
+        #prompt-textarea::-webkit-scrollbar,
+        .ProseMirror::-webkit-scrollbar {
+          width: 5px !important;
+        }
+
+        #prompt-textarea::-webkit-scrollbar-track,
+        .ProseMirror::-webkit-scrollbar-track {
+          background: transparent !important;
+        }
+
+        #prompt-textarea::-webkit-scrollbar-thumb,
+        .ProseMirror::-webkit-scrollbar-thumb {
+          background: rgba(255, 255, 255, 0.25) !important;
+          border-radius: 4px !important;
         }
 
         /* Native Textarea Placeholder */
