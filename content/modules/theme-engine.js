@@ -134,8 +134,10 @@
       docRoot.style.setProperty('--pc-input-bg', c.inputBg);
       docRoot.style.setProperty('--pc-sidebar', c.sidebar);
       docRoot.style.setProperty('--pc-sidebar-hover', c.sidebarHover);
-      docRoot.style.setProperty('--pc-font', theme.font || 'Inter');
-      docRoot.style.setProperty('--pc-font-size', theme.fontSize || '15px');
+      const currentFont = docRoot.style.getPropertyValue('--pc-font') || (theme.font ? `'${theme.font}', sans-serif` : "'Inter', sans-serif");
+      docRoot.style.setProperty('--pc-font', currentFont);
+      const currentFontSize = docRoot.style.getPropertyValue('--pc-font-size') || theme.fontSize || '15px';
+      docRoot.style.setProperty('--pc-font-size', currentFontSize);
       docRoot.style.setProperty('--pc-radius', theme.borderRadius || '4px');
       docRoot.style.setProperty('--pc-msg-radius', theme.messageBorderRadius || '4px');
 

@@ -37,6 +37,10 @@
       prompts: defaultPrompts,
       themes: defaultThemes,
       activeTheme: 'ferrariCorse',
+      activeFont: 'Inter',
+      activeFontCategory: 'All',
+      fontSampleText: '',
+      fontSize: '15px',
       settings: {},
       uiPalette: null,
       platformLabel: 'AI Chat'
@@ -85,6 +89,20 @@
       return '';
     },
 
+    renderFontCard(font, isActive, customSample) {
+      if (root.PCSidebarTemplates?.renderFontCard) {
+        return root.PCSidebarTemplates.renderFontCard(font, isActive, customSample);
+      }
+      return '';
+    },
+
+    renderFontCategoryChip(cat, count, isActive) {
+      if (root.PCSidebarTemplates?.renderFontCategoryChip) {
+        return root.PCSidebarTemplates.renderFontCategoryChip(cat, count, isActive);
+      }
+      return '';
+    },
+
     buildSidebarSkeleton(platformLabel) {
       if (root.PCSidebarTemplates?.buildSidebarSkeleton) {
         return root.PCSidebarTemplates.buildSidebarSkeleton(platformLabel);
@@ -115,6 +133,9 @@
         this.renderCategories();
         this.renderPrompts();
         this.renderThemes();
+        this.preloadFontPreviews();
+        this.renderFontCategories();
+        this.renderFonts();
         this.renderStudioMiniPreview();
         this.syncControls();
         return;
@@ -146,6 +167,9 @@
       this.renderCategories();
       this.renderPrompts();
       this.renderThemes();
+      this.preloadFontPreviews();
+      this.renderFontCategories();
+      this.renderFonts();
       this.renderStudioMiniPreview();
       this.syncControls();
 
@@ -433,6 +457,141 @@
       });
     },
 
+    preloadFontPreviews() {
+      if (document.getElementById('pc-fonts-preview-link')) return;
+      try {
+        if (typeof chrome !== 'undefined' && chrome.runtime?.sendMessage) {
+          const popularBatch = ['Inter', 'Outfit', 'Playfair Display', 'Caveat', 'Fredoka', 'JetBrains Mono'];
+          popularBatch.forEach(font => {
+            chrome.runtime.sendMessage({ type: 'FETCH_INLINED_FONT', fontName: font });
+          });
+        }
+      } catch (e) {}
+      const link = document.createElement('link');
+      link.id = 'pc-fonts-preview-link';
+      link.rel = 'stylesheet';
+      link.href = root.PCFonts?.getBatchedGoogleFontsUrl?.() || 'https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap';
+      document.head.appendChild(link);
+    },
+
+    renderFontCategories() {
+      const bar = document.getElementById('pc-font-cat-bar');
+      if (!bar) return;
+      const categories = root.PCFonts?.FONT_CATEGORIES || ['All', 'Premium', 'Stylish', 'Handwriting', 'Goofy', 'Monospace'];
+      const allPresets = root.PCFonts?.FONT_PRESETS || [];
+      const counts = { All: allPresets.length };
+      allPresets.forEach(f => {
+        counts[f.category] = (counts[f.category] || 0) + 1;
+      });
+
+      bar.innerHTML = categories.map(cat => {
+        return this.renderFontCategoryChip(cat, counts[cat] || 0, this.state.activeFontCategory === cat);
+      }).join('');
+
+      bar.querySelectorAll('.pc-font-cat-chip').forEach(chip => {
+        chip.addEventListener('click', () => {
+          this.state.activeFontCategory = chip.dataset.cat;
+          this.renderFontCategories();
+          this.renderFonts();
+        });
+      });
+    },
+
+    renderFonts() {
+      const list = document.getElementById('pc-font-list');
+      if (!list) return;
+      const allPresets = root.PCFonts?.FONT_PRESETS || [];
+      const activeCat = this.state.activeFontCategory || 'All';
+      const activeFont = this.state.activeFont || this.state.settings?.activeFont || 'Inter';
+      const customSample = this.state.fontSampleText || '';
+
+      const filtered = allPresets.filter(f => {
+        if (activeCat === 'All') return true;
+        return f.category.toLowerCase() === activeCat.toLowerCase();
+      });
+
+      list.innerHTML = filtered.map(f => {
+        const isActive = f.name.toLowerCase() === activeFont.toLowerCase();
+        return this.renderFontCard(f, isActive, customSample);
+      }).join('');
+
+      list.querySelectorAll('.pc-font-card').forEach(card => {
+        card.addEventListener('click', () => {
+          const fontName = card.dataset.font;
+          if (fontName) this.applyFont(fontName);
+        });
+      });
+    },
+
+    applyFont(fontName) {
+      this.state.activeFont = fontName;
+      this.state.settings = this.state.settings || {};
+      this.state.settings.activeFont = fontName;
+
+      if (typeof root.PCApplyCustomFont === 'function') {
+        root.PCApplyCustomFont(fontName);
+      } else {
+        document.documentElement.style.setProperty('--pc-font', `'${fontName}', sans-serif`);
+        let fontStyleEl = document.getElementById('pc-chatgpt-font-style');
+        if (!fontStyleEl) {
+          fontStyleEl = document.createElement('style');
+          fontStyleEl.id = 'pc-chatgpt-font-style';
+          document.head.appendChild(fontStyleEl);
+        }
+        const isMonospace = ['JetBrains Mono', 'Fira Code', 'VT323'].includes(fontName);
+        const codeFont = isMonospace ? `'${fontName}', monospace !important` : `'JetBrains Mono', 'Fira Code', 'Cascadia Code', monospace !important`;
+        fontStyleEl.textContent = `
+          :root, html, body {
+            --font-sans: '${fontName}', sans-serif !important;
+            --font-serif: '${fontName}', serif !important;
+            --pc-font: '${fontName}', sans-serif !important;
+          }
+          html, body,
+          #prompt-textarea, #prompt-textarea *,
+          .ProseMirror, .ProseMirror *,
+          div[contenteditable="true"], div[contenteditable="true"] *,
+          main, main *,
+          article, article *,
+          [data-message-author-role], [data-message-author-role] *,
+          .markdown, .markdown *,
+          [class*="font-sans"], [class*="font-user-message"], [class*="font-normal"], [class*="font-medium"], [class*="font-semibold"], [class*="font-bold"],
+          [class*="text-token-text"], div[class*="conversation-"], div[class*="text-base"],
+          p, h1, h2, h3, h4, h5, h6,
+          textarea, input,
+          button:not([class*="icon"]):not(.pc-tab-svg *):not(#promptcanvas-root *):not(#pc-toggle-btn *) {
+            font-family: '${fontName}', sans-serif !important;
+          }
+          pre, pre *, code, code *, kbd, kbd *, samp, samp *,
+          .font-mono, [class*="font-mono"], .hljs, .hljs * {
+            font-family: ${codeFont};
+          }
+        `;
+
+        try {
+          if (typeof chrome !== 'undefined' && chrome.runtime?.sendMessage) {
+            chrome.runtime.sendMessage({ type: 'FETCH_INLINED_FONT', fontName: fontName }, (res) => {
+              if (res && res.success && res.css) {
+                let fontFaceEl = document.getElementById('pc-font-face-style');
+                if (!fontFaceEl) {
+                  fontFaceEl = document.createElement('style');
+                  fontFaceEl.id = 'pc-font-face-style';
+                  document.head.appendChild(fontFaceEl);
+                }
+                fontFaceEl.textContent = res.css;
+              }
+            });
+          }
+        } catch (e) {}
+      }
+
+      const statusEl = document.getElementById('pc-active-font-name');
+      if (statusEl) statusEl.textContent = fontName;
+
+      this.renderFonts();
+      this.callbacks.onFontChange?.(fontName);
+      this.showToast(`Font set to ${fontName}`);
+    },
+
     updateActiveThemeWallpaper(patch) {
       const activeThemeId = this.state.activeTheme;
       if (!this.state.themes[activeThemeId]) return;
@@ -460,6 +619,19 @@
     },
 
     syncControls() {
+      const activeFont = this.state.settings?.activeFont || this.state.activeFont || 'Inter';
+      const statusEl = document.getElementById('pc-active-font-name');
+      if (statusEl) statusEl.textContent = activeFont;
+      this.state.activeFont = activeFont;
+
+      const fontTabSlider = document.getElementById('range-fonts-tab-size');
+      const fontTabVal = document.getElementById('val-fonts-tab-size');
+      const savedFontSize = parseInt(this.state.settings?.fontSize || '15', 10);
+      if (fontTabSlider && !isNaN(savedFontSize)) {
+        fontTabSlider.value = savedFontSize;
+        if (fontTabVal) fontTabVal.textContent = `${savedFontSize}px`;
+      }
+      
       const s = this.state.settings || {};
       const themeToggle = document.getElementById('toggle-theme-enabled');
       if (themeToggle && typeof s.themeEnabled !== 'undefined') {
@@ -649,6 +821,38 @@
       });
 
       // Typography & Geometry Sliders
+      // Interactive Font Preview Input
+      const sampleInput = document.getElementById('input-font-sample');
+      const sampleClear = document.getElementById('btn-clear-font-sample');
+      sampleInput?.addEventListener('input', (e) => {
+        this.state.fontSampleText = e.target.value;
+        if (sampleClear) sampleClear.style.display = this.state.fontSampleText ? 'block' : 'none';
+        this.renderFonts();
+      });
+      sampleClear?.addEventListener('click', () => {
+        if (sampleInput) sampleInput.value = '';
+        this.state.fontSampleText = '';
+        sampleClear.style.display = 'none';
+        this.renderFonts();
+        sampleInput?.focus();
+      });
+
+      // Fonts Tab Size Slider
+      const fontTabSlider = document.getElementById('range-fonts-tab-size');
+      const fontTabVal = document.getElementById('val-fonts-tab-size');
+      fontTabSlider?.addEventListener('input', (e) => {
+        const size = `${e.target.value}px`;
+        if (fontTabVal) fontTabVal.textContent = size;
+        this.state.fontSize = size;
+        document.documentElement.style.setProperty('--pc-font-size', size);
+        this.callbacks.onFontSizeChange?.(size);
+      });
+
+      // Reset Font to Default
+      document.getElementById('btn-reset-font')?.addEventListener('click', () => {
+        this.applyFont('Inter');
+      });
+
       document.getElementById('select-font')?.addEventListener('change', (e) => {
         this.callbacks.onFontChange?.(e.target.value);
         this.showToast(`Font set to ${e.target.value}`);

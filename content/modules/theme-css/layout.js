@@ -59,9 +59,47 @@
           -webkit-backdrop-filter: blur(8px) !important;
         }
 
+        :root, html, body {
+          --font-sans: var(--pc-font, '${theme.font || 'Inter'}', sans-serif) !important;
+          --font-serif: var(--pc-font, '${theme.font || 'Inter'}', serif) !important;
+        }
+
+        html, body,
+        #prompt-textarea,
+        #prompt-textarea *,
+        .ProseMirror,
+        .ProseMirror *,
+        main,
+        main *,
+        article,
+        article *,
+        [data-message-author-role],
+        [data-message-author-role] *,
+        .markdown,
+        .markdown *,
+        [class*="font-sans"],
+        [class*="font-normal"],
+        [class*="font-medium"],
+        [class*="font-semibold"],
+        [class*="font-bold"],
+        [class*="text-token-text"],
+        div[class*="conversation-"],
+        div[class*="text-base"],
+        p, h1, h2, h3, h4, h5, h6,
+        textarea, input,
+        div[contenteditable="true"], div[contenteditable="true"] *,
+        [class*="font-user-message"],
+        button:not([class*="icon"]):not(.pc-tab-svg *):not(#promptcanvas-root *):not(#pc-toggle-btn *) {
+          font-family: var(--pc-font, '${theme.font || 'Inter'}', sans-serif) !important;
+        }
+
         html, body {
-          font-family: '${theme.font || 'Inter'}', sans-serif !important;
           color: #F8FAFC !important;
+        }
+
+        pre, pre *, code, code *, kbd, kbd *, samp, samp *,
+        .font-mono, [class*="font-mono"], .hljs, .hljs * {
+          font-family: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', monospace !important;
         }
 
 `;

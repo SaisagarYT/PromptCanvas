@@ -8,6 +8,7 @@
     if (typeof root.escapeHtml === 'function') return root.escapeHtml(text);
     return text || '';
   }
+  const escapeHtml = _escapeHtml;
 
   const PCSidebarTemplates = {
     renderPromptCard(p) {
@@ -136,6 +137,38 @@
         </div>`;
     },
 
+    renderFontCategoryChip(cat, count, isActive) {
+      return `
+        <button class="pc-cat-chip pc-font-cat-chip ${isActive ? 'pc-active' : ''}" data-cat="${_escapeHtml(cat)}">
+          <span>${_escapeHtml(cat)}</span>
+          <span class="pc-cat-count">${count}</span>
+        </button>
+      `;
+    },
+
+    renderFontCard(font, isActive, customSample = '') {
+      const previewText = customSample || font.sampleText || 'The quick brown fox jumps over the lazy dog';
+      const badgeClass = `pc-font-badge-${font.category.toLowerCase()}`;
+      return `
+        <div class="pc-font-card ${isActive ? 'pc-font-card-active' : ''}" data-font="${_escapeHtml(font.name)}">
+          <div class="pc-font-card-header">
+            <div class="pc-font-card-info">
+              <span class="pc-font-card-name">${_escapeHtml(font.name)}</span>
+              <span class="pc-font-card-badge ${badgeClass}">${_escapeHtml(font.category)}</span>
+            </div>
+            ${isActive ? '<span class="pc-font-active-tag">ACTIVE ✓</span>' : `<button class="pc-font-apply-btn" data-font="${_escapeHtml(font.name)}">Apply</button>`}
+          </div>
+          <div class="pc-font-card-desc">${_escapeHtml(font.description)}</div>
+          <div class="pc-font-sample" style="font-family: '${font.name}', sans-serif;">
+            ${_escapeHtml(previewText)}
+          </div>
+          <div class="pc-font-subsample" style="font-family: '${font.name}', sans-serif;">
+            ABCDEFGHIJKLM · abcdefghijklm · 0123456789
+          </div>
+        </div>
+      `;
+    },
+
     buildSidebarSkeleton(platformLabel = 'AI Chat') {
       const icons = root.PCIcons || {};
       const brandIcon = icons.brand || `
@@ -172,6 +205,12 @@
         <svg class="pc-tab-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <circle cx="12" cy="12" r="3"/>
           <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+        </svg>`;
+      const tabFontsIcon = icons.tabFonts || `
+        <svg class="pc-tab-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="4 7 4 4 20 4 20 7"/>
+          <line x1="9" y1="20" x2="15" y2="20"/>
+          <line x1="12" y1="4" x2="12" y2="20"/>
         </svg>`;
       const searchIcon = icons.search || `
         <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
@@ -236,9 +275,9 @@
                 ${tabThemesIcon}
                 <span>Themes</span>
               </button>
-              <button class="pc-tab" data-tab="settings">
-                ${tabSettingsIcon}
-                <span>Settings</span>
+              <button class="pc-tab" data-tab="fonts">
+                ${tabFontsIcon}
+                <span>Fonts</span>
               </button>
             </div>
           </div>
@@ -366,79 +405,44 @@
             </div>
           </div>
 
-          <!-- Settings Tab -->
-          <div class="pc-content" id="pc-tab-settings">
-            <div class="pc-section-label">Active Workspace</div>
-            <div class="pc-settings-section">
-              <div class="pc-settings-item">
-                <div class="pc-settings-info">
-                  <div class="pc-settings-title">${platformLabel} Theming</div>
-                  <div class="pc-settings-desc">Apply theme styling to ${platformLabel} chat</div>
+          <!-- Fonts Tab (Curated Premium, Goofy, Stylish & Handwriting Typography) -->
+          <div class="pc-content" id="pc-tab-fonts">
+            <!-- Active Font Hero Card -->
+            <div class="pc-font-hero-card">
+              <div class="pc-font-hero-header">
+                <div class="pc-font-hero-status">
+                  <span class="pc-font-status-dot"></span>
+                  <span class="pc-font-status-label">Active Font:</span>
+                  <strong id="pc-active-font-name" class="pc-font-status-name">Inter</strong>
                 </div>
-                <label class="pc-toggle">
-                  <input type="checkbox" id="toggle-theme-enabled">
-                  <span class="pc-toggle-slider"></span>
-                </label>
+                <button class="pc-btn pc-btn-ghost pc-btn-xs" id="btn-reset-font" title="Reset font to Inter">Default</button>
               </div>
-              <div class="pc-settings-item">
-                <div class="pc-settings-info">
-                  <div class="pc-settings-title">1-Click Prompt Inserter</div>
-                  <div class="pc-settings-desc">Direct injection into ${platformLabel} composer</div>
+
+              <div class="pc-font-controls-row">
+                <div class="pc-font-slider-group">
+                  <div class="pc-font-slider-header">
+                    <span class="pc-control-label">Font Size</span>
+                    <span class="pc-range-val" id="val-fonts-tab-size">15px</span>
+                  </div>
+                  <input type="range" class="pc-range-slider" id="range-fonts-tab-size" min="12" max="22" value="15">
                 </div>
-                <label class="pc-toggle">
-                  <input type="checkbox" id="toggle-prompts-enabled">
-                  <span class="pc-toggle-slider"></span>
-                </label>
+              </div>
+
+              <!-- Interactive Custom Test Input -->
+              <div class="pc-font-sample-input-wrap">
+                <span class="pc-font-sample-icon">Aa</span>
+                <input type="text" class="pc-font-sample-input" id="input-font-sample"
+                  placeholder="Type custom text to preview all fonts live...">
+                <button type="button" class="pc-font-sample-clear" id="btn-clear-font-sample" style="display:none;" title="Clear sample text">×</button>
               </div>
             </div>
 
-            <div class="pc-section-label" style="margin-top:10px;">Extension Appearance</div>
-            <div class="pc-settings-section">
-              <div class="pc-settings-item" id="btn-open-studio-card" style="cursor:pointer;" title="Click to open Color Studio in Options">
-                <div class="pc-settings-info">
-                  <div class="pc-settings-title">Active Color Studio</div>
-                  <div class="pc-settings-desc">10 Designer palettes for Sidebar & Popup</div>
-                  <div class="pc-studio-mini-preview" id="pc-studio-mini-preview"></div>
-                </div>
-                <button class="pc-btn pc-btn-primary pc-btn-xs" id="btn-open-options-page">OPEN STUDIO →</button>
-              </div>
-            </div>
+            <!-- Category Filter Chips -->
+            <div class="pc-section-label" style="margin-top: 4px;">Typography Styles</div>
+            <div class="pc-cat-bar pc-font-cat-bar" id="pc-font-cat-bar"></div>
 
-            <div class="pc-section-label" style="margin-top:10px;">Keyboard Shortcuts</div>
-            <div class="pc-settings-section">
-              <div class="pc-settings-item">
-                <div class="pc-settings-info">
-                  <div class="pc-settings-title">Toggle Sidebar</div>
-                  <div class="pc-settings-desc">Show or hide the PromptCanvas panel</div>
-                </div>
-                <kbd class="pc-kbd">Alt + P</kbd>
-              </div>
-              <div class="pc-settings-item">
-                <div class="pc-settings-info">
-                  <div class="pc-settings-title">Close Sidebar / Modal</div>
-                  <div class="pc-settings-desc">Dismiss active drawer or dialog</div>
-                </div>
-                <kbd class="pc-kbd">Esc</kbd>
-              </div>
-              <div class="pc-settings-item">
-                <div class="pc-settings-info">
-                  <div class="pc-settings-title">Focus Search</div>
-                  <div class="pc-settings-desc">Jump straight to prompt search</div>
-                </div>
-                <kbd class="pc-kbd">/</kbd>
-              </div>
-            </div>
-
-            <div class="pc-section-label" style="margin-top:10px;">System & Storage</div>
-            <div class="pc-settings-section">
-              <div class="pc-settings-item">
-                <div class="pc-settings-info">
-                  <div class="pc-settings-title">Reset Defaults</div>
-                  <div class="pc-settings-desc">Restore original Tokyo Duo settings & prompts</div>
-                </div>
-                <button class="pc-btn pc-btn-ghost pc-btn-xs" id="btn-reset">RESET</button>
-              </div>
-            </div>
+            <!-- Font Cards Grid -->
+            <div class="pc-font-list" id="pc-font-list"></div>
           </div>
 
           <!-- Footer -->

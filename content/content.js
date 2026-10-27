@@ -105,6 +105,12 @@
       state.settings = data.settings || {};
       state.uiPalette = data.uiPalette || null;
       state.activeTheme = state.settings.activeTheme || 'ferrariCorse';
+      if (state.settings.activeFont) {
+        applyCustomFont(state.settings.activeFont);
+      }
+      if (state.settings.fontSize) {
+        document.documentElement.style.setProperty('--pc-font-size', state.settings.fontSize);
+      }
 
       // Initialize the Sidebar module from sidebar/sidebar.js
       if (window.PCSidebar) {
@@ -154,10 +160,16 @@
             await setStorage({ settings: state.settings });
           },
 
-          onFontChange: (font) => applyCustomFont(font),
+          onFontChange: async (font) => {
+            applyCustomFont(font);
+            state.settings.activeFont = font;
+            await setStorage({ settings: state.settings });
+          },
 
-          onFontSizeChange: (size) => {
+          onFontSizeChange: async (size) => {
             document.documentElement.style.setProperty('--pc-font-size', size);
+            state.settings.fontSize = size;
+            await setStorage({ settings: state.settings });
           },
 
           onRadiusChange: (rad) => {
@@ -313,9 +325,15 @@
     if (changes.settings) {
       state.settings = changes.settings.newValue || {};
       updates.settings = state.settings;
-      const newTheme = state.settings.activeTheme;
+            const newTheme = state.settings.activeTheme;
       if (newTheme && newTheme !== state.activeTheme) {
         state.activeTheme = newTheme;
+      }
+      if (state.settings.activeFont) {
+        applyCustomFont(state.settings.activeFont);
+      }
+      if (state.settings.fontSize) {
+        document.documentElement.style.setProperty('--pc-font-size', state.settings.fontSize);
       }
       applyTheme();
     }
@@ -346,13 +364,85 @@
     window.PCThemeEngine?.applyPageTheme(theme, PLATFORM, state.settings.themeEnabled, globalWp, sidebarStyle, inputBarStyle);
   }
 
-  function applyCustomFont(font) {
-    const link = document.createElement('link');
-    link.rel = 'stylesheet';
-    link.href = `https://fonts.googleapis.com/css2?family=${encodeURIComponent(font)}:wght@400;500;600;700&display=swap`;
-    document.head.appendChild(link);
+    function applyCustomFont(font) {
+    if (!font) return;
+
+    // 1. Update CSS custom properties immediately
     document.documentElement.style.setProperty('--pc-font', `'${font}', sans-serif`);
+
+    const isMonospace = ['JetBrains Mono', 'Fira Code', 'VT323'].includes(font);
+    const codeFontFamily = isMonospace ? `'${font}', monospace !important` : `'JetBrains Mono', 'Fira Code', 'Cascadia Code', monospace !important`;
+
+    // 2. Inject or update dedicated high-specificity ChatGPT font style tag
+    let fontStyleEl = document.getElementById('pc-chatgpt-font-style');
+    if (!fontStyleEl) {
+      fontStyleEl = document.createElement('style');
+      fontStyleEl.id = 'pc-chatgpt-font-style';
+      document.head.appendChild(fontStyleEl);
+    }
+    fontStyleEl.textContent = `
+      :root, html, body {
+        --font-sans: '${font}', sans-serif !important;
+        --font-serif: '${font}', serif !important;
+        --pc-font: '${font}', sans-serif !important;
+      }
+      html, body,
+      #prompt-textarea, #prompt-textarea *,
+      .ProseMirror, .ProseMirror *,
+      div[contenteditable="true"], div[contenteditable="true"] *,
+      main, main *,
+      article, article *,
+      [data-message-author-role], [data-message-author-role] *,
+      .markdown, .markdown *,
+      [class*="font-sans"], [class*="font-user-message"], [class*="font-normal"], [class*="font-medium"], [class*="font-semibold"], [class*="font-bold"],
+      [class*="text-token-text"], div[class*="conversation-"], div[class*="text-base"],
+      p, h1, h2, h3, h4, h5, h6,
+      textarea, input,
+      button:not([class*="icon"]):not(.pc-tab-svg *):not(#promptcanvas-root *):not(#pc-toggle-btn *) {
+        font-family: '${font}', sans-serif !important;
+      }
+      pre, pre *, code, code *, kbd, kbd *, samp, samp *,
+      .font-mono, [class*="font-mono"], .hljs, .hljs * {
+        font-family: ${codeFontFamily};
+      }
+    `;
+
+    // 3. Request embedded base64 font CSS from background worker (100% CSP immune)
+    try {
+      if (typeof chrome !== 'undefined' && chrome.runtime?.sendMessage) {
+        chrome.runtime.sendMessage({ type: 'FETCH_INLINED_FONT', fontName: font }, (res) => {
+          if (res && res.success) {
+            // A. Inject self-contained @font-face with data: URIs
+            if (res.css) {
+              let fontFaceEl = document.getElementById('pc-font-face-style');
+              if (!fontFaceEl) {
+                fontFaceEl = document.createElement('style');
+                fontFaceEl.id = 'pc-font-face-style';
+                document.head.appendChild(fontFaceEl);
+              }
+              fontFaceEl.textContent = res.css;
+            }
+
+            // B. Also register via native browser FontFace API for instant in-memory rendering
+            if (typeof FontFace !== 'undefined' && res.base64) {
+              try {
+                const binary = atob(res.base64);
+                const bytes = new Uint8Array(binary.length);
+                for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+                const face = new FontFace(font, bytes.buffer);
+                face.load().then(loaded => {
+                  document.fonts.add(loaded);
+                }).catch(() => {});
+              } catch (e) {}
+            }
+          }
+        });
+      }
+    } catch (e) {}
   }
+
+  // Expose for sidebar and other modules
+  window.PCApplyCustomFont = applyCustomFont;
 
   function openOptionsPage(panel = '') {
     const hash = panel ? `#${panel}` : '';

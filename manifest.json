@@ -10,7 +10,9 @@
   ],
   "host_permissions": [
     "https://chatgpt.com/*",
-    "https://chat.openai.com/*"
+    "https://chat.openai.com/*",
+    "https://fonts.googleapis.com/*",
+    "https://fonts.gstatic.com/*"
   ],
   "action": {
     "default_popup": "popup/popup.html",
@@ -39,6 +41,7 @@
         "common/constants/wallpapers.js",
         "common/constants/themes.js",
         "common/constants/defaults.js",
+        "common/constants/fonts.js",
         "content/modules/icons.js",
         "content/modules/wallpaper-engine.js",
         "content/modules/theme-css/tokens.js",
